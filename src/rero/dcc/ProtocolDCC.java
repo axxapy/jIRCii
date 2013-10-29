@@ -1,123 +1,119 @@
 package rero.dcc;
 
-import rero.ircfw.*;
-import rero.ircfw.interfaces.*;
+import rero.ircfw.ChatFramework;
+import rero.ircfw.ProtocolDispatcher;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.Socket;
+import java.util.HashMap;
 
-public abstract class ProtocolDCC
-{
-   public static final int DCC_SEND    = 001;
-   public static final int DCC_RECEIVE = 002;
-   public static final int DCC_CHAT    = 003;
+public abstract class ProtocolDCC {
+	public static final int DCC_SEND = 001;
+	public static final int DCC_RECEIVE = 002;
+	public static final int DCC_CHAT = 003;
 
-   public static final int STATE_WAIT   = 401;
-   public static final int STATE_OPEN   = 402; // 3 different states of a dcc connection.  
-   public static final int STATE_CLOSED = 403;
+	public static final int STATE_WAIT = 401;
+	public static final int STATE_OPEN = 402; // 3 different states of a dcc connection.
+	public static final int STATE_CLOSED = 403;
 
-   public static final int DCC_TIMEOUT  = 60 * 1000 * 2; // 2 minutes
+	public static final int DCC_TIMEOUT = 60 * 1000 * 2; // 2 minutes
 
-   protected String             nickname;
-   protected Socket             socket;
+	protected String nickname;
+	protected Socket socket;
 
-   protected long               idleTime;
-   protected long               startTime;
+	protected long idleTime;
+	protected long startTime;
 
-   protected HashMap            eventData  = new HashMap();
-   protected ProtocolDispatcher dispatcher;
+	protected HashMap eventData = new HashMap();
+	protected ProtocolDispatcher dispatcher;
 
-   protected int                state = STATE_WAIT; // by default we are in a waiting state.
+	protected int state = STATE_WAIT; // by default we are in a waiting state.
 
-   /** return the type of DCC based on a constant */
-   public abstract int getTypeOfDCC();
+	/**
+	 * return the type of DCC based on a constant
+	 */
+	public abstract int getTypeOfDCC();
 
-   public void close()
-   {
-      try
-      {
-         socket.close();
-         state = STATE_CLOSED;
-      }
-      catch (Exception ex)
-      {
-         ex.printStackTrace();
-      }
-   }
+	public void close() {
+		try {
+			socket.close();
+			state = STATE_CLOSED;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
-   public int getState()
-   {
-      if (state == STATE_OPEN && !isConnected())
-      {
-         state = STATE_CLOSED;
-      }
-      return state;
-   }
+	public int getState() {
+		if (state == STATE_OPEN && !isConnected()) {
+			state = STATE_CLOSED;
+		}
+		return state;
+	}
 
-   public String getRemoteAddress()
-   {
-      return socket.getInetAddress().getHostAddress();
-   }
+	public String getRemoteAddress() {
+		return socket.getInetAddress().getHostAddress();
+	}
 
-   public int getLocalPort()
-   {
-      return socket.getLocalPort();
-   }
+	public int getLocalPort() {
+		return socket.getLocalPort();
+	}
 
-   public int getPort()
-   {
-      return socket.getPort();
-   }
+	public int getPort() {
+		return socket.getPort();
+	}
 
-   /** tells the protocol implementation class that we are ready to rock and roll, Socket is assumed to be connected. */
-   public void announceFramework(ChatFramework f)
-   {
-      dispatcher = f.getProtocolDispatcher();
-   }
+	/**
+	 * tells the protocol implementation class that we are ready to rock and roll, Socket is assumed to be connected.
+	 */
+	public void announceFramework(ChatFramework f) {
+		dispatcher = f.getProtocolDispatcher();
+	}
 
-   public abstract void run();
+	public abstract void run();
 
-   /** returns wether or not the socket is connected */
-   public boolean isConnected()
-   {
-       return socket != null && socket.isConnected();
-   }
+	/**
+	 * returns wether or not the socket is connected
+	 */
+	public boolean isConnected() {
+		return socket != null && socket.isConnected();
+	}
 
-   /** returns the nickname of who we are having a *chat* with */
-   public String getNickname()
-   {
-       return nickname;
-   }
+	/**
+	 * returns the nickname of who we are having a *chat* with
+	 */
+	public String getNickname() {
+		return nickname;
+	}
 
-   /** returns the number of milliseconds since this chat has been active */
-   public long getIdleTime() 
-   {
-      return (System.currentTimeMillis() - idleTime);
-   }
+	/**
+	 * returns the number of milliseconds since this chat has been active
+	 */
+	public long getIdleTime() {
+		return (System.currentTimeMillis() - idleTime);
+	}
 
-   /** return time that this chat started */
-   public long getStartTime()
-   {
-      return startTime;
-   }
- 
-   /** return total amount of time this chat has been active (in milliseconds) */
-   public long getTotalTime()
-   {
-      return System.currentTimeMillis() - startTime;
-   }
+	/**
+	 * return time that this chat started
+	 */
+	public long getStartTime() {
+		return startTime;
+	}
 
-   public void setDCCSocket(Socket _socket)
-   {
-      socket = _socket;
+	/**
+	 * return total amount of time this chat has been active (in milliseconds)
+	 */
+	public long getTotalTime() {
+		return System.currentTimeMillis() - startTime;
+	}
 
-      startTime = System.currentTimeMillis();
-      idleTime  = System.currentTimeMillis();
+	public void setDCCSocket(Socket _socket) {
+		socket = _socket;
 
-      state     = STATE_OPEN;
-   }
+		startTime = System.currentTimeMillis();
+		idleTime = System.currentTimeMillis();
 
-   public abstract void fireError(String text);
-  
+		state = STATE_OPEN;
+	}
+
+	public abstract void fireError(String text);
+
 }

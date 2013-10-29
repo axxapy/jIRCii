@@ -1,83 +1,70 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientState;
+import rero.config.StringList;
+import rero.dck.SuperInput;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 
-import java.util.*;
+public class TextInput extends SuperInput implements ActionListener {
+	protected JEditorPane text;
 
-import java.io.*;
+	public TextInput(String _variable, int inset) {
+		text = new JEditorPane();
+		setLayout(new BorderLayout(2, 2));
 
-import rero.dck.*;
-import rero.config.*;
+		add(new JScrollPane(text), BorderLayout.CENTER);
 
-public class TextInput extends SuperInput implements ActionListener
-{
-   protected JEditorPane   text;
+		variable = _variable;
 
-   public TextInput(String _variable, int inset)
-   {
-      text   = new JEditorPane();
-      setLayout(new BorderLayout(2, 2));
+		setBorder(BorderFactory.createEmptyBorder(0, inset, 0, inset));
+	}
 
-      add(new JScrollPane(text), BorderLayout.CENTER);
+	public void actionPerformed(ActionEvent ev) {
+		text.setText("");
+	}
 
-      variable = _variable;
+	public void save() {
+		String[] blah = text.getText().split("\n");
 
-      setBorder(BorderFactory.createEmptyBorder(0, inset, 0, inset));
-   }
+		StringList temp = new StringList(getVariable());
+		temp.clear();
 
-   public void actionPerformed(ActionEvent ev)
-   {
-      text.setText("");
-   }
+		for (int x = 0; x < blah.length; x++) {
+			temp.add(blah[x]);
+		}
 
-   public void save()
-   {
-      String[] blah = text.getText().split("\n");
+		temp.save();
+	}
 
-      StringList temp = new StringList(getVariable());
-      temp.clear();
+	public int getEstimatedWidth() {
+		return -1;
+	}
 
-      for (int x = 0; x < blah.length; x++)
-      {
-         temp.add(blah[x]);
-      }
+	public void setAlignWidth(int width) {
+	}
 
-      temp.save();
-   }
+	public JComponent getComponent() {
+		return this;
+	}
 
-   public int getEstimatedWidth()
-   {
-      return -1;
-   }
+	public void refresh() {
+		StringList string = ClientState.getClientState().getStringList(getVariable());
+		StringBuffer data = new StringBuffer();
 
-   public void setAlignWidth(int width)
-   {
-   }
+		Iterator i = string.getList().iterator();
+		while (i.hasNext()) {
+			data.append(i.next());
+			data.append("\n");
+		}
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
-
-   public void refresh()
-   {
-      StringList string = ClientState.getClientState().getStringList(getVariable());
-      StringBuffer data = new StringBuffer();
-
-      Iterator i = string.getList().iterator();
-      while (i.hasNext())
-      {
-         data.append(i.next());
-         data.append("\n");
-      }
-      
-      text.setText(data.toString());
-      text.setCaretPosition(0);
-   }
+		text.setText(data.toString());
+		text.setCaretPosition(0);
+	}
 }
 
 

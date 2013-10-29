@@ -1,89 +1,71 @@
 package rero.bridges.menu;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.script.ScriptCore;
+import sleep.engine.Block;
+import sleep.runtime.ScriptInstance;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import sleep.runtime.*;
-import sleep.engine.*;
+public class ScriptedMenu extends JMenu implements MenuListener, MenuBridgeParent {
+	protected LinkedList code;
 
-import rero.script.ScriptCore;
+	public ScriptedMenu(ScriptInstance _owner, String _label, Block _code) {
+		if (_label.indexOf('&') > -1) {
+			setText(_label.substring(0, _label.indexOf('&')) + _label.substring(_label.indexOf('&') + 1, _label.length()));
+			setMnemonic(_label.charAt(_label.indexOf('&') + 1));
+		} else {
+			setText(_label);
+		}
 
-import java.util.*;
+		code = new LinkedList();
+		installCode(_owner, _code);
 
-public class ScriptedMenu extends JMenu implements MenuListener, MenuBridgeParent
-{
-   protected LinkedList     code;
+		addMenuListener(this);
+	}
 
-   public ScriptedMenu(ScriptInstance _owner, String _label, Block _code)
-   {
-       if (_label.indexOf('&') > -1)
-       {
-          setText( _label.substring(0, _label.indexOf('&')) + _label.substring(_label.indexOf('&') + 1, _label.length()) );
-          setMnemonic(_label.charAt(_label.indexOf('&') + 1));
-       }
-       else
-       {
-          setText(_label);
-       }
+	public JPopupMenu getScriptedPopupMenu() {
+		return new ScriptedPopupMenu(code);
+	}
 
-       code  = new LinkedList();
-       installCode(_owner, _code);
+	public void installCode(ScriptInstance _owner, Block _code) {
+		code.add(new CodeSnippet(_owner, _code));
+	}
 
-       addMenuListener(this);
-   }
+	public boolean isValidCode() {
+		Iterator i = code.iterator();
+		while (i.hasNext()) {
+			CodeSnippet temp = (CodeSnippet) i.next();
+			if (!temp.getOwner().isLoaded()) {
+				i.remove();
+			}
+		}
 
-   public JPopupMenu getScriptedPopupMenu()
-   {
-       return new ScriptedPopupMenu(code);
-   }
+		return code.size() > 0;
+	}
 
-   public void installCode(ScriptInstance _owner, Block _code)
-   {
-       code.add(new CodeSnippet(_owner, _code));
-   }
+	public void menuSelected(MenuEvent e) {
+		MenuBridge.SetParent(this);
 
-   public boolean isValidCode()
-   {
-       Iterator i = code.iterator();
-       while (i.hasNext())
-       {
-          CodeSnippet temp = (CodeSnippet)i.next();
-          if (!temp.getOwner().isLoaded())
-          {
-             i.remove();
-          }
-       }
+		Iterator i = code.iterator();
+		while (i.hasNext()) {
+			CodeSnippet temp = (CodeSnippet) i.next();
+			if (temp.getOwner().isLoaded()) {
+				ScriptCore.runCode(temp.getOwner(), temp.getBlock(), ScriptedPopupMenu.getMenuData());
+			}
+		}
 
-       return code.size() > 0;
-   }
+		MenuBridge.FinishParent();
+	}
 
-   public void menuSelected(MenuEvent e)
-   {
-       MenuBridge.SetParent(this);
+	public void menuDeselected(MenuEvent e) {
+		removeAll();
+	}
 
-       Iterator i = code.iterator();
-       while (i.hasNext())
-       {
-          CodeSnippet temp = (CodeSnippet)i.next();
-          if (temp.getOwner().isLoaded())
-          {
-             ScriptCore.runCode(temp.getOwner(), temp.getBlock(), ScriptedPopupMenu.getMenuData());
-          }
-       }
-
-       MenuBridge.FinishParent();
-   }
-
-   public void menuDeselected(MenuEvent e) 
-   { 
-       removeAll();
-   } 
-
-   public void menuCanceled(MenuEvent e) 
-   { 
-       removeAll();
-   }
+	public void menuCanceled(MenuEvent e) {
+		removeAll();
+	}
 }

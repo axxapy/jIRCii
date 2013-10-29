@@ -1,395 +1,346 @@
 package rero.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.util.*;
-
-import rero.net.interfaces.*;
-import rero.net.*;
-
-import rero.gui.windows.*;
-
-import rero.client.*;
-import rero.dialogs.server.*;
-
+import rero.bridges.menu.MenuBridge;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import rero.config.StringList;
+import rero.dialogs.server.Server;
+import rero.dialogs.server.ServerData;
+import rero.gui.toolkit.MinimalTabUI;
+import rero.gui.windows.ClientWindowEvent;
+import rero.gui.windows.ClientWindowListener;
+import rero.net.SocketEvent;
+import rero.net.interfaces.SocketStatusListener;
 import rero.test.QuickConnect;
 
-import rero.bridges.menu.*;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import rero.config.*;
-import rero.gui.toolkit.*;
+public class SessionManager extends JTabbedPane implements ClientWindowListener, SocketStatusListener, ChangeListener, ClientStateListener {
+	protected HashMap sessions = new HashMap();
+	protected IRCSession active = null;
+	protected JFrame frame = null;
+	protected MenuBridge bridge = null;
+	protected PopupManager popups = null;
+	protected KeyBindings keyb = null;
 
-public class SessionManager extends JTabbedPane implements ClientWindowListener, SocketStatusListener, ChangeListener, ClientStateListener
-{
-   protected HashMap      sessions = new HashMap();
-   protected IRCSession   active   = null;
-   protected JFrame       frame    = null;
-   protected MenuBridge   bridge   = null;
-   protected PopupManager popups   = null;
-   protected KeyBindings  keyb     = null;
+	protected String lastscript = "";
+	protected long lastref = 0;
 
-   protected String       lastscript = "";
-   protected long         lastref    = 0;
+	protected static GlobalCapabilities global;
 
-   protected static GlobalCapabilities global; 
+	public static GlobalCapabilities getGlobalCapabilities() {
+		return global;
+	}
 
-   public static GlobalCapabilities getGlobalCapabilities()
-   {
-      return global;
-   }
+	public void propertyChanged(String property, String parameter) {
+		bridge = (MenuBridge) getActiveSession().getCapabilities().getDataStructure("menuBridge");
+		rero.util.ClientUtils.invokeLater(new Runnable() {
+			public void run() {
+				if (ClientState.getClientState().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
+					JMenuBar menu = new JMenuBar();
+					bridge.installMenubar(menu);
+					frame.setJMenuBar(menu);
+				} else {
+					frame.setJMenuBar(null);
+				}
+				frame.validate();
+			}
+		});
+	}
 
-   public void propertyChanged(String property, String parameter)
-   {
-      bridge = (MenuBridge)getActiveSession().getCapabilities().getDataStructure("menuBridge");
-      rero.util.ClientUtils.invokeLater(new Runnable()
-      {
-         public void run()
-         {
-            if (ClientState.getClientState().isOption("ui.showbar", ClientDefaults.ui_showbar))
-            {
-               JMenuBar menu = new JMenuBar();
-               bridge.installMenubar(menu);
-               frame.setJMenuBar(menu);
-            }
-            else
-            {
-               frame.setJMenuBar(null);
-            }
-            frame.validate();
-         }
-      });
-   }
+	public void stateChanged(ChangeEvent ev) {
+		active = getSession(getSelectedComponent());
 
-   public void stateChanged(ChangeEvent ev)
-   {
-      active = getSession(getSelectedComponent());
-
-      if (getActiveSession() != null)
-      {
-         propertyChanged(null, null);
+		if (getActiveSession() != null) {
+			propertyChanged(null, null);
 //         MenuBridge temp = (MenuBridge)getActiveSession().getCapabilities().getDataStructure("menuBridge");
 //         temp.installMenubar(menu);
-         GraphicalToolbar.stateChanged(); // CHEATING!!!!
+			GraphicalToolbar.stateChanged(); // CHEATING!!!!
 
-         getActiveSession().getCapabilities().dispatchEvent(switchEventHashMap);
-      }
-   }
+			getActiveSession().getCapabilities().dispatchEvent(switchEventHashMap);
+		}
+	}
 
-   protected HashMap switchEventHashMap = new HashMap();
+	protected HashMap switchEventHashMap = new HashMap();
 
-   public SessionManager(JFrame _frame)
-   {
-      //
-      // make the tabs scrollable, show them on the bottom.
-      //
+	public SessionManager(JFrame _frame) {
+		//
+		// make the tabs scrollable, show them on the bottom.
+		//
 //      super(JTabbedPane.BOTTOM, JTabbedPane.SCROLL_TAB_LAYOUT);
-      super();
+		super();
 
-      switchEventHashMap.put("$event", "session");
+		switchEventHashMap.put("$event", "session");
 
-      setTabPlacement(JTabbedPane.BOTTOM);
+		setTabPlacement(JTabbedPane.BOTTOM);
 //      setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT); - swing bug
 
-      global = new GlobalCapabilities(this);
+		global = new GlobalCapabilities(this);
 
-      keyb = new KeyBindings(this);
-      KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyb);
- 
-      addChangeListener(this);
+		keyb = new KeyBindings(this);
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyb);
 
-      SwingUtilities.invokeLater(new Runnable()
-      {
-         public void run()
-         {
-            // do this before doing anything else... dig?
-            if (!ClientState.getClientState().isOption("ui.showtabs", ClientDefaults.ui_showtabs))
-            {
-               setUI(new MinimalTabUI());
-            }
+		addChangeListener(this);
 
-            StringList temp = ClientState.getClientState().getStringList("auto.connect");
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				// do this before doing anything else... dig?
+				if (!ClientState.getClientState().isOption("ui.showtabs", ClientDefaults.ui_showtabs)) {
+					setUI(new MinimalTabUI());
+				}
 
-            if (QuickConnect.IsQuickConnect())
-            {
-               addSession();
-               getSession(getComponentAt(0)).executeCommand(QuickConnect.GetInformation().getConnectCommand());
-            }
-            else if (temp.getList().size() == 0)
-            {
-               addSession();
-            }
-            else
-            {
-               ServerData sdata = ServerData.getServerData();
+				StringList temp = ClientState.getClientState().getStringList("auto.connect");
 
-               int y = 0;
-               Iterator i = temp.getList().iterator();
-               while (i.hasNext())
-               {
-                  Server stemp = sdata.getServerByName(i.next().toString());
+				if (QuickConnect.IsQuickConnect()) {
+					addSession();
+					getSession(getComponentAt(0)).executeCommand(QuickConnect.GetInformation().getConnectCommand());
+				} else if (temp.getList().size() == 0) {
+					addSession();
+				} else {
+					ServerData sdata = ServerData.getServerData();
 
-                  if (stemp != null)
-                  {
-                     addSession();
-                     getSession(getComponentAt(y)).executeCommand(stemp.getCommand());
-                     y++;
-                  }
-               }
-            }
+					int y = 0;
+					Iterator i = temp.getList().iterator();
+					while (i.hasNext()) {
+						Server stemp = sdata.getServerByName(i.next().toString());
 
-            GraphicalToolbar.startup(); // the toolbar knows how to set itself up using the global stuff available
-         }
-      });
+						if (stemp != null) {
+							addSession();
+							getSession(getComponentAt(y)).executeCommand(stemp.getCommand());
+							y++;
+						}
+					}
+				}
 
-      frame = _frame;
+				GraphicalToolbar.startup(); // the toolbar knows how to set itself up using the global stuff available
+			}
+		});
 
-      if (ClientState.getClientState().isOption("ui.showbar", ClientDefaults.ui_showbar))
-      {
-         frame.setJMenuBar(new JMenuBar());
-      }
+		frame = _frame;
 
-      if (getMouseListeners().length > 0)
-         removeMouseListener(getMouseListeners()[0]);
+		if (ClientState.getClientState().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
+			frame.setJMenuBar(new JMenuBar());
+		}
 
-      popups = new PopupManager();
-      addMouseListener(popups);
+		if (getMouseListeners().length > 0)
+			removeMouseListener(getMouseListeners()[0]);
 
-      ClientState.getClientState().addClientStateListener("loaded.scripts", this);
-      ClientState.getClientState().addClientStateListener("ui.showbar", this);
-   }
+		popups = new PopupManager();
+		addMouseListener(popups);
 
-   
+		ClientState.getClientState().addClientStateListener("loaded.scripts", this);
+		ClientState.getClientState().addClientStateListener("ui.showbar", this);
+	}
 
-   /** returns the currently active irc session */
-   public IRCSession getActiveSession()
-   {
-      return active;
-   }
 
-   /** returns the specified session */
-   public IRCSession getSpecificSession(int index)
-   {
-      return getSession(getComponentAt(index));
-   }
+	/**
+	 * returns the currently active irc session
+	 */
+	public IRCSession getActiveSession() {
+		return active;
+	}
 
-   /** all calls to add session should be done on the java event thread... period!  Or else bad things will happen. */
-   public void addSession()
-   {
-      IRCSession session = new IRCSession();
+	/**
+	 * returns the specified session
+	 */
+	public IRCSession getSpecificSession(int index) {
+		return getSession(getComponentAt(index));
+	}
 
-      active = session; // we'll assume that a new session is always "active"
+	/**
+	 * all calls to add session should be done on the java event thread... period!  Or else bad things will happen.
+	 */
+	public void addSession() {
+		IRCSession session = new IRCSession();
 
-      sessions.put(session.getStatusWindow().getWindow(), session); // store the session by its status window
-      sessions.put(session.getCapabilities().getSocketConnection(), session); // store the session by its socket
-      sessions.put(session.getCapabilities(), session); // store the session by its capabilities
+		active = session; // we'll assume that a new session is always "active"
 
-      sessions.put(session.getDesktop(), session); // store the session by its component
+		sessions.put(session.getStatusWindow().getWindow(), session); // store the session by its status window
+		sessions.put(session.getCapabilities().getSocketConnection(), session); // store the session by its socket
+		sessions.put(session.getCapabilities(), session); // store the session by its capabilities
 
-      session.getStatusWindow().getWindow().addWindowListener(this);
-      session.getCapabilities().getSocketConnection().addSocketStatusListener(this);
+		sessions.put(session.getDesktop(), session); // store the session by its component
 
-      setSelectedComponent(add("not connected", session.getDesktop()));
+		session.getStatusWindow().getWindow().addWindowListener(this);
+		session.getCapabilities().getSocketConnection().addSocketStatusListener(this);
 
-      session.getClient().post(); // tells the irc client code to do the default stuff once everything is initialized
+		setSelectedComponent(add("not connected", session.getDesktop()));
+
+		session.getClient().post(); // tells the irc client code to do the default stuff once everything is initialized
 
 /*      for (int x = 0; x < getComponents().length; x++)
-      {
+	  {
          System.out.println("Adding listener: " + getComponents()[x]);
          getComponents()[x].addMouseListener(popups);
       }  */
 
-      propertyChanged(null, null);
-      revalidate();
+		propertyChanged(null, null);
+		revalidate();
 
-      if (ClientState.getClientState().getString("user.nick", null) == null && !QuickConnect.IsQuickConnect())
-      {
-          getGlobalCapabilities().showOptionDialog(null);
-          session.getStatusWindow().getInput().requestFocus(); // give status window focus after first time setup...
-      }
-   }      
+		if (ClientState.getClientState().getString("user.nick", null) == null && !QuickConnect.IsQuickConnect()) {
+			getGlobalCapabilities().showOptionDialog(null);
+			session.getStatusWindow().getInput().requestFocus(); // give status window focus after first time setup...
+		}
+	}
 
-   public IRCSession getSession(Object key)
-   {
-      return (IRCSession)sessions.get(key);
-   }
+	public IRCSession getSession(Object key) {
+		return (IRCSession) sessions.get(key);
+	}
 
-   public int getIndexFor(Object key)
-   {
-      IRCSession session  = getSession(key);
+	public int getIndexFor(Object key) {
+		IRCSession session = getSession(key);
 
-      if (session == null)
-      {
-         return -1;
-      }
+		if (session == null) {
+			return -1;
+		}
 
-      int n = indexOfComponent(session.getDesktop());
+		int n = indexOfComponent(session.getDesktop());
 
-      if (n > getTabCount())
-          return -1;
+		if (n > getTabCount())
+			return -1;
 
-      return n;
-   }
+		return n;
+	}
 
-   public void removeSession(IRCSession session)
-   {
-      Iterator i = sessions.values().iterator();
-      while (i.hasNext())
-      {
-         Object temp = i.next();
-         if (temp == session)
-         {
-            i.remove();
-         }
-      }
+	public void removeSession(IRCSession session) {
+		Iterator i = sessions.values().iterator();
+		while (i.hasNext()) {
+			Object temp = i.next();
+			if (temp == session) {
+				i.remove();
+			}
+		}
 
-      long freememory = Runtime.getRuntime().freeMemory();
-      remove(session.getDesktop());      
+		long freememory = Runtime.getRuntime().freeMemory();
+		remove(session.getDesktop());
 
-      keyb.removeSession(session);
+		keyb.removeSession(session);
 
-      session.cleanup();
+		session.cleanup();
 
-      revalidate();
+		revalidate();
 
-      System.gc();
+		System.gc();
 
-      freememory = Runtime.getRuntime().freeMemory() - freememory;
-      System.out.println("Freed a total of " + rero.util.ClientUtils.formatBytes(freememory));
+		freememory = Runtime.getRuntime().freeMemory() - freememory;
+		System.out.println("Freed a total of " + rero.util.ClientUtils.formatBytes(freememory));
 
-      if (getTabCount() <= 0)
-      {
-         addSession(); // bad things happen if we don't always have a session "open"
-      }
-      
-      if (active == session)
-      {
-         stateChanged(null); 
-      }
-   }
+		if (getTabCount() <= 0) {
+			addSession(); // bad things happen if we don't always have a session "open"
+		}
 
-   public void onClose(ClientWindowEvent ev)
-   {
-      IRCSession source = getSession(ev.getSource());
+		if (active == session) {
+			stateChanged(null);
+		}
+	}
 
-      removeSession(source); // remove the session first so the irc connection is told to clean up and not "auto reconnect"
+	public void onClose(ClientWindowEvent ev) {
+		IRCSession source = getSession(ev.getSource());
 
-      if (source.getCapabilities().isConnected())
-      {
-         source.getCapabilities().sendln("QUIT :Hey! Where'd my controlling terminal go?");
-         source.getCapabilities().getSocketConnection().disconnect();
-      }
-   }
+		removeSession(source); // remove the session first so the irc connection is told to clean up and not "auto reconnect"
 
-   public void onActive(ClientWindowEvent ev) 
-   {
+		if (source.getCapabilities().isConnected()) {
+			source.getCapabilities().sendln("QUIT :Hey! Where'd my controlling terminal go?");
+			source.getCapabilities().getSocketConnection().disconnect();
+		}
+	}
 
-   }
+	public void onActive(ClientWindowEvent ev) {
 
-   public void onInactive(ClientWindowEvent ev)
-   {
+	}
 
-   }
+	public void onInactive(ClientWindowEvent ev) {
 
-   public void onMinimize(ClientWindowEvent ev)
-   {
+	}
 
-   }
+	public void onMinimize(ClientWindowEvent ev) {
 
-   public void onOpen(ClientWindowEvent ev)
-   {
- 
-   }
+	}
 
-   public void setTabTitle(Object key, String text)
-   {
-      setTitleAt(getIndexFor(key), text);
-   }
+	public void onOpen(ClientWindowEvent ev) {
 
-   public void socketStatusChanged(SocketEvent ev)
-   {
-      if (ev.data.isConnected)
-      {
-         if (getIndexFor(ev.socket) > -1)
-            setTitleAt(getIndexFor(ev.socket), ev.data.hostname);        
-      }
-      else
-      {
-         if (getIndexFor(ev.socket) > -1)
-            setTitleAt(getIndexFor(ev.socket), "disconnected");
-      }
+	}
 
-      GraphicalToolbar.stateChanged(); // CHEATING!!!!
-   }
+	public void setTabTitle(Object key, String text) {
+		setTitleAt(getIndexFor(key), text);
+	}
 
-   public IRCSession getSessionAt(Point location)
-   {
-      if (indexAtLocation((int)location.getX(), (int)location.getY()) < 0)
-      {
-         return null;
-      }
-      return getSession(getComponentAt(indexAtLocation((int)location.getX(), (int)location.getY())));
-   }
+	public void socketStatusChanged(SocketEvent ev) {
+		if (ev.data.isConnected) {
+			if (getIndexFor(ev.socket) > -1)
+				setTitleAt(getIndexFor(ev.socket), ev.data.hostname);
+		} else {
+			if (getIndexFor(ev.socket) > -1)
+				setTitleAt(getIndexFor(ev.socket), "disconnected");
+		}
 
-   protected class PopupManager extends MouseAdapter
-   {
-   public void maybeShowPopup(MouseEvent ev)
-   {
-      if (ev.isPopupTrigger())
-      {
-         IRCSession temp = getSessionAt(ev.getPoint());
+		GraphicalToolbar.stateChanged(); // CHEATING!!!!
+	}
 
-         if (temp == null)
-         {
-            return;
-         }
+	public IRCSession getSessionAt(Point location) {
+		if (indexAtLocation((int) location.getX(), (int) location.getY()) < 0) {
+			return null;
+		}
+		return getSession(getComponentAt(indexAtLocation((int) location.getX(), (int) location.getY())));
+	}
 
-         bridge = (MenuBridge)temp.getCapabilities().getDataStructure("menuBridge");
-         JPopupMenu menu = bridge.getPopupMenu("tab", null);
+	protected class PopupManager extends MouseAdapter {
+		public void maybeShowPopup(MouseEvent ev) {
+			if (ev.isPopupTrigger()) {
+				IRCSession temp = getSessionAt(ev.getPoint());
 
-         if (menu == null)
-         {
-            return;
-         }
+				if (temp == null) {
+					return;
+				}
 
-         menu.show((JComponent)ev.getComponent(), ev.getX(), ev.getY());
-         ev.consume();
+				bridge = (MenuBridge) temp.getCapabilities().getDataStructure("menuBridge");
+				JPopupMenu menu = bridge.getPopupMenu("tab", null);
 
-         return;
-      }
+				if (menu == null) {
+					return;
+				}
 
-      return;
-   }
+				menu.show((JComponent) ev.getComponent(), ev.getX(), ev.getY());
+				ev.consume();
 
-   public void mouseClicked(MouseEvent e)
-   {
-      maybeShowPopup(e);
-   }
+				return;
+			}
 
-   public void mousePressed(MouseEvent e) 
-   {
-      maybeShowPopup(e);
+			return;
+		}
 
-      if (e.getButton() == MouseEvent.BUTTON1)
-      {
-          int idx = indexAtLocation(e.getX(), e.getY());
+		public void mouseClicked(MouseEvent e) {
+			maybeShowPopup(e);
+		}
 
-          if (idx > -1)
-          {
-             setSelectedIndex(idx);
-          }
-      }
-   }
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
 
-   public void mouseReleased(MouseEvent e)
-   {
-      maybeShowPopup(e);
-   }
+			if (e.getButton() == MouseEvent.BUTTON1) {
+				int idx = indexAtLocation(e.getX(), e.getY());
 
-   public void mouseEntered(MouseEvent e) { }
-   public void mouseExited(MouseEvent e) { }
-   }
+				if (idx > -1) {
+					setSelectedIndex(idx);
+				}
+			}
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		public void mouseExited(MouseEvent e) {
+		}
+	}
 }

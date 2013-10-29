@@ -1,23 +1,19 @@
 package rero.gui.toolbar;
 
-import rero.gui.*;
+import rero.gui.SessionManager;
 
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
 
-public class NotifyAction2 implements ToolAction
-{
-   public void actionPerformed(MouseEvent ev)
-   {
-      SessionManager.getGlobalCapabilities().showOptionDialog("Notify Setup");
-   }
+public class NotifyAction2 implements ToolAction {
+	public void actionPerformed(MouseEvent ev) {
+		SessionManager.getGlobalCapabilities().showOptionDialog("Notify Setup");
+	}
 
-   public String getDescription()
-   {
-      return "Edit Notify List";
-   }
+	public String getDescription() {
+		return "Edit Notify List";
+	}
 
-   public int getIndex()
-   {
-      return 26;
-   }
+	public int getIndex() {
+		return 26;
+	}
 }

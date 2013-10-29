@@ -1,72 +1,68 @@
 package rero.bridges.alias;
- 
-import java.util.*;
-import java.io.*;
 
-import sleep.engine.*;
-import sleep.interfaces.*;
-import sleep.runtime.*;
+import rero.script.LocalVariables;
+import sleep.engine.Block;
+import sleep.interfaces.Variable;
+import sleep.runtime.ScriptInstance;
+import sleep.runtime.ScriptVariables;
+import sleep.runtime.SleepUtils;
 
-import rero.script.*;
+import java.util.HashMap;
+import java.util.Hashtable;
 
-/** implementation of subroutines for the DefaultEnvironment class */
-public class ScriptAlias implements rero.ircfw.interfaces.FrameworkConstants
-{
-    protected Block                   code;
-    protected ScriptAlias      predecessor;
-    protected ScriptInstance         owner; // owner of this alias.
-    protected Hashtable                env;
+/**
+ * implementation of subroutines for the DefaultEnvironment class
+ */
+public class ScriptAlias implements rero.ircfw.interfaces.FrameworkConstants {
+	protected Block code;
+	protected ScriptAlias predecessor;
+	protected ScriptInstance owner; // owner of this alias.
+	protected Hashtable env;
 
-    public ScriptAlias(ScriptInstance si, Block _code)
-    {
-       this(si, _code, null);
-    }
+	public ScriptAlias(ScriptInstance si, Block _code) {
+		this(si, _code, null);
+	}
 
-    public ScriptAlias(ScriptInstance si, Block _code, ScriptAlias _predecessor)
-    {
-       code        =        _code;
-       predecessor = _predecessor;
-       owner       =           si;
+	public ScriptAlias(ScriptInstance si, Block _code, ScriptAlias _predecessor) {
+		code = _code;
+		predecessor = _predecessor;
+		owner = si;
 
-       env = si.getScriptEnvironment().getEnvironment(); // assuming the environment is shared.
-    }
+		env = si.getScriptEnvironment().getEnvironment(); // assuming the environment is shared.
+	}
 
-    public boolean isValid()
-    {
-       return owner.isLoaded();
-    }
+	public boolean isValid() {
+		return owner.isLoaded();
+	}
 
-    public ScriptAlias getPredecessor()
-    {
-       return predecessor;
-    }
+	public ScriptAlias getPredecessor() {
+		return predecessor;
+	}
 
-    public void runAlias(String name, String parameters)
-    {
-       synchronized (owner.getScriptVariables())
-       {
-          ScriptVariables vars = owner.getScriptVariables();
+	public void runAlias(String name, String parameters) {
+		synchronized (owner.getScriptVariables()) {
+			ScriptVariables vars = owner.getScriptVariables();
 
-          vars.pushLocalLevel();
- 
-          Variable localLevel = vars.getLocalVariables();
+			vars.pushLocalLevel();
 
-          //
-          // setup the parameters variable
-          //
-          HashMap eventData = new HashMap();
-          eventData.put($PARMS$, parameters);
-          eventData.put($DATA$, name + " " + parameters);
+			Variable localLevel = vars.getLocalVariables();
 
-          LocalVariables locals = (LocalVariables)localLevel;
-          locals.setDataSource(eventData);
+			//
+			// setup the parameters variable
+			//
+			HashMap eventData = new HashMap();
+			eventData.put($PARMS$, parameters);
+			eventData.put($DATA$, name + " " + parameters);
 
-          //
-          // execute the block of code
-          //
-          SleepUtils.runCode(code, owner.getScriptEnvironment());
- 
-          vars.popLocalLevel();
-       }
-    }
+			LocalVariables locals = (LocalVariables) localLevel;
+			locals.setDataSource(eventData);
+
+			//
+			// execute the block of code
+			//
+			SleepUtils.runCode(code, owner.getScriptEnvironment());
+
+			vars.popLocalLevel();
+		}
+	}
 }

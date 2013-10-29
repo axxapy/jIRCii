@@ -1,94 +1,80 @@
 package rero.dialogs;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
+import rero.dck.DGroup;
+import rero.dck.DMain;
+import rero.dck.items.CheckboxInput;
 
 import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.util.*;
-import rero.config.*;
+public class UIDialog extends DMain {
+	protected static boolean NATIVE_DIALOG_SHOWN = false;
+	protected static boolean SDI_DIALOG_SHOWN = false;
+	protected static boolean TAB_DIALOG_SHOWN = false;
+	protected static boolean MENU_DIALOG_SHOWN = false;
 
-import rero.dck.*;
-import rero.dck.items.*;
+	public String getTitle() {
+		return "GUI Setup";
+	}
 
-public class UIDialog extends DMain
-{
-   protected static boolean NATIVE_DIALOG_SHOWN = false;
-   protected static boolean    SDI_DIALOG_SHOWN = false;
-   protected static boolean    TAB_DIALOG_SHOWN = false;
-   protected static boolean   MENU_DIALOG_SHOWN = false;
+	public String getDescription() {
+		return "User Interface Options";
+	}
 
-   public String getTitle()
-   {
-      return "GUI Setup";
-   }
+	private static ActionListener preferenceListener = null;
 
-   public String getDescription()
-   {
-      return "User Interface Options";
-   }
+	public void setupDialog() {
+		addBlankSpace();
+		addBlankSpace();
 
-   private static ActionListener preferenceListener = null;
+		preferenceListener = new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				if (ClientState.getClientState().isOption("ui.showrestart", ClientDefaults.ui_showrestart)) {
+					JOptionPane.showMessageDialog((JComponent) ev.getSource(), "This change in jIRCii's interface\npreferences will not take effect\nuntil you restart jIRCii\n\nUse Alt+O to open the options\ndialog to undo this later", "Interface Setting", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+		};
 
-   public void setupDialog()
-   {
-      addBlankSpace();
-      addBlankSpace();
+		addDialogGroup(new DGroup("Interface Setup", 30) {
+			public void setupDialog() {
+				CheckboxInput a, b;
 
-      preferenceListener = new ActionListener()
-      {
-         public void actionPerformed(ActionEvent ev)
-         {
-            if (ClientState.getClientState().isOption("ui.showrestart", ClientDefaults.ui_showrestart))
-            {
-               JOptionPane.showMessageDialog((JComponent)ev.getSource(), "This change in jIRCii's interface\npreferences will not take effect\nuntil you restart jIRCii\n\nUse Alt+O to open the options\ndialog to undo this later", "Interface Setting", JOptionPane.INFORMATION_MESSAGE);
-            }
-         }
-      };
+				a = addCheckboxInput("ui.native", ClientDefaults.ui_native, "Use native look and feel", 'n');
+				b = addCheckboxInput("ui.sdi", ClientDefaults.ui_sdi, "Use single document interface", 'i');
+				a.getCheckBox().addActionListener(preferenceListener);
+				b.getCheckBox().addActionListener(preferenceListener);
+			}
+		});
 
-      addDialogGroup(new DGroup("Interface Setup", 30)
-      {
-          public void setupDialog()
-          {
-             CheckboxInput a, b;
+		addBlankSpace();
 
-             a = addCheckboxInput("ui.native", ClientDefaults.ui_native, "Use native look and feel", 'n');
-             b = addCheckboxInput("ui.sdi", ClientDefaults.ui_sdi, "Use single document interface", 'i');
-             a.getCheckBox().addActionListener(preferenceListener);
-             b.getCheckBox().addActionListener(preferenceListener);
-          }
-      });
+		addDialogGroup(new DGroup("Interface Elements", 30) {
+			public void setupDialog() {
+				CheckboxInput a;
 
-      addBlankSpace();
+				addCheckboxInput("ui.usetoolbar", ClientDefaults.ui_usetoolbar, "Show newbie toolbar", 's');
+				a = addCheckboxInput("ui.showtabs", ClientDefaults.ui_showtabs, "Show server tabs", 't');
+				addCheckboxInput("ui.showbar", ClientDefaults.ui_showbar, "Show menubar", 'm');
 
-      addDialogGroup(new DGroup("Interface Elements", 30)
-      {
-          public void setupDialog()
-          {
-             CheckboxInput a;
+				a.getCheckBox().addActionListener(preferenceListener);
+			}
+		});
 
-             addCheckboxInput("ui.usetoolbar", ClientDefaults.ui_usetoolbar, "Show newbie toolbar", 's');
-             a = addCheckboxInput("ui.showtabs", ClientDefaults.ui_showtabs, "Show server tabs", 't');
-             addCheckboxInput("ui.showbar", ClientDefaults.ui_showbar, "Show menubar", 'm');
+		addBlankSpace();
 
-             a.getCheckBox().addActionListener(preferenceListener);
-          }
-      });
+		restartbox = addCheckboxInput("ui.showrestart", ClientDefaults.ui_showrestart, "Show restart required warning dialog", 'r', FlowLayout.CENTER);
+		restartbox.getCheckBox().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				restartbox.save(); // force an immediate save so this option takes effect right away
+			}
+		});
+	}
 
-      addBlankSpace();
-
-      restartbox = addCheckboxInput("ui.showrestart", ClientDefaults.ui_showrestart,  "Show restart required warning dialog", 'r', FlowLayout.CENTER);
-      restartbox.getCheckBox().addActionListener(new ActionListener() { 
-         public void actionPerformed(ActionEvent ev)
-         {
-             restartbox.save(); // force an immediate save so this option takes effect right away
-         }
-      });
-   }
-
-   private CheckboxInput restartbox;
+	private CheckboxInput restartbox;
 }
 
 

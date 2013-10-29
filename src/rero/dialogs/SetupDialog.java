@@ -1,70 +1,57 @@
 package rero.dialogs;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.dck.DGroup;
+import rero.dck.DItem;
+import rero.dck.DMain;
+import rero.dck.items.ServerList;
+import rero.dialogs.server.ServerData;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
 
-import java.util.*;
+public class SetupDialog extends DMain {
+	protected ServerData data = ServerData.getServerData();
+	protected DItem itema, itemb;
 
-import rero.dck.items.*;
-import rero.config.*;
-import rero.dck.*;
+	public String getTitle() {
+		return "jIRCii Setup";
+	}
 
-import rero.dialogs.server.*;
+	public String getDescription() {
+		return "Setup jIRCii";
+	}
 
-public class SetupDialog extends DMain
-{
-   protected ServerData data = ServerData.getServerData();
-   protected DItem      itema, itemb;
+	public JComponent getDialog() {
+		JPanel dialog = new JPanel();
 
-   public String getTitle()
-   {
-      return "jIRCii Setup";
-   }
+		setupLayout(dialog);
+		setupDialog();
 
-   public String getDescription()
-   {
-      return "Setup jIRCii";
-   }
+		dialog.add(itema.getComponent(), BorderLayout.CENTER);
+		dialog.add(itemb.getComponent(), BorderLayout.SOUTH);
 
-   public JComponent getDialog()
-   {
-      JPanel dialog = new JPanel();
+		return dialog;
+	}
 
-      setupLayout(dialog);
-      setupDialog();
+	public JComponent setupLayout(JComponent component) {
+		component.setLayout(new BorderLayout(3, 3));
+		component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
-      dialog.add(itema.getComponent(), BorderLayout.CENTER);
-      dialog.add(itemb.getComponent(), BorderLayout.SOUTH);
+		return component;
+	}
 
-      return dialog;
-   }
+	public void setupDialog() {
+		itema = addOther(new ServerList(data, 0, 150, getCapabilities()));
 
-   public JComponent setupLayout(JComponent component)
-   {
-      component.setLayout(new BorderLayout(3, 3));
-      component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-
-      return component;
-   }
-
-   public void setupDialog()
-   {
-      itema = addOther(new ServerList(data, 0, 150, getCapabilities()));
-
-      itemb = addDialogGroup(new DGroup("User Information", 0)
-      {
-          public void setupDialog()
-          {
-             addStringInput("user.rname"  , "", " Real Name:  ", 'R',  10);
-             addStringInput("user.email"  , "", " E-mail:  "   , 'E',  60);
-             addStringInput("user.nick"   , "", " Nickname:   ", 'N',  60);
-             addStringInput("user.altnick", "", " Alt. Nick:  ", 'A',  60);
-          }
-      });
-   }
+		itemb = addDialogGroup(new DGroup("User Information", 0) {
+			public void setupDialog() {
+				addStringInput("user.rname", "", " Real Name:  ", 'R', 10);
+				addStringInput("user.email", "", " E-mail:  ", 'E', 60);
+				addStringInput("user.nick", "", " Nickname:   ", 'N', 60);
+				addStringInput("user.altnick", "", " Alt. Nick:  ", 'A', 60);
+			}
+		});
+	}
 }
 
 

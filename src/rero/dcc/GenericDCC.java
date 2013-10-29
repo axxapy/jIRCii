@@ -1,64 +1,57 @@
 package rero.dcc;
 
-import java.io.*;
-import java.net.*;
+import rero.ircfw.ChatFramework;
 
-import rero.ircfw.*;
+import java.net.Socket;
 
-public abstract class GenericDCC implements Runnable
-{
-   protected ProtocolDCC       impl;
-   protected ChatFramework       fw;
+public abstract class GenericDCC implements Runnable {
+	protected ProtocolDCC impl;
+	protected ChatFramework fw;
 
-   public void announceFramework(ChatFramework f)
-   {
-       fw = f;
-   }
+	public void announceFramework(ChatFramework f) {
+		fw = f;
+	}
 
-   public void setImplementation(ProtocolDCC _impl)
-   {
-       impl = _impl;
+	public void setImplementation(ProtocolDCC _impl) {
+		impl = _impl;
 
-       impl.announceFramework(fw);
-   }
+		impl.announceFramework(fw);
+	}
 
-   public String getNickname()
-   {
-       return getImplementation().getNickname();
-   }
+	public String getNickname() {
+		return getImplementation().getNickname();
+	}
 
-   public int getTypeOfDCC() 
-   {
-       return getImplementation().getTypeOfDCC();
-   }
+	public int getTypeOfDCC() {
+		return getImplementation().getTypeOfDCC();
+	}
 
-   public int getState()
-   {
-       return getImplementation().getState();
-   }
+	public int getState() {
+		return getImplementation().getState();
+	}
 
-   public ProtocolDCC getImplementation()
-   {
-       return impl;
-   }
+	public ProtocolDCC getImplementation() {
+		return impl;
+	}
 
-   public void connect()
-   {
-       Thread fred = new Thread(this);
-       fred.start();
-   }
+	public void connect() {
+		Thread fred = new Thread(this);
+		fred.start();
+	}
 
-   public abstract Socket establishConnection();
+	public abstract Socket establishConnection();
 
-   public void run()
-   {
-          Socket sock = establishConnection();
- 
-          try { sock.setKeepAlive(true); } catch (Exception ex) { }
+	public void run() {
+		Socket sock = establishConnection();
 
-          impl.setDCCSocket( sock );
-          impl.run();
-          if (impl.isConnected())
-             impl.close(); 
-   }
+		try {
+			sock.setKeepAlive(true);
+		} catch (Exception ex) {
+		}
+
+		impl.setDCCSocket(sock);
+		impl.run();
+		if (impl.isConnected())
+			impl.close();
+	}
 }

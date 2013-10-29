@@ -1,129 +1,116 @@
 package text;
 
-import text.list.*;
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import text.list.ListData;
+import text.list.ListDisplayComponent;
+import text.list.ListElement;
+import text.list.ListSelectionSpace;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
 import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.font.*;
-import java.awt.datatransfer.*;
+import javax.swing.event.MouseInputListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.LinkedList;
 
-import text.event.*;
+public class ListDisplay extends JComponent implements MouseWheelListener, MouseInputListener, ClientStateListener {
+	protected ListDisplayComponent display;
+	protected JScrollBar scroller;
 
-import rero.config.*;
+	protected ListData data;
+	protected ListSelectionSpace select;
 
-public class ListDisplay extends JComponent implements MouseWheelListener, MouseInputListener, ClientStateListener
-{
-   protected ListDisplayComponent display;
-   protected JScrollBar           scroller;
+	public ListElement getSelectedElement() {
+		return select.getSelectedElement();
+	}
 
-   protected ListData             data;
-   protected ListSelectionSpace   select;
+	public LinkedList getSelectedElements() {
+		return select.getSelectedElements();
+	}
 
-   public ListElement getSelectedElement()
-   {
-      return select.getSelectedElement();
-   }
+	public void propertyChanged(String a, String b) {
+		data.dirty();
+	} // happens when ui.font changes...
 
-   public LinkedList getSelectedElements()
-   {
-      return select.getSelectedElements();
-   }
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		// manipulate the scroll bar directly for this one..
 
-   public void propertyChanged(String a, String b) { data.dirty(); } // happens when ui.font changes...
+		if (e.getWheelRotation() >= 0) // up
+		{
+			scroller.setValue(scroller.getValue() + (e.getScrollAmount()));
+			repaint();
+		} else // down
+		{
+			scroller.setValue(scroller.getValue() - (e.getScrollAmount()));
+			repaint();
+		}
+	}
 
-   public void mouseWheelMoved(MouseWheelEvent e)
-   {
-      // manipulate the scroll bar directly for this one..
+	public ListDisplay(ListData data) {
+		scroller = new JScrollBar(JScrollBar.VERTICAL, 0, 0, 0, 0);
+		display = new ListDisplayComponent();
 
-      if (e.getWheelRotation() >= 0) // up
-      {
-          scroller.setValue(scroller.getValue() + (e.getScrollAmount()));
-          repaint();
-      }
-      else // down
-      {
-          scroller.setValue(scroller.getValue() - (e.getScrollAmount()));
-          repaint();
-      }
-   }
+		select = new ListSelectionSpace(this, data);
+		addMouseListener(select);
+		addMouseMotionListener(select);
 
-   public ListDisplay(ListData data)
-   {
-      scroller = new JScrollBar(JScrollBar.VERTICAL, 0, 0, 0, 0);
-      display  = new ListDisplayComponent();
+		this.data = data;
 
-      select = new ListSelectionSpace(this, data);
-      addMouseListener(select);
-      addMouseMotionListener(select);
+		display.installDataSource(data);
+		scroller.setModel(data);
 
-      this.data = data;
+		addMouseWheelListener(this);
+		addMouseListener(this);
+		addMouseMotionListener(this);
 
-      display.installDataSource(data);
-      scroller.setModel(data);
+		data.addChangeListener(display);
 
-      addMouseWheelListener(this);
-      addMouseListener(this);
-      addMouseMotionListener(this);
-   
-      data.addChangeListener(display);
+		setLayout(new BorderLayout());
+		add(scroller, BorderLayout.EAST);
+		add(display, BorderLayout.CENTER);
 
-      setLayout(new BorderLayout());
-      add(scroller, BorderLayout.EAST);
-      add(display, BorderLayout.CENTER);
+		setOpaque(false);
+		setDoubleBuffered(false);
 
-      setOpaque(false);
-      setDoubleBuffered(false);
+		ClientState.getClientState().addClientStateListener("ui.font", this);
+	}
 
-      ClientState.getClientState().addClientStateListener("ui.font", this);
-   }
+	public void mousePressed(MouseEvent ev) {
+	}
 
-   public void mousePressed(MouseEvent ev)
-   {
-   }   
+	public void mouseReleased(MouseEvent ev) {
+	}
 
-   public void mouseReleased(MouseEvent ev)
-   {
-   }   
+	public void mouseClicked(MouseEvent ev) {
+		if (ev.isShiftDown() && ev.isControlDown()) {
+			ListElement temp = data.getElementAtLocation(ev.getY());
+			if (temp != null) {
+				AttributedText attribs = temp.getAttributedText().getAttributesAt(ev.getX());
+				if (attribs != null) {
+					ModifyColorMapDialog.showModifyColorMapDialog(this, attribs.foreIndex);
+					repaint();
+					ev.consume();
+				}
+			}
+		}
+	}
 
-   public void mouseClicked(MouseEvent ev)
-   {
-      if (ev.isShiftDown() && ev.isControlDown())
-      {
-          ListElement temp = data.getElementAtLocation(ev.getY());
-          if (temp != null)
-          {
-              AttributedText attribs = temp.getAttributedText().getAttributesAt(ev.getX());
-              if (attribs != null)
-              {
-                 ModifyColorMapDialog.showModifyColorMapDialog(this, attribs.foreIndex);
-                 repaint();
-                 ev.consume();
-              }
-          }
-      }
-   }   
+	public void mouseEntered(MouseEvent ev) {
+		// we have nothing to do for this event...
+	}
 
-   public void mouseEntered(MouseEvent ev)
-   {
-      // we have nothing to do for this event...
-   }   
+	public void mouseExited(MouseEvent ev) {
+		// nothing to do for this event...
+	}
 
-   public void mouseExited(MouseEvent ev)
-   {
-      // nothing to do for this event...
-   }   
+	public void mouseDragged(MouseEvent ev) {
+	}
 
-   public void mouseDragged(MouseEvent ev)
-   {
-   }   
-
-   public void mouseMoved(MouseEvent ev)
-   {
-      // again nothing to do for this event...
-   }   
+	public void mouseMoved(MouseEvent ev) {
+		// again nothing to do for this event...
+	}
 
 /*   protected void finalize()
    {

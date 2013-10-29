@@ -1,25 +1,21 @@
 package rero.gui.toolbar;
 
-import rero.gui.*;
-import rero.gui.mdi.*;
+import rero.gui.SessionManager;
+import rero.gui.mdi.ClientDesktop;
 
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
 
 
-public class TileAction implements ToolAction
-{
-   public void actionPerformed(MouseEvent ev)
-   {
-      ((ClientDesktop)SessionManager.getGlobalCapabilities().getActiveSession().getDesktop()).tileWindows();
-   }
+public class TileAction implements ToolAction {
+	public void actionPerformed(MouseEvent ev) {
+		((ClientDesktop) SessionManager.getGlobalCapabilities().getActiveSession().getDesktop()).tileWindows();
+	}
 
-   public String getDescription()
-   {
-      return "Tile Windows";
-   }
+	public String getDescription() {
+		return "Tile Windows";
+	}
 
-   public int getIndex()
-   {
-      return 31;
-   }
+	public int getIndex() {
+		return 31;
+	}
 }

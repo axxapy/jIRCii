@@ -1,98 +1,88 @@
 package rero.dialogs;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientState;
+import rero.dck.DItem;
+import rero.dck.DMain;
+import rero.dck.DParent;
+import rero.dck.items.CheckboxInput;
+import rero.dck.items.NetworkSelect;
+import rero.dck.items.TextInput;
 
 import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import java.util.*;
-import rero.config.*;
+public class PerformDialog extends DMain implements DParent, ActionListener {
+	public String getTitle() {
+		return "Perform";
+	}
 
-import rero.dck.items.*;
-import rero.dck.*;
+	public String getDescription() {
+		return "Perform on Connect";
+	}
 
-public class PerformDialog extends DMain implements DParent, ActionListener
-{
-   public String getTitle()
-   {
-      return "Perform";
-   }
+	protected String current = NetworkSelect.ALL_NETWORKS;
 
-   public String getDescription()
-   {
-      return "Perform on Connect";
-   }
+	public void actionPerformed(ActionEvent ev) {
+		itemc.save();
+		current = ev.getActionCommand();
+	}
 
-   protected String current = NetworkSelect.ALL_NETWORKS;
+	public void notifyParent(String variable) {
+		ClientState.getClientState().fireChange("perform");
+		itemc.refresh();
+	}
 
-   public void actionPerformed(ActionEvent ev)
-   {
-      itemc.save();
-      current = ev.getActionCommand();
-   }
+	public String getVariable(String variable) {
+		return "perform." + current.toLowerCase();
+	}
 
-   public void notifyParent(String variable)
-   {
-      ClientState.getClientState().fireChange("perform");
-      itemc.refresh();          
-   }
+	protected DItem itemb, itemc;
+	protected CheckboxInput itema;
 
-   public String getVariable(String variable)
-   {
-      return "perform." + current.toLowerCase();
-   }
+	public JComponent getDialog() {
+		JPanel dialog = new JPanel();
 
-   protected DItem itemb, itemc;
-   protected CheckboxInput itema;
+		setupLayout(dialog);
+		setupDialog();
 
-   public JComponent getDialog()
-   {
-      JPanel dialog = new JPanel();
+		dialog.add(itema.getComponent(), BorderLayout.SOUTH);
 
-      setupLayout(dialog);
-      setupDialog();
+		dialog.add(itemb.getComponent(), BorderLayout.NORTH);
+		dialog.add(itemc.getComponent(), BorderLayout.CENTER);
 
-      dialog.add(itema.getComponent(), BorderLayout.SOUTH);
+		return dialog;
+	}
 
-      dialog.add(itemb.getComponent(), BorderLayout.NORTH);
-      dialog.add(itemc.getComponent(), BorderLayout.CENTER);
+	public JComponent setupLayout(JComponent component) {
+		component.setLayout(new BorderLayout(3, 3));
+		component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
-      return dialog;
-   }
+		return component;
+	}
 
-   public JComponent setupLayout(JComponent component)
-   {
-      component.setLayout(new BorderLayout(3, 3));
-      component.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+	public void setupDialog() {
+		itema = addCheckboxInput("perform.enabled", false, "Perform these commands when connecting", 'P', FlowLayout.LEFT);
 
-      return component;
-   }
+		itemb = addNetworkSelector("perform.networks", "perform.cnetwork");
+		itemc = addTextInput(".perform", 5); // doesn't really matter
 
-   public void setupDialog()
-   { 
-      itema = addCheckboxInput("perform.enabled", false,  "Perform these commands when connecting", 'P', FlowLayout.LEFT);
+		((NetworkSelect) itemb).addActionListener(this);
+		((NetworkSelect) itemb).addDeleteListener((TextInput) itemc);
 
-      itemb = addNetworkSelector("perform.networks", "perform.cnetwork");
-      itemc = addTextInput(".perform", 5); // doesn't really matter
+		itemb.setParent(this);
+		itemc.setParent(this);
 
-      ((NetworkSelect)itemb).addActionListener(this);
-      ((NetworkSelect)itemb).addDeleteListener((TextInput)itemc);
+		itema.addDependent(itemb);
+		itema.addDependent(itemc);
+	}
 
-      itemb.setParent(this);
-      itemc.setParent(this);
-
-      itema.addDependent(itemb);
-      itema.addDependent(itemc);
-   }
-
-   public void refresh()
-   {
-      current = NetworkSelect.ALL_NETWORKS;
-      itemc.refresh();
-      super.refresh();
-   }
+	public void refresh() {
+		current = NetworkSelect.ALL_NETWORKS;
+		itemc.refresh();
+		super.refresh();
+	}
 }
 
 

@@ -1,80 +1,72 @@
 package rero.dck;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.border.*;
-import java.util.*;
+import javax.swing.border.Border;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-public class SmallButton extends JLabel
-{
-   protected static String NORMAL = "<html><b>?</b></html>";
-   protected static String ACTIVE = "<html><b>?</b></html>";
+public class SmallButton extends JLabel {
+	protected static String NORMAL = "<html><b>?</b></html>";
+	protected static String ACTIVE = "<html><b>?</b></html>";
 
-   protected JLabel label;
+	protected JLabel label;
 
-   protected LinkedList listeners;
+	protected LinkedList listeners;
 
-   public SmallButton(Border border, String text)
-   {
-      super(NORMAL);
+	public SmallButton(Border border, String text) {
+		super(NORMAL);
 
-      setToolTipText(text);   
- 
-      addMouseListener(new TakeAction());
+		setToolTipText(text);
 
-      label = this;
+		addMouseListener(new TakeAction());
 
-      listeners = new LinkedList();
+		label = this;
 
-      setBorder(border);
-   }
+		listeners = new LinkedList();
 
-   public void addActionListener(ActionListener l)
-   {
-      listeners.add(l);
-   }
+		setBorder(border);
+	}
 
-   public void fireEvent()
-   {
-      ActionEvent event = new ActionEvent(this, 0, "?");
+	public void addActionListener(ActionListener l) {
+		listeners.add(l);
+	}
 
-      Iterator i = listeners.iterator();
-      while (i.hasNext())
-      {
-         ((ActionListener)i.next()).actionPerformed(event);
-      }
-   }
+	public void fireEvent() {
+		ActionEvent event = new ActionEvent(this, 0, "?");
 
-   public class TakeAction extends MouseAdapter
-   {
-      protected Color original;
+		Iterator i = listeners.iterator();
+		while (i.hasNext()) {
+			((ActionListener) i.next()).actionPerformed(event);
+		}
+	}
 
-      public void mouseClicked(MouseEvent ev)
-      {
-         fireEvent();
-      }
-    
-      public void mousePressed(MouseEvent ev)
-      {
-         original = label.getForeground();
-         label.setForeground(UIManager.getColor("TextArea.selectionBackground"));
-      }
+	public class TakeAction extends MouseAdapter {
+		protected Color original;
 
-      public void mouseReleased(MouseEvent ev)
-      {
-         label.setForeground(original);
-      }
+		public void mouseClicked(MouseEvent ev) {
+			fireEvent();
+		}
 
-      public void mouseEntered(MouseEvent ev)
-      {
-         label.setText(ACTIVE);
-      }
+		public void mousePressed(MouseEvent ev) {
+			original = label.getForeground();
+			label.setForeground(UIManager.getColor("TextArea.selectionBackground"));
+		}
 
-      public void mouseExited(MouseEvent ev)
-      {
-         label.setText(NORMAL);
-      }
-   }
+		public void mouseReleased(MouseEvent ev) {
+			label.setForeground(original);
+		}
+
+		public void mouseEntered(MouseEvent ev) {
+			label.setText(ACTIVE);
+		}
+
+		public void mouseExited(MouseEvent ev) {
+			label.setText(NORMAL);
+		}
+	}
 }

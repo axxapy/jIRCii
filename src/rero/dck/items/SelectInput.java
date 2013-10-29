@@ -1,94 +1,81 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientState;
+import rero.dck.SuperInput;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
-import rero.config.*;
-import rero.dck.*;
+public class SelectInput extends SuperInput implements ItemListener {
+	protected JLabel label;
+	protected int defaultVal;
 
-public class SelectInput extends SuperInput implements ItemListener
-{
-   protected JLabel    label;
-   protected int       defaultVal;
+	protected JComboBox select;
 
-   protected JComboBox select;
+	public SelectInput(String var, int _defaultVal, String values[], String _label, char mnemonic, int rightGap) {
+		label = new JLabel(_label);
 
-   public SelectInput(String var, int _defaultVal, String values[], String _label, char mnemonic, int rightGap)
-   {
-      label = new JLabel(_label);
+		setLayout(new BorderLayout());
 
-      setLayout(new BorderLayout());
-     
-      select = new JComboBox(values);
- 
-      add(label,  BorderLayout.WEST);
-      add(select, BorderLayout.CENTER);
+		select = new JComboBox(values);
 
-      if (rightGap > 0)
-      {
-         JPanel temp = new JPanel();
-         temp.setPreferredSize(new Dimension(rightGap, 0));
+		add(label, BorderLayout.WEST);
+		add(select, BorderLayout.CENTER);
 
-         add(temp, BorderLayout.EAST);
-      }
+		if (rightGap > 0) {
+			JPanel temp = new JPanel();
+			temp.setPreferredSize(new Dimension(rightGap, 0));
 
-      label.setDisplayedMnemonic(mnemonic);
-      select.addItemListener(this);
+			add(temp, BorderLayout.EAST);
+		}
 
-      variable   = var;
- 
-      defaultVal = _defaultVal; 
-   }
+		label.setDisplayedMnemonic(mnemonic);
+		select.addItemListener(this);
 
-   public void setEnabled(boolean b)
-   {
-      Component[] blah = getComponents();
-      for (int x = 0; x < blah.length; x++)
-      {
-         blah[x].setEnabled(b);
-      }
+		variable = var;
 
-      super.setEnabled(b);
-   }
+		defaultVal = _defaultVal;
+	}
 
-   public void setModel(ComboBoxModel model)
-   {
-      select.setModel(model);
-   }
+	public void setEnabled(boolean b) {
+		Component[] blah = getComponents();
+		for (int x = 0; x < blah.length; x++) {
+			blah[x].setEnabled(b);
+		}
 
-   public void save()
-   {
-      ClientState.getClientState().setInteger(getVariable(), select.getSelectedIndex());
-   }
+		super.setEnabled(b);
+	}
 
-   public int getEstimatedWidth()
-   {
-      return (int)label.getPreferredSize().getWidth();
-   }
+	public void setModel(ComboBoxModel model) {
+		select.setModel(model);
+	}
 
-   public void setAlignWidth(int width)
-   {
-      label.setPreferredSize(new Dimension(width, 0));
-      revalidate();
-   }
+	public void save() {
+		ClientState.getClientState().setInteger(getVariable(), select.getSelectedIndex());
+	}
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
+	public int getEstimatedWidth() {
+		return (int) label.getPreferredSize().getWidth();
+	}
 
-   public void refresh()
-   {
-      select.setSelectedIndex(ClientState.getClientState().getInteger(getVariable(), defaultVal));
-   }
+	public void setAlignWidth(int width) {
+		label.setPreferredSize(new Dimension(width, 0));
+		revalidate();
+	}
 
-   public void itemStateChanged(ItemEvent ev)
-   {
-      notifyParent();
-   }
+	public JComponent getComponent() {
+		return this;
+	}
+
+	public void refresh() {
+		select.setSelectedIndex(ClientState.getClientState().getInteger(getVariable(), defaultVal));
+	}
+
+	public void itemStateChanged(ItemEvent ev) {
+		notifyParent();
+	}
 }
 
 

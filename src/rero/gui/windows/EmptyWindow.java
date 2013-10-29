@@ -1,141 +1,124 @@
 package rero.gui.windows;
 
-import rero.gui.*;
-import rero.gui.input.*;
-import rero.gui.background.*;
+import rero.bridges.menu.MenuBridge;
+import rero.client.Capabilities;
+import rero.gui.input.InputField;
+import text.WrappedDisplay;
+import text.event.ClickEvent;
+import text.event.ClickListener;
+
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-import rero.client.*;
-import java.util.HashMap;
-import rero.util.ClientUtils;
+public abstract class EmptyWindow extends StatusWindow implements ClientWindowListener {
+	public void touch() {
+	}
 
-import rero.ircfw.*;
+	public void installCapabilities(Capabilities c) {
+		capabilities = c;
+		menuManager = (MenuBridge) c.getDataStructure("menuBridge");
 
-import rero.bridges.menu.*;
+		init();
+	}
 
-import text.*;
-import rero.config.*;
+	public InputField getInput() {
+		return null;
+	}
 
-import java.util.*;
-import text.event.*;
+	public WrappedDisplay getDisplay() {
+		return null;
+	}
 
-public abstract class EmptyWindow extends StatusWindow implements ClientWindowListener
-{
-   public void touch()
-   {
-   }
+	public WindowStatusBar getStatusBar() {
+		return null;
+	}
 
-   public void installCapabilities(Capabilities c)
-   {
-      capabilities = c;
-      menuManager = (MenuBridge)c.getDataStructure("menuBridge");
+	public void init(ClientWindow _frame) {
+		frame = _frame;
+		frame.addWindowListener(new ClientWindowStuff());
+		frame.addWindowListener(this);
 
-      init();
-   }
+		frame.setContentPane(this);
 
-   public InputField getInput()
-   {
-      return null;
-   }
+		setTitle(getName());
+		frame.setIcon(getImageIcon());
+	}
 
-   public WrappedDisplay getDisplay()
-   {
-      return null;
-   }
+	public abstract void init();
 
-   public WindowStatusBar getStatusBar()
-   {
-      return null;
-   }
+	public String getQuery() {
+		return "Nada";
+	}
 
-   public void init(ClientWindow _frame)
-   {
-      frame = _frame;
-      frame.addWindowListener(new ClientWindowStuff());
-      frame.addWindowListener(this);
+	public void setQuery(String q) {
+	}
 
-      frame.setContentPane(this);
+	public void setTitle(String title) {
+		frame.setTitle(title);
+	}
 
-      setTitle(getName());
-      frame.setIcon(getImageIcon());
-   }
+	public ClientWindow getWindow() {
+		return frame;
+	}
 
-   public abstract void init();
+	public String getTitle() {
+		return frame.getTitle();
+	}
 
-   public String getQuery()
-   {
-      return "Nada";
-   }
+	public abstract String getName();
 
-   public void setQuery(String q)
-   {
-   }
+	public abstract ImageIcon getImageIcon();
 
-   public void setTitle(String title)
-   {
-      frame.setTitle(title);
-   }
+	public String getWindowType() {
+		return "Other";
+	}
 
-   public ClientWindow getWindow() 
-   {
-      return frame;
-   }
+	public boolean isLegalWindow() {
+		return false;
+	}
 
-   public String getTitle()
-   {
-      return frame.getTitle();
-   }
+	private boolean isOpen = true;
 
-   public abstract String getName();
+	public boolean isOpen() {
+		return isOpen;
+	}
 
-   public abstract ImageIcon getImageIcon();
+	public void onActive(ClientWindowEvent ev) {
+	}
 
-   public String getWindowType()
-   {
-      return "Other";
-   }
+	public void onOpen(ClientWindowEvent ev) {
+		isOpen = true;
+	}
 
-   public boolean isLegalWindow()
-   {
-      return false;
-   }
+	public void onInactive(ClientWindowEvent ev) {
+	}
 
-   private boolean isOpen = true;
+	public void onMinimize(ClientWindowEvent ev) {
+	}
 
-   public boolean isOpen()
-   {
-      return isOpen;
-   }
+	public void onClose(ClientWindowEvent ev) {
+		isOpen = false;
+	}
 
-   public void onActive(ClientWindowEvent ev) { }
-   public void onOpen(ClientWindowEvent ev) { isOpen = true; }
-   public void onInactive(ClientWindowEvent ev) { }
-   public void onMinimize(ClientWindowEvent ev) { }
-   public void onClose(ClientWindowEvent ev) { isOpen = false; }
+	protected LinkedList listeners = new LinkedList();
 
-   protected LinkedList listeners = new LinkedList();
+	public void addClickListener(ClickListener l) {
+		listeners.add(l);
+	}
 
-   public void addClickListener(ClickListener l)
-   {
-      listeners.add(l);
-   }
+	public void fireClickEvent(String text, MouseEvent mev) {
+		ClickEvent ev = new ClickEvent(text, getName(), mev);
 
-   public void fireClickEvent(String text, MouseEvent mev)
-   {
-      ClickEvent ev = new ClickEvent(text, getName(), mev);
+		ListIterator i = listeners.listIterator();
+		while (i.hasNext() && !ev.isConsumed()) {
+			ClickListener l = (ClickListener) i.next();
+			l.wordClicked(ev);
+		}
+	}
 
-      ListIterator i = listeners.listIterator();
-      while (i.hasNext() && !ev.isConsumed())
-      {
-          ClickListener l = (ClickListener)i.next();
-          l.wordClicked(ev);
-      }
-   }
-
-   public int compareWindowType()
-   {
-      return 4;
-   }
+	public int compareWindowType() {
+		return 4;
+	}
 }

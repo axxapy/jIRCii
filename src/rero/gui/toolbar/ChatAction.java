@@ -1,36 +1,26 @@
 package rero.gui.toolbar;
 
-import rero.gui.*;
-
-import java.awt.event.*;
-import java.awt.*;
+import rero.client.Capabilities;
+import rero.gui.SessionManager;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.event.MouseEvent;
 
-import rero.client.*;
+public class ChatAction implements ToolAction {
+	public void actionPerformed(MouseEvent ev) {
+		Capabilities client = SessionManager.getGlobalCapabilities().getActiveSession().getCapabilities();
 
-import rero.bridges.menu.*;
+		String nick = JOptionPane.showInputDialog(SessionManager.getGlobalCapabilities().getFrame(), "Request dcc chat from:", "DCC Chat", JOptionPane.QUESTION_MESSAGE);
 
-public class ChatAction implements ToolAction
-{
-   public void actionPerformed(MouseEvent ev)
-   {
-      Capabilities client = SessionManager.getGlobalCapabilities().getActiveSession().getCapabilities();
+		if (nick != null)
+			SessionManager.getGlobalCapabilities().getActiveSession().executeCommand("/DCC chat " + nick);
+	}
 
-      String nick = JOptionPane.showInputDialog(SessionManager.getGlobalCapabilities().getFrame(), "Request dcc chat from:", "DCC Chat", JOptionPane.QUESTION_MESSAGE);
+	public String getDescription() {
+		return "Request a DCC Chat";
+	}
 
-      if (nick != null)
-        SessionManager.getGlobalCapabilities().getActiveSession().executeCommand("/DCC chat " + nick);
-   }
-
-   public String getDescription()
-   {
-      return "Request a DCC Chat";
-   } 
-
-   public int getIndex()
-   {
-      return 23;
-   }
+	public int getIndex() {
+		return 23;
+	}
 }

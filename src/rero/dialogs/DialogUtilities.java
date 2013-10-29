@@ -1,56 +1,48 @@
 package rero.dialogs;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.gui.SessionManager;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.io.File;
 
-import java.io.*;
+public class DialogUtilities {
+	private static JFileChooser chooser = null;
 
-import rero.gui.*;
+	public static File showFileDialog(String title, String acceptButton, File startin) {
+		if (chooser == null)
+			chooser = new JFileChooser();
 
-public class DialogUtilities
-{
-   private static JFileChooser chooser = null;
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-   public static File showFileDialog(String title, String acceptButton, File startin)
-   {
-      if (chooser == null)
-          chooser = new JFileChooser();
+		chooser.setDialogTitle(title);
 
-      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		if (startin != null)
+			chooser.setCurrentDirectory(startin);
 
-      chooser.setDialogTitle(title);
+		if (acceptButton != null)
+			chooser.setApproveButtonText(acceptButton);
 
-      if (startin != null)
-         chooser.setCurrentDirectory(startin);
+		int returnVal = chooser.showOpenDialog(SessionManager.getGlobalCapabilities().getFrame());
 
-      if (acceptButton != null)
-         chooser.setApproveButtonText(acceptButton);
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+			return chooser.getSelectedFile();
 
-      int returnVal = chooser.showOpenDialog(SessionManager.getGlobalCapabilities().getFrame());
+		return null;
+	}
 
-      if (returnVal == JFileChooser.APPROVE_OPTION)
-          return chooser.getSelectedFile();
+	public static File showSaveDialog(String title) {
+		if (chooser == null)
+			chooser = new JFileChooser();
 
-      return null;
-   }
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-   public static File showSaveDialog(String title)
-   {
-      if (chooser == null)
-          chooser = new JFileChooser();
+		chooser.setDialogTitle(title);
 
-      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		int returnVal = chooser.showSaveDialog(null);
 
-      chooser.setDialogTitle(title);
+		if (returnVal == JFileChooser.APPROVE_OPTION)
+			return chooser.getSelectedFile();
 
-      int returnVal = chooser.showSaveDialog(null);
-
-      if (returnVal == JFileChooser.APPROVE_OPTION)
-         return chooser.getSelectedFile();
-
-      return null;
-   }
+		return null;
+	}
 }

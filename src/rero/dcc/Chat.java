@@ -17,136 +17,114 @@
 
 package rero.dcc;
 
-import java.util.*;
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import rero.ircfw.interfaces.FrameworkConstants;
 
-import java.net.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.PrintStream;
 
-import rero.ircfw.*;
-import rero.ircfw.interfaces.*;
+public class Chat extends ProtocolDCC implements ClientStateListener {
+	protected BufferedReader input;
+	protected PrintStream output;
 
-import rero.config.*;
+	public Chat(String _nickname) {
+		nickname = _nickname;
+		ClientState.getClientState().addClientStateListener("client.encoding", this);
+	}
 
-public class Chat extends ProtocolDCC implements ClientStateListener
-{   
-    protected BufferedReader     input;
-    protected PrintStream        output;
+	public void propertyChanged(String property, String value) {
+		try {
+			if (input != null && socket.isConnected()) {
+				input = new BufferedReader(ClientState.getClientState().getProperInputStream(socket.getInputStream()));
+				output = ClientState.getClientState().getProperPrintStream(socket.getOutputStream());
+			}
+		} catch (Exception ex) {
+			System.out.println("Unable to switch encodings...");
+			ex.printStackTrace();
+		}
+	}
 
-    public Chat(String _nickname)
-    {
-       nickname = _nickname;
-       ClientState.getClientState().addClientStateListener("client.encoding", this);
-   }
+	/**
+	 * returns the nickname of who we are having a *chat* with
+	 */
+	public String getNickname() {
+		return nickname;
+	}
 
-    public void propertyChanged(String property, String value)
-    {
-      try
-      {
-         if (input != null && socket.isConnected())
-         {
-            input  = new BufferedReader(   ClientState.getClientState().getProperInputStream( socket.getInputStream() )   );
-            output = ClientState.getClientState().getProperPrintStream( socket.getOutputStream() );
-         }
-      }
-      catch (Exception ex)
-      {
-         System.out.println("Unable to switch encodings...");
-         ex.printStackTrace();
-      }
-    }
-  
-    /** returns the nickname of who we are having a *chat* with */
-    public String getNickname()
-    {
-       return nickname;
-    }
+	/**
+	 * sends a message to the chat
+	 */
+	public void sendln(String text) {
+		output.println(text);
+	}
 
-    /** sends a message to the chat */
-    public void sendln(String text)
-    {
-       output.println(text);
-    }
-    
-    public int getTypeOfDCC()
-    {
-       return DCC_CHAT;
-    }
+	public int getTypeOfDCC() {
+		return DCC_CHAT;
+	}
 
-    public void run()
-    {
-       if (socket == null || !socket.isConnected())
-       {
-          return;
-       }
+	public void run() {
+		if (socket == null || !socket.isConnected()) {
+			return;
+		}
 
-       try
-       {
-          socket.setKeepAlive(true);
-       }
-       catch (Exception ex)
-       {
-          ex.printStackTrace();
-       }
+		try {
+			socket.setKeepAlive(true);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-       fireEvent("CHAT_OPEN", null);
+		fireEvent("CHAT_OPEN", null);
 
-       String text;
+		String text;
 
-       try
-       {
-          output = ClientState.getClientState().getProperPrintStream( socket.getOutputStream() );
-          input  = new BufferedReader(   ClientState.getClientState().getProperInputStream( socket.getInputStream() )   );
+		try {
+			output = ClientState.getClientState().getProperPrintStream(socket.getOutputStream());
+			input = new BufferedReader(ClientState.getClientState().getProperInputStream(socket.getInputStream()));
 
-          while (socket.isConnected())
-          {
-             text = input.readLine();
-             if (text == null)
-             {
-                fireEvent("CHAT_CLOSE", "closed");
-                return;
-             } 
+			while (socket.isConnected()) {
+				text = input.readLine();
+				if (text == null) {
+					fireEvent("CHAT_CLOSE", "closed");
+					return;
+				}
 
-             idleTime = System.currentTimeMillis();
+				idleTime = System.currentTimeMillis();
 
-             fireEvent("CHAT", text);
-          } 
-         
-          fireEvent("CHAT_CLOSE", "closed");
-       }
-       catch (Exception ex)
-       {
-          ex.printStackTrace();
+				fireEvent("CHAT", text);
+			}
 
-          fireError(ex.getMessage());
-       }
-    }
+			fireEvent("CHAT_CLOSE", "closed");
+		} catch (Exception ex) {
+			ex.printStackTrace();
 
-    public void fireEvent(String event, String description)
-    {
-       eventData.clear();
+			fireError(ex.getMessage());
+		}
+	}
 
-       eventData.put(FrameworkConstants.$NICK$,   getNickname());
-       eventData.put(FrameworkConstants.$EVENT$,  event);
-       eventData.put("$this", this.toString());
+	public void fireEvent(String event, String description) {
+		eventData.clear();
 
- 
-       if (description != null)
-       {
-          eventData.put(FrameworkConstants.$DATA$,  getNickname() + " " + description);
-          eventData.put(FrameworkConstants.$PARMS$, description); 
-       }
+		eventData.put(FrameworkConstants.$NICK$, getNickname());
+		eventData.put(FrameworkConstants.$EVENT$, event);
+		eventData.put("$this", this.toString());
 
-       dispatcher.dispatchEvent(eventData);
-    }
 
-    public void fireError(String description)
-    {
-       eventData.put(FrameworkConstants.$NICK$,   getNickname());
-       eventData.put(FrameworkConstants.$EVENT$, "CHAT_CLOSE");
-       eventData.put(FrameworkConstants.$DATA$,  getNickname() + " " + description);
-       eventData.put(FrameworkConstants.$PARMS$, description);
-       eventData.put("$this", this.toString());
+		if (description != null) {
+			eventData.put(FrameworkConstants.$DATA$, getNickname() + " " + description);
+			eventData.put(FrameworkConstants.$PARMS$, description);
+		}
 
-       dispatcher.dispatchEvent(eventData);
-    }
+		dispatcher.dispatchEvent(eventData);
+	}
+
+	public void fireError(String description) {
+		eventData.put(FrameworkConstants.$NICK$, getNickname());
+		eventData.put(FrameworkConstants.$EVENT$, "CHAT_CLOSE");
+		eventData.put(FrameworkConstants.$DATA$, getNickname() + " " + description);
+		eventData.put(FrameworkConstants.$PARMS$, description);
+		eventData.put("$this", this.toString());
+
+		dispatcher.dispatchEvent(eventData);
+	}
 }

@@ -1,6 +1,5 @@
 package rero.util;
 
-public interface TimerListener
-{
-    public void timerExecute();
+public interface TimerListener {
+	public void timerExecute();
 }

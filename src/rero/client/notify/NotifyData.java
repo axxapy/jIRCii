@@ -1,226 +1,193 @@
 package rero.client.notify;
 
+import rero.client.Feature;
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import rero.config.StringList;
+import rero.ircfw.interfaces.ChatListener;
+import rero.util.TimerListener;
+import rero.util.TokenizedString;
+
 import java.util.*;
-
-import rero.client.*;
-import rero.util.*;
-
-import rero.ircfw.*;
-import rero.ircfw.interfaces.*;
-
-import rero.config.*;
 
 //
 // Documented bug - if there is no notify reply before the next one is sent and then both come one of them
 //   will be echo'd.   Its not really worth working around this problem.  
 //
-public class NotifyData extends Feature implements ChatListener, TimerListener, ClientStateListener
-{
-   protected HashMap users     = new HashMap();
-   protected Set     signedon  = new HashSet();
-   protected Lag     lag       = new Lag();
+public class NotifyData extends Feature implements ChatListener, TimerListener, ClientStateListener {
+	protected HashMap users = new HashMap();
+	protected Set signedon = new HashSet();
+	protected Lag lag = new Lag();
 
-   protected int isChecking = 0;
+	protected int isChecking = 0;
 
-   public void reset()
-   {
-      signedon = new HashSet();
-   }
+	public void reset() {
+		signedon = new HashSet();
+	}
 
-   public void propertyChanged(String value, String parameter)
-   {
-      hashUsers();    
-   }
+	public void propertyChanged(String value, String parameter) {
+		hashUsers();
+	}
 
-   public void hashUsers()
-   {
-      HashMap newUsers = new HashMap();
+	public void hashUsers() {
+		HashMap newUsers = new HashMap();
 
-      Iterator i = ClientState.getClientState().getStringList("notify.users").getList().iterator();
-      while (i.hasNext())
-      {
-         String temp = (String)i.next();
-         if (users.containsKey(temp))
-         {
-            newUsers.put(temp, users.get(temp));
-         }         
-         else
-         {
-            newUsers.put(temp, createNotifyUser(temp));
-         }
-      }
+		Iterator i = ClientState.getClientState().getStringList("notify.users").getList().iterator();
+		while (i.hasNext()) {
+			String temp = (String) i.next();
+			if (users.containsKey(temp)) {
+				newUsers.put(temp, users.get(temp));
+			} else {
+				newUsers.put(temp, createNotifyUser(temp));
+			}
+		}
 
-      users = newUsers;
-   }
+		users = newUsers;
+	}
 
-   public void addUser(String nickname) // *permanently adds user to notify list*
-   {
-      StringList temp = ClientState.getClientState().getStringList("notify.users");
-      temp.add(nickname);
-      temp.save();
-      ClientState.getClientState().sync();
-   }
+	public void addUser(String nickname) // *permanently adds user to notify list*
+	{
+		StringList temp = ClientState.getClientState().getStringList("notify.users");
+		temp.add(nickname);
+		temp.save();
+		ClientState.getClientState().sync();
+	}
 
-   public void removeUser(String nickname)
-   {
-      StringList temp = ClientState.getClientState().getStringList("notify.users");
-      temp.remove(nickname);
-      temp.save();
-      ClientState.getClientState().sync();
-   }
+	public void removeUser(String nickname) {
+		StringList temp = ClientState.getClientState().getStringList("notify.users");
+		temp.remove(nickname);
+		temp.save();
+		ClientState.getClientState().sync();
+	}
 
-   public Set getSignedOnUsers()
-   {
-      Set rv = new HashSet();
+	public Set getSignedOnUsers() {
+		Set rv = new HashSet();
 
-      Iterator i = users.values().iterator(); 
-      while (i.hasNext())
-      {
-         NotifyUser temp = (NotifyUser)i.next();
-         if (temp.isSignedOn())
-         {
-            rv.add(temp);
-         }
-      }
- 
-      return rv;
-   }
+		Iterator i = users.values().iterator();
+		while (i.hasNext()) {
+			NotifyUser temp = (NotifyUser) i.next();
+			if (temp.isSignedOn()) {
+				rv.add(temp);
+			}
+		}
 
-   public Set getNotifyUsers()
-   {
-      return new HashSet(users.values());
-   }
+		return rv;
+	}
 
-   public Set getSignedOffUsers()
-   {
-      Set rv = new HashSet();
+	public Set getNotifyUsers() {
+		return new HashSet(users.values());
+	}
 
-      Iterator i = users.values().iterator(); 
-      while (i.hasNext())
-      {
-         NotifyUser temp = (NotifyUser)i.next();
-         if (!temp.isSignedOn())
-         {
-            rv.add(temp);
-         }
-      }
- 
-      return rv;
-   }
+	public Set getSignedOffUsers() {
+		Set rv = new HashSet();
 
-   public void init()
-   {
-      hashUsers();
+		Iterator i = users.values().iterator();
+		while (i.hasNext()) {
+			NotifyUser temp = (NotifyUser) i.next();
+			if (!temp.isSignedOn()) {
+				rv.add(temp);
+			}
+		}
 
-      getCapabilities().addChatListener(this);
-      getCapabilities().getTimer().addTimer(this, 60 * 1000); // check the notify list every 60 seconds.
+		return rv;
+	}
 
-      ClientState.getClientState().addClientStateListener("notify.users", this);
-   }
+	public void init() {
+		hashUsers();
 
-   public void cleanup()
-   {
-      getCapabilities().getTimer().stopTimer(this);
-   }
+		getCapabilities().addChatListener(this);
+		getCapabilities().getTimer().addTimer(this, 60 * 1000); // check the notify list every 60 seconds.
 
-   public void storeDataStructures(WeakHashMap data)
-   {
-      data.put("lag", lag);
-      data.put("notify", this);
-   }
+		ClientState.getClientState().addClientStateListener("notify.users", this);
+	}
 
-   public NotifyUser createNotifyUser(String nickname)
-   {
-      NotifyUser temp = new NotifyUser(nickname);
-      temp.installCapabilities(getCapabilities());
+	public void cleanup() {
+		getCapabilities().getTimer().stopTimer(this);
+	}
 
-      return temp;
-   }
+	public void storeDataStructures(WeakHashMap data) {
+		data.put("lag", lag);
+		data.put("notify", this);
+	}
 
-   public NotifyUser getUserInfo(String nickname)
-   {
-      return (NotifyUser)users.get(nickname);
-   }
+	public NotifyUser createNotifyUser(String nickname) {
+		NotifyUser temp = new NotifyUser(nickname);
+		temp.installCapabilities(getCapabilities());
 
-   public void checkNotify() 
-   {
-      if (getCapabilities().isConnected())
-      {
-         isChecking++;
+		return temp;
+	}
 
-         StringBuffer temp = new StringBuffer("ISON :");
-         Iterator i = users.keySet().iterator();
-         while (i.hasNext())
-         {
-            temp.append((String)i.next());
-            temp.append(" ");
-         }
+	public NotifyUser getUserInfo(String nickname) {
+		return (NotifyUser) users.get(nickname);
+	}
 
-         lag.checkLag();
-         getCapabilities().sendln(temp.toString());
-      }
-   }
+	public void checkNotify() {
+		if (getCapabilities().isConnected()) {
+			isChecking++;
 
-   public void timerExecute()
-   {
-      checkNotify();
-   }
+			StringBuffer temp = new StringBuffer("ISON :");
+			Iterator i = users.keySet().iterator();
+			while (i.hasNext()) {
+				temp.append((String) i.next());
+				temp.append(" ");
+			}
 
-   public int fireChatEvent (HashMap eventDescription)
-   {
-      if (eventDescription.get("$event").equals("376"))
-      {
-          // We are connected, check the notify
-          //
-          checkNotify();
-          return EVENT_DONE;
-      }
+			lag.checkLag();
+			getCapabilities().sendln(temp.toString());
+		}
+	}
 
-      lag.setLag();
+	public void timerExecute() {
+		checkNotify();
+	}
 
-      if (eventDescription.get("$event").equals("303"))
-      {
-         String parms = (String)eventDescription.get("$parms");
+	public int fireChatEvent(HashMap eventDescription) {
+		if (eventDescription.get("$event").equals("376")) {
+			// We are connected, check the notify
+			//
+			checkNotify();
+			return EVENT_DONE;
+		}
 
-         TokenizedString temp = new TokenizedString(parms);
-         temp.tokenize(" ");
+		lag.setLag();
 
-         Set newbatch = new HashSet();
+		if (eventDescription.get("$event").equals("303")) {
+			String parms = (String) eventDescription.get("$parms");
 
-         for (int x = 0; x < temp.getTotalTokens(); x++)
-         {
-            NotifyUser user = getUserInfo(temp.getToken(x));
+			TokenizedString temp = new TokenizedString(parms);
+			temp.tokenize(" ");
 
-            if (user != null && !user.isSignedOn())
-            {
-               user.signOn();         
-            }          
-            newbatch.add(user);
-         }
+			Set newbatch = new HashSet();
 
-         signedon.removeAll(newbatch);
+			for (int x = 0; x < temp.getTotalTokens(); x++) {
+				NotifyUser user = getUserInfo(temp.getToken(x));
 
-         Iterator i = signedon.iterator();
-         while (i.hasNext())
-         {
-            NotifyUser user = (NotifyUser)i.next();
-            if (user != null && user.isSignedOn() && users.containsKey(user.toString()))
-            {
-               user.signOff();
-            }
-         }
+				if (user != null && !user.isSignedOn()) {
+					user.signOn();
+				}
+				newbatch.add(user);
+			}
 
-         signedon = newbatch;
-      }
+			signedon.removeAll(newbatch);
 
-      isChecking--;
+			Iterator i = signedon.iterator();
+			while (i.hasNext()) {
+				NotifyUser user = (NotifyUser) i.next();
+				if (user != null && user.isSignedOn() && users.containsKey(user.toString())) {
+					user.signOff();
+				}
+			}
 
-      return EVENT_HALT;
-   }
+			signedon = newbatch;
+		}
 
-   public boolean isChatEvent(String eventId, HashMap eventDescription)
-   {
-      // :lug.mtu.edu 303 ^butang :shrunk mutilator `butane
-      return (isChecking > 0 && (eventId.equals("303") || eventId.equals("461"))) || eventId.equals("376");
-   }
+		isChecking--;
+
+		return EVENT_HALT;
+	}
+
+	public boolean isChatEvent(String eventId, HashMap eventDescription) {
+		// :lug.mtu.edu 303 ^butang :shrunk mutilator `butane
+		return (isChecking > 0 && (eventId.equals("303") || eventId.equals("461"))) || eventId.equals("376");
+	}
 }

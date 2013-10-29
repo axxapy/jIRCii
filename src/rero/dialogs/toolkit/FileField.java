@@ -1,70 +1,59 @@
 package rero.dialogs.toolkit;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.dck.SmallButton;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
-import rero.dck.*;
+public class FileField extends JPanel implements ActionListener {
+	protected JTextField text;
+	protected SmallButton button;
+	protected JFileChooser chooser;
 
-import java.io.*;
+	protected boolean directory;
 
-public class FileField extends JPanel implements ActionListener
-{
-   protected JTextField   text;
-   protected SmallButton  button;
-   protected JFileChooser chooser;
+	public FileField(File value, boolean _directory) {
+		text = new JTextField();
+		button = new SmallButton(text.getBorder(), "Click to open a file chooser");
 
-   protected boolean    directory;
+		button.addActionListener(this);
 
-   public FileField(File value, boolean _directory)
-   {
-      text   = new JTextField();
-      button = new SmallButton(text.getBorder(), "Click to open a file chooser");
+		setLayout(new BorderLayout(2, 2));
 
-      button.addActionListener(this);
+		add(text, BorderLayout.CENTER);
+		add(button, BorderLayout.EAST);
 
-      setLayout(new BorderLayout(2, 2));
+		text.setText(value.getAbsolutePath());
 
-      add(text,   BorderLayout.CENTER);
-      add(button, BorderLayout.EAST);      
+		directory = _directory;
+	}
 
-      text.setText(value.getAbsolutePath());
+	public File getSelectedFile() {
+		return new File(text.getText());
+	}
 
-      directory = _directory;
-   }
+	public void actionPerformed(ActionEvent ev) {
+		if (chooser == null) {
+			chooser = new JFileChooser();
+		}
 
-   public File getSelectedFile()
-   {
-      return new File(text.getText());
-   }
+		if (directory) {
+			chooser.setApproveButtonText("Select Directory");
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		} else {
+			chooser.setApproveButtonText("Select File");
+		}
 
-   public void actionPerformed(ActionEvent ev)
-   {
-      if (chooser == null)
-      {
-         chooser = new JFileChooser();
-      }
+		chooser.setSelectedFile(new File(text.getText()));
 
-      if (directory)
-      {
-         chooser.setApproveButtonText("Select Directory");
-         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-      }
-      else
-      {
-         chooser.setApproveButtonText("Select File");
-      }
-
-      chooser.setSelectedFile(new File(text.getText()));
-
-      if (chooser.showDialog(this, null) == JFileChooser.APPROVE_OPTION)
-      {
-         text.setText(chooser.getSelectedFile().getAbsolutePath());
-         text.requestFocus();
-      }
-   }
+		if (chooser.showDialog(this, null) == JFileChooser.APPROVE_OPTION) {
+			text.setText(chooser.getSelectedFile().getAbsolutePath());
+			text.requestFocus();
+		}
+	}
 }
 
 

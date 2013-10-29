@@ -1,43 +1,35 @@
 package rero.dialogs.help;
 
-import javax.swing.*;
-import javax.swing.border.*;
-
-import java.awt.*;
-
-import java.util.*;
-
 import rero.dialogs.HelpWindow;
 
-public abstract class HelperObject
-{
-   public abstract JComponent getNavigationComponent();
+import javax.swing.*;
+import java.awt.*;
 
-   protected HelpWindow help;
+public abstract class HelperObject {
+	public abstract JComponent getNavigationComponent();
 
-   public JComponent getNavigation()
-   {
-      JPanel general = new JPanel();
-      general.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+	protected HelpWindow help;
 
-      general.setLayout(new BorderLayout(5, 5));
+	public JComponent getNavigation() {
+		JPanel general = new JPanel();
+		general.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-      JScrollPane genScroller = new JScrollPane(getNavigationComponent());
-      genScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		general.setLayout(new BorderLayout(5, 5));
 
-      general.add(new JLabel("Contents:"), BorderLayout.NORTH);
-      general.add(genScroller, BorderLayout.CENTER);
+		JScrollPane genScroller = new JScrollPane(getNavigationComponent());
+		genScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-      return general;
-   }
+		general.add(new JLabel("Contents:"), BorderLayout.NORTH);
+		general.add(genScroller, BorderLayout.CENTER);
 
-   public void setHelp(HelpWindow _help)
-   {
-      help = _help;
-   }
+		return general;
+	}
 
-   public void updateText(String newText)
-   {
-      help.updateText(newText);
-   }
+	public void setHelp(HelpWindow _help) {
+		help = _help;
+	}
+
+	public void updateText(String newText) {
+		help.updateText(newText);
+	}
 }

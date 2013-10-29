@@ -1,73 +1,61 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.dck.DItem;
+import rero.dck.DParent;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
 
-import rero.dck.*;
+public class LabelInput extends JPanel implements DItem {
+	protected JTextPane label;
 
-public class LabelInput extends JPanel implements DItem
-{
-   protected JTextPane label;
+	public LabelInput(String text, int width) {
+		setLayout(new BorderLayout());
 
-   public LabelInput(String text, int width)
-   {
-      setLayout(new BorderLayout());
+		label = new JTextPane();
+		label.setText(text);
+		label.setBorder(null);
+		label.setOpaque(false);
+		label.setEditable(false);
 
-      label = new JTextPane();
-      label.setText(text);
-      label.setBorder(null);
-      label.setOpaque(false);
-      label.setEditable(false);
-      
-      add(label, BorderLayout.CENTER);
-     
-      JPanel gap = new JPanel();
-      gap.setPreferredSize(new Dimension(width, 0));
-      add(gap, BorderLayout.EAST);
+		add(label, BorderLayout.CENTER);
 
-      gap = new JPanel();
-      gap.setPreferredSize(new Dimension(width, 0));
-      add(gap, BorderLayout.WEST);
-   }
+		JPanel gap = new JPanel();
+		gap.setPreferredSize(new Dimension(width, 0));
+		add(gap, BorderLayout.EAST);
 
-   public void setEnabled(boolean b)
-   {
-   }
+		gap = new JPanel();
+		gap.setPreferredSize(new Dimension(width, 0));
+		add(gap, BorderLayout.WEST);
+	}
 
-   public void save()
-   {
+	public void setEnabled(boolean b) {
+	}
 
-   }
+	public void save() {
 
-   public void refresh()
-   {
-   }
+	}
 
-   public int getEstimatedWidth()
-   {
-      return 0;
-   }
+	public void refresh() {
+	}
 
-   public void setAlignWidth(int width)
-   {
-   }
+	public int getEstimatedWidth() {
+		return 0;
+	}
 
-   public void setParent(DParent parent)
-   {
-      
-   }
+	public void setAlignWidth(int width) {
+	}
 
-   public void setText(String text)
-   {
-      label.setText(text);
-   }
+	public void setParent(DParent parent) {
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
+	}
+
+	public void setText(String text) {
+		label.setText(text);
+	}
+
+	public JComponent getComponent() {
+		return this;
+	}
 }
 

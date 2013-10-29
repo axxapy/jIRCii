@@ -1,412 +1,365 @@
 package rero.gui.mdi;
 
-import javax.swing.*;
-import javax.swing.event.*;
-
-import java.awt.*;
-import java.awt.event.*;
-
-import java.util.*;
-
-import java.beans.*;
-
-import rero.gui.windows.*;
-import rero.gui.background.*;
-
-import rero.util.ClientUtils;
-import rero.config.*;
-
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import rero.gui.background.BackgroundDesktop;
 import rero.gui.toolkit.OrientedToolBar;
+import rero.gui.windows.*;
+import rero.util.ClientUtils;
 
-/** responsible for mantaining the state of the desktop GUI and switchbar */
-public class ClientDesktop extends WindowManager implements ClientWindowListener, ClientStateListener
-{
-    protected JDesktopPane desktop;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.beans.PropertyVetoException;
+import java.util.HashMap;
+import java.util.LinkedList;
 
-    public void init()
-    {
-       desktop   = new JDesktopPane();
-       switchbar = new OrientedToolBar();  
+/**
+ * responsible for mantaining the state of the desktop GUI and switchbar
+ */
+public class ClientDesktop extends WindowManager implements ClientWindowListener, ClientStateListener {
+	protected JDesktopPane desktop;
 
-       setLayout(new BorderLayout());
-       add(desktop, BorderLayout.CENTER);
+	public void init() {
+		desktop = new JDesktopPane();
+		switchbar = new OrientedToolBar();
 
-       switchOptions = new SwitchBarOptions(this, switchbar);
+		setLayout(new BorderLayout());
+		add(desktop, BorderLayout.CENTER);
+
+		switchOptions = new SwitchBarOptions(this, switchbar);
 //       add(switchbar, BorderLayout.NORTH);
 
-       windowMap = new HashMap();  
-       windows   = new LinkedList();
+		windowMap = new HashMap();
+		windows = new LinkedList();
 
-       desktop.setDesktopManager(new MyModifiedDesktopManager());
+		desktop.setDesktopManager(new MyModifiedDesktopManager());
 
-       MantainActiveFocus temp = new MantainActiveFocus(this); // object automagically registers itself as a listener.
+		MantainActiveFocus temp = new MantainActiveFocus(this); // object automagically registers itself as a listener.
 
-       BackgroundDesktop wallpaper = new BackgroundDesktop(desktop);
-       wallpaper.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-       desktop.add(wallpaper, new Integer(Integer.MIN_VALUE));
-    }
+		BackgroundDesktop wallpaper = new BackgroundDesktop(desktop);
+		wallpaper.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+		desktop.add(wallpaper, new Integer(Integer.MIN_VALUE));
+	}
 
-    public void addWindow(StatusWindow window, boolean selected)
-    {
-       ClientInternalWindow temp = new ClientInternalWindow();
-       window.init(temp);
+	public void addWindow(StatusWindow window, boolean selected) {
+		ClientInternalWindow temp = new ClientInternalWindow();
+		window.init(temp);
 
-       Rectangle bounds = ClientState.getClientState().getBounds(window.getWindowType()+".size", desktop.getSize(), new Dimension(480, 300));
+		Rectangle bounds = ClientState.getClientState().getBounds(window.getWindowType() + ".size", desktop.getSize(), new Dimension(480, 300));
 
-       temp.setBounds(bounds);
+		temp.setBounds(bounds);
 
-       windowMap.put(window.getWindow(), window);
-       windowMap.put(window.getButton(), window);
+		windowMap.put(window.getWindow(), window);
+		windowMap.put(window.getButton(), window);
 
-       window.getWindow().addWindowListener(this);
-       window.getButton().addActionListener(this);
+		window.getWindow().addWindowListener(this);
+		window.getButton().addActionListener(this);
 
-       // add to the switchbar
-       addToSwitchbar(window);
+		// add to the switchbar
+		addToSwitchbar(window);
 
-       // add to the desktop
-       desktop.add((JInternalFrame)window.getWindow());
+		// add to the desktop
+		desktop.add((JInternalFrame) window.getWindow());
 
-       if (!selected)
-       {
-          temp.setVisible(false);
-       }
-       else
-       {
-          window.getWindow().show();
-       }
+		if (!selected) {
+			temp.setVisible(false);
+		} else {
+			window.getWindow().show();
+		}
 
-       // one of my hacks...  make sure the selected window knows it is the selected window.
-       // for some reason when I first launch the program this concept doesn't take so well.
- 
-       ClientUtils.invokeLater(new Runnable()
-       {
-          public void run()
-          {
-              if (desktop.getSelectedFrame() != null && !desktop.getSelectedFrame().isSelected())
-              {
-                 try
-                 {
-                    refreshFocus(desktop.getSelectedFrame()); 
-                    desktop.getSelectedFrame().setSelected(true);
-                 }
-                 catch (java.beans.PropertyVetoException ex) { }
-                 desktop.repaint();
-              }
-          }
-       });
-    }
+		// one of my hacks...  make sure the selected window knows it is the selected window.
+		// for some reason when I first launch the program this concept doesn't take so well.
 
-    public void onActive(ClientWindowEvent ev) 
-    { 
-       StatusWindow temp = getWindowFor(ev.getSource());
-       doActivate(temp);
-    }
+		ClientUtils.invokeLater(new Runnable() {
+			public void run() {
+				if (desktop.getSelectedFrame() != null && !desktop.getSelectedFrame().isSelected()) {
+					try {
+						refreshFocus(desktop.getSelectedFrame());
+						desktop.getSelectedFrame().setSelected(true);
+					} catch (java.beans.PropertyVetoException ex) {
+					}
+					desktop.repaint();
+				}
+			}
+		});
+	}
 
-    public void onInactive(ClientWindowEvent ev) 
-    { 
-       doDeactivate(getWindowFor(ev.getSource()));
-    }
+	public void onActive(ClientWindowEvent ev) {
+		StatusWindow temp = getWindowFor(ev.getSource());
+		doActivate(temp);
+	}
 
-    public void onMinimize(ClientWindowEvent ev) 
-    { 
-       boolean wasSelected = ev.getSource().isSelected();
-       doDeactivate(getWindowFor(ev.getSource()));
+	public void onInactive(ClientWindowEvent ev) {
+		doDeactivate(getWindowFor(ev.getSource()));
+	}
 
-       if (wasSelected)
-       {
-          int index = windows.indexOf(getWindowFor(ev.getSource()));
-          newActive(index, false);
-          refreshFocus(desktop.getSelectedFrame()); 
-       }
-    }
+	public void onMinimize(ClientWindowEvent ev) {
+		boolean wasSelected = ev.getSource().isSelected();
+		doDeactivate(getWindowFor(ev.getSource()));
 
-    public void onOpen(ClientWindowEvent ev) 
-    { 
-       StatusWindow temp = getWindowFor(ev.getSource());
+		if (wasSelected) {
+			int index = windows.indexOf(getWindowFor(ev.getSource()));
+			newActive(index, false);
+			refreshFocus(desktop.getSelectedFrame());
+		}
+	}
 
-       try
-       {
-          /* check if current window is maxed, if it is, maximize the new one */
-          JInternalFrame f = desktop.getSelectedFrame();
-          if (f != null && f.isMaximum())
-          {
-              doActivate(temp);
-              ((JInternalFrame)ev.getSource()).setMaximum(true);
-          }
-          else
-          {
-              doActivate(temp);
-          }
-       }
-       catch (Exception ex) { ex.printStackTrace(); }
-    }
+	public void onOpen(ClientWindowEvent ev) {
+		StatusWindow temp = getWindowFor(ev.getSource());
 
-    public void onClose(ClientWindowEvent ev) 
-    { 
-       int index = windows.indexOf(getWindowFor(ev.getSource()));
-       boolean wasSelected = ev.getSource().isSelected();
+		try {
+		  /* check if current window is maxed, if it is, maximize the new one */
+			JInternalFrame f = desktop.getSelectedFrame();
+			if (f != null && f.isMaximum()) {
+				doActivate(temp);
+				((JInternalFrame) ev.getSource()).setMaximum(true);
+			} else {
+				doActivate(temp);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
-       ClientWindow window = ev.getSource();
-       StatusWindow temp = (StatusWindow)windowMap.get(window);
+	public void onClose(ClientWindowEvent ev) {
+		int index = windows.indexOf(getWindowFor(ev.getSource()));
+		boolean wasSelected = ev.getSource().isSelected();
 
-       saveBounds(temp);
+		ClientWindow window = ev.getSource();
+		StatusWindow temp = (StatusWindow) windowMap.get(window);
 
-       switchbar.remove(temp.getButton());
+		saveBounds(temp);
 
-       windowMap.remove(window);
-       windowMap.remove(temp.getButton());
-       windowMap.remove(temp.getWindow());
-       windows.remove(temp);
+		switchbar.remove(temp.getButton());
 
-       switchbar.validate();
-       switchbar.repaint();
+		windowMap.remove(window);
+		windowMap.remove(temp.getButton());
+		windowMap.remove(temp.getWindow());
+		windows.remove(temp);
 
-       if (desktop.getSelectedFrame() == null)
-       {
-          newActive(index, true);
-          refreshFocus(desktop.getSelectedFrame()); 
-       }
-    }
+		switchbar.validate();
+		switchbar.repaint();
 
-    public StatusWindow getActiveWindow()
-    {
-       JInternalFrame f = desktop.getSelectedFrame();
-       return getWindowFor(f);
-    }
+		if (desktop.getSelectedFrame() == null) {
+			newActive(index, true);
+			refreshFocus(desktop.getSelectedFrame());
+		}
+	}
 
-    protected void doActivate(StatusWindow window)
-    {
-       try 
-       {
-          JInternalFrame temp = (JInternalFrame)window.getWindow();
+	public StatusWindow getActiveWindow() {
+		JInternalFrame f = desktop.getSelectedFrame();
+		return getWindowFor(f);
+	}
 
-          if (!((ClientInternalWindow)window.getWindow()).isOpen())
-          {
-             window.getWindow().show();
-          }
+	protected void doActivate(StatusWindow window) {
+		try {
+			JInternalFrame temp = (JInternalFrame) window.getWindow();
 
-          if (!temp.isSelected())
-          {
-             JInternalFrame[] ftemp = desktop.getAllFrames();
+			if (!((ClientInternalWindow) window.getWindow()).isOpen()) {
+				window.getWindow().show();
+			}
 
-             for (int x = 0; x < ftemp.length; x++)
-             {
-                if (ftemp[x].isSelected()) { ftemp[x].setSelected(false); }
-             }
-          }    
+			if (!temp.isSelected()) {
+				JInternalFrame[] ftemp = desktop.getAllFrames();
 
-          if (temp.isIcon())
-          {
-             temp.setIcon(false);
-          }
+				for (int x = 0; x < ftemp.length; x++) {
+					if (ftemp[x].isSelected()) {
+						ftemp[x].setSelected(false);
+					}
+				}
+			}
 
-          desktop.setSelectedFrame(temp);
-          window.getButton().setSelected(true);
+			if (temp.isIcon()) {
+				temp.setIcon(false);
+			}
 
-          temp.setSelected(true);
+			desktop.setSelectedFrame(temp);
+			window.getButton().setSelected(true);
 
-          if (window.isLegalWindow())
-            window.getInput().requestFocus();
+			temp.setSelected(true);
 
-          saveBounds(window);
-       } 
-       catch (PropertyVetoException ex) { ex.printStackTrace(); }
-    }
+			if (window.isLegalWindow())
+				window.getInput().requestFocus();
 
-    private void saveBounds(StatusWindow window)
-    {
-       JInternalFrame temp = (JInternalFrame)window.getWindow();
+			saveBounds(window);
+		} catch (PropertyVetoException ex) {
+			ex.printStackTrace();
+		}
+	}
 
-       if (window.getWindow().isMaximum())
-       {
-          ClientState.getClientState().setBounds(window.getWindowType()+".size", new Rectangle(0, 0, (int)desktop.getSize().getWidth(), (int)desktop.getSize().getHeight()));
-       }
-       else
-       {
-          ClientState.getClientState().setBounds(window.getWindowType()+".size", temp.getBounds());
-       }
-    }
+	private void saveBounds(StatusWindow window) {
+		JInternalFrame temp = (JInternalFrame) window.getWindow();
 
-    public void refreshFocus(JInternalFrame f)
-    {
-       if (f != null && isShowing() && getWindowFor(f).isLegalWindow() && !rero.gui.KeyBindings.is_dialog_active)
-          getWindowFor(f).getInput().requestFocus();
-    }
+		if (window.getWindow().isMaximum()) {
+			ClientState.getClientState().setBounds(window.getWindowType() + ".size", new Rectangle(0, 0, (int) desktop.getSize().getWidth(), (int) desktop.getSize().getHeight()));
+		} else {
+			ClientState.getClientState().setBounds(window.getWindowType() + ".size", temp.getBounds());
+		}
+	}
 
-    protected void doDeactivate(StatusWindow window)
-    {
-       JInternalFrame temp = (JInternalFrame)window.getWindow();
+	public void refreshFocus(JInternalFrame f) {
+		if (f != null && isShowing() && getWindowFor(f).isLegalWindow() && !rero.gui.KeyBindings.is_dialog_active)
+			getWindowFor(f).getInput().requestFocus();
+	}
 
-       if (temp.isSelected())
-       {
-          try
-          {
-             temp.setIcon(true);
-          }
-          catch (Exception ex) { }
-       }
+	protected void doDeactivate(StatusWindow window) {
+		JInternalFrame temp = (JInternalFrame) window.getWindow();
 
-       window.getButton().setSelected(false);
+		if (temp.isSelected()) {
+			try {
+				temp.setIcon(true);
+			} catch (Exception ex) {
+			}
+		}
 
-       try
-       {
-          temp.setSelected(false);
-       }
-       catch (Exception ex) { }
-    }
+		window.getButton().setSelected(false);
 
-    private int totalOpenWindows()
-    {
-       int wincount = 0;
-       for (int x = 0; x < desktop.getAllFrames().length; x++)
-       {
-          JInternalFrame cwin = desktop.getAllFrames()[x];
-          if (!cwin.isIcon()) { wincount++; }
-       }
+		try {
+			temp.setSelected(false);
+		} catch (Exception ex) {
+		}
+	}
 
-       return wincount;
-    }
+	private int totalOpenWindows() {
+		int wincount = 0;
+		for (int x = 0; x < desktop.getAllFrames().length; x++) {
+			JInternalFrame cwin = desktop.getAllFrames()[x];
+			if (!cwin.isIcon()) {
+				wincount++;
+			}
+		}
 
-    public void cascadeWindows()
-    {
-       // Add your handling code here:
-       Dimension size = desktop.getSize();
-       int width      = size.width  * 4/5;
-       int height     = size.height * 2/3;
-       int total      = totalOpenWindows();
+		return wincount;
+	}
 
-       if (total <= 0) 
-           return;
+	public void cascadeWindows() {
+		// Add your handling code here:
+		Dimension size = desktop.getSize();
+		int width = size.width * 4 / 5;
+		int height = size.height * 2 / 3;
+		int total = totalOpenWindows();
 
-       JInternalFrame[] frames = desktop.getAllFrames();
+		if (total <= 0)
+			return;
 
-       for (int x = 0, pos = total - 1; x < frames.length; x++)
-       {
-          try 
-          {
-             if (!frames[x].isIcon())
-             {
-                try { frames[x].setMaximum(false); } catch (Exception ex) { }
-                frames[x].setSize(width, height);
-                frames[x].setLocation(pos * 20, pos * 20);
-                pos--;
-             }
-          }
-          catch (Exception ex) { }
-       }
-    }
- 
-    public void tileWindows()
-    {
-       JInternalFrame[] frames = desktop.getAllFrames();
-       int total  = totalOpenWindows();
+		JInternalFrame[] frames = desktop.getAllFrames();
 
-       if (total <= 0) 
-           return;
+		for (int x = 0, pos = total - 1; x < frames.length; x++) {
+			try {
+				if (!frames[x].isIcon()) {
+					try {
+						frames[x].setMaximum(false);
+					} catch (Exception ex) {
+					}
+					frames[x].setSize(width, height);
+					frames[x].setLocation(pos * 20, pos * 20);
+					pos--;
+				}
+			} catch (Exception ex) {
+			}
+		}
+	}
 
-       int numcols = (int)(Math.sqrt((double)total));
-       int numrows = (total / numcols);
-       if ((total % numcols) != 0) { numrows++; }
+	public void tileWindows() {
+		JInternalFrame[] frames = desktop.getAllFrames();
+		int total = totalOpenWindows();
 
-       Dimension size = desktop.getSize();
-       int width  = size.width  / numcols;
-       int height = size.height / numrows;
+		if (total <= 0)
+			return;
 
-       int ypos = 0;
-       int winno = 1;
+		int numcols = (int) (Math.sqrt((double) total));
+		int numrows = (total / numcols);
+		if ((total % numcols) != 0) {
+			numrows++;
+		}
 
-       for (int z = 0; z < frames.length; z++)
-       {
-          if (!frames[z].isIcon())
-          {
-             try { frames[z].setMaximum(false); } catch (Exception ex) { }
-             frames[z].setSize(new Dimension(width, height));
-             frames[z].setLocation((winno - 1) * width, ypos);
-             if (winno == numcols)
-             {
-                winno = 0;
-                ypos += height;
-             }
-             winno++;
-          }  
-       }
-    }
+		Dimension size = desktop.getSize();
+		int width = size.width / numcols;
+		int height = size.height / numrows;
 
-    protected class MyModifiedDesktopManager extends DefaultDesktopManager
-    {
-        public void closeFrame(JInternalFrame f) { }
+		int ypos = 0;
+		int winno = 1;
 
-        public void iconifyFrame(JInternalFrame f)
-        { 
-           boolean findNew = f.isSelected();
+		for (int z = 0; z < frames.length; z++) {
+			if (!frames[z].isIcon()) {
+				try {
+					frames[z].setMaximum(false);
+				} catch (Exception ex) {
+				}
+				frames[z].setSize(new Dimension(width, height));
+				frames[z].setLocation((winno - 1) * width, ypos);
+				if (winno == numcols) {
+					winno = 0;
+					ypos += height;
+				}
+				winno++;
+			}
+		}
+	}
 
-           f.setVisible(false);
-           f.getParent().repaint(f.getX(), f.getY(), f.getWidth(), f.getHeight());
-        }
+	protected class MyModifiedDesktopManager extends DefaultDesktopManager {
+		public void closeFrame(JInternalFrame f) {
+		}
 
-        public void deiconifyFrame(JInternalFrame f)
-        {
-           f.setVisible(true);
-        }
+		public void iconifyFrame(JInternalFrame f) {
+			boolean findNew = f.isSelected();
 
-        public void dragFrame(JComponent f, int newX, int newY)
-        {
-           super.dragFrame(f, newX, newY);
+			f.setVisible(false);
+			f.getParent().repaint(f.getX(), f.getY(), f.getWidth(), f.getHeight());
+		}
 
-           if (isRelative)
-           {
+		public void deiconifyFrame(JInternalFrame f) {
+			f.setVisible(true);
+		}
+
+		public void dragFrame(JComponent f, int newX, int newY) {
+			super.dragFrame(f, newX, newY);
+
+			if (isRelative) {
 //              f.repaint();  // smart dragging feature, causes window to be repainted while it is being dragged, unfortunately
-                              // it comes out jerky and looking like crap.  So I'm disabling it here.
-           }
-        }
- 
-        public void endDraggingFrame(JComponent f)
-        {
-           super.endDraggingFrame(f);
+				// it comes out jerky and looking like crap.  So I'm disabling it here.
+			}
+		}
 
-           if (isRelative)
-           {
-              f.repaint();
-           }
-        }
-    }
+		public void endDraggingFrame(JComponent f) {
+			super.endDraggingFrame(f);
+
+			if (isRelative) {
+				f.repaint();
+			}
+		}
+	}
 
 
-    private class MantainActiveFocus extends ComponentAdapter
-    {
-        protected ClientDesktop desktop;
+	private class MantainActiveFocus extends ComponentAdapter {
+		protected ClientDesktop desktop;
 
-        public MantainActiveFocus(ClientDesktop mine)
-        {
-           desktop = mine;
-           desktop.addComponentListener(this);
-        }
+		public MantainActiveFocus(ClientDesktop mine) {
+			desktop = mine;
+			desktop.addComponentListener(this);
+		}
 
-        public void componentShown(ComponentEvent e)
-        {
-           JDesktopPane temp = desktop.desktop;
+		public void componentShown(ComponentEvent e) {
+			JDesktopPane temp = desktop.desktop;
 
-           if (temp.getSelectedFrame() != null)
-           {
-              SwingUtilities.invokeLater(new Runnable() 
-              {
-                 public void run()
-                 {
-                    try
-                    {
-                       if (!desktop.desktop.getSelectedFrame().isSelected())
-                       {
-                          desktop.desktop.getSelectedFrame().setSelected(true);
-                       }
-                       desktop.refreshFocus(desktop.desktop.getSelectedFrame());
-                    }
-                    catch (Exception ex) { ex.printStackTrace(); }
-                 }
-              });
+			if (temp.getSelectedFrame() != null) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						try {
+							if (!desktop.desktop.getSelectedFrame().isSelected()) {
+								desktop.desktop.getSelectedFrame().setSelected(true);
+							}
+							desktop.refreshFocus(desktop.desktop.getSelectedFrame());
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
+					}
+				});
 
-              temp.repaint();
-           }
-        }
-    }
+				temp.repaint();
+			}
+		}
+	}
 }

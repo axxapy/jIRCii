@@ -1,67 +1,60 @@
 package rero.dialogs.dcc;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.dcc.Chat;
+import rero.dcc.ConnectDCC;
+import rero.dialogs.toolkit.ADialog;
+import rero.dialogs.toolkit.APanel;
+import rero.dialogs.toolkit.LabelGroup;
+import rero.dialogs.toolkit.PlainLabel;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
 
-import java.util.*;
-import java.io.*;
+public class ChatRequest extends APanel {
+	public static boolean showDialog(Component component, ConnectDCC connection) {
+		ChatRequest request = new ChatRequest();
+		request.setupDialog(connection);
 
-import rero.dialogs.toolkit.*;
-import rero.dcc.*;
+		ADialog dialog = new ADialog(component, "DCC Chat Request", request, null);
+		dialog.pack();
+		return (dialog.showDialog(component) != null);
+	}
 
-import rero.util.*;
+	public void setupDialog(Object value) {
+		JPanel space = new JPanel();
+		space.setPreferredSize(new Dimension(0, 15));
 
-public class ChatRequest extends APanel
-{
-    public static boolean showDialog(Component component, ConnectDCC connection)
-    {
-       ChatRequest request = new ChatRequest();
-       request.setupDialog(connection);
+		JPanel space2 = new JPanel();
+		space2.setPreferredSize(new Dimension(0, 15));
 
-       ADialog dialog = new ADialog(component, "DCC Chat Request", request, null);
-       dialog.pack();
-       return (dialog.showDialog(component) != null);
-    }
+		LabelGroup labels = new LabelGroup();
+		JLabel user, host, blank;
 
-    public void setupDialog(Object value)
-    {
-       JPanel space = new JPanel();
-       space.setPreferredSize(new Dimension(0, 15));
+		user = new JLabel("User: ");
+		host = new JLabel("Host: ");
+		blank = new JLabel("");
 
-       JPanel space2 = new JPanel();
-       space2.setPreferredSize(new Dimension(0, 15));
+		labels.addLabel(user);
+		labels.addLabel(blank);
+		labels.sync(); // lines the labels up
 
-       LabelGroup labels = new LabelGroup();
-       JLabel user, host, blank;
+		ConnectDCC info1 = (ConnectDCC) value;
+		Chat info2 = (Chat) info1.getImplementation();
 
-       user   = new JLabel("User: ");
-       host   = new JLabel("Host: ");
-       blank  = new JLabel("");
+		PlainLabel iuser, ihost;
 
-       labels.addLabel(user); labels.addLabel(blank);
-       labels.sync(); // lines the labels up
+		iuser = new PlainLabel(info2.getNickname());
+		ihost = new PlainLabel(info1.getHost() + ":" + info1.getPort());
 
-       ConnectDCC info1 = (ConnectDCC)value;
-       Chat       info2 = (Chat)info1.getImplementation();
+		addComponent(new PlainLabel("A user is requesting a direct chat"));
 
-       PlainLabel iuser, ihost;
+		addComponent(space2);
+		addComponent(mergeComponents(user, iuser));
+		addComponent(mergeComponents(host, ihost));
+		addComponent(space);
+	}
 
-       iuser = new PlainLabel(info2.getNickname());
-       ihost = new PlainLabel(info1.getHost() + ":" + info1.getPort());
-
-       addComponent(new PlainLabel("A user is requesting a direct chat"));
-
-       addComponent(space2);
-       addComponent(mergeComponents(user, iuser));
-       addComponent(mergeComponents(host, ihost));
-       addComponent(space);
-    }
- 
-    public Object getValue(Object defvalue)
-    {
-       return "";
-    }
+	public Object getValue(Object defvalue) {
+		return "";
+	}
 }

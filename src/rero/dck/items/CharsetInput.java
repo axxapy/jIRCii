@@ -1,102 +1,82 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientState;
+import rero.dck.SuperInput;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.nio.charset.Charset;
+import java.util.Iterator;
 
-import java.io.*;
-import java.nio.charset.*;
+public class CharsetInput extends SuperInput {
+	public static final String DEFAULT_CHARSET = "Platform Default";
 
-import java.util.*;
+	protected JComboBox name;
+	protected boolean listing = true;
+	protected JLabel label;
 
-import rero.dck.*;
-import rero.config.*;
+	public CharsetInput(String _variable, String aLabel, char mnemonic, int rightGap) {
+		variable = _variable;
 
-public class CharsetInput extends SuperInput
-{
-   public static final String DEFAULT_CHARSET = "Platform Default";
+		setLayout(new BorderLayout());
 
-   protected JComboBox  name;
-   protected boolean    listing = true;
-   protected JLabel     label;
+		name = new JComboBox();
+		name.addItem("Loading Charsets...");
 
-   public CharsetInput(String _variable, String aLabel, char mnemonic, int rightGap)
-   {
-      variable = _variable;
+		add(name, BorderLayout.CENTER);
 
-      setLayout(new BorderLayout()); 
+		if (rightGap > 0) {
+			JPanel temp = new JPanel();
+			temp.setPreferredSize(new Dimension(rightGap, 0));
 
-      name  = new JComboBox();
-      name.addItem("Loading Charsets...");
+			add(temp, BorderLayout.EAST);
+		}
 
-      add(name, BorderLayout.CENTER);
+		label = new JLabel("  " + aLabel + " ");
+		label.setDisplayedMnemonic(mnemonic);
 
-      if (rightGap > 0)
-      {
-         JPanel temp = new JPanel();
-         temp.setPreferredSize(new Dimension(rightGap, 0));
+		add(label, BorderLayout.WEST);
+	}
 
-         add(temp, BorderLayout.EAST);
-      }
+	public void setAlignWidth(int width) {
+		label.setPreferredSize(new Dimension(width, 0));
+		revalidate();
+	}
 
-      label = new JLabel("  " + aLabel + " ");
-      label.setDisplayedMnemonic(mnemonic);
+	public void save() {
+		ClientState.getClientState().setString(getVariable(), name.getSelectedItem().toString());
+	}
 
-      add(label, BorderLayout.WEST);
-   }
-  
-   public void setAlignWidth(int width)
-   {
-      label.setPreferredSize(new Dimension(width, 0));
-      revalidate();
-   }
+	public JComponent getComponent() {
+		return this;
+	}
 
-   public void save()
-   {
-      ClientState.getClientState().setString(getVariable(), name.getSelectedItem().toString());
-   }
+	public int getEstimatedWidth() {
+		return (int) label.getPreferredSize().getWidth();
+	}
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
+	public void refresh() {
+		if (!listing) {
+			name.setSelectedItem(ClientState.getClientState().getString(getVariable(), DEFAULT_CHARSET));
+		} else {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					name.addItem(DEFAULT_CHARSET);
 
-   public int getEstimatedWidth()
-   {
-      return (int)label.getPreferredSize().getWidth();
-   }
+					Iterator i = Charset.availableCharsets().keySet().iterator();
 
-   public void refresh()
-   {
-      if (!listing)
-      {
-         name.setSelectedItem(ClientState.getClientState().getString(getVariable(), DEFAULT_CHARSET));
-      }
-      else
-      {
-         SwingUtilities.invokeLater(new Runnable()
-         {
-             public void run()
-             {
-                name.addItem(DEFAULT_CHARSET);
+					while (i.hasNext()) {
+						name.addItem(i.next().toString());
+					}
 
-                Iterator i = Charset.availableCharsets().keySet().iterator();
-
-                while (i.hasNext())
-                {
-                   name.addItem(i.next().toString());
-                }
-
-                name.removeItemAt(0);             
-                listing = false;
-                refresh();
-                revalidate();
-             } 
-         });
-      }
-   }
+					name.removeItemAt(0);
+					listing = false;
+					refresh();
+					revalidate();
+				}
+			});
+		}
+	}
 }
 
 

@@ -1,104 +1,97 @@
 package text.wrapped;
 
-import text.*;
+import text.AttributedString;
+import text.AttributedText;
 
-import java.util.*;
-import java.awt.*;
-import rero.util.*;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 /* a special class for dealing with the formatting of /names output */
 
-public class WrappedNames extends WrappedContainer
-{
-   protected AttributedText[] rawData;
-   protected double           percentage;
-   protected String[]         users;
+public class WrappedNames extends WrappedContainer {
+	protected AttributedText[] rawData;
+	protected double percentage;
+	protected String[] users;
 
-   public WrappedNames(String text, String[] _users, double _percentage)
-   {
-      super(text);
+	public WrappedNames(String text, String[] _users, double _percentage) {
+		super(text);
 
-      users   = _users;
+		users = _users;
 
-      calculateAttributes();
+		calculateAttributes();
 
-      percentage = _percentage;
-   }
+		percentage = _percentage;
+	}
 
-   public void calculateAttributes()
-   {
-      rawData = new AttributedText[users.length];
+	public void calculateAttributes() {
+		rawData = new AttributedText[users.length];
 
-      for (int x = 0; x < users.length; x++)
-      {
-         AttributedString temp = AttributedString.CreateAttributedString(users[x]);
-         temp.assignWidths();
-         rawData[x] = temp.getAttributedText(); 
-      }
-   }
+		for (int x = 0; x < users.length; x++) {
+			AttributedString temp = AttributedString.CreateAttributedString(users[x]);
+			temp.assignWidths();
+			rawData[x] = temp.getAttributedText();
+		}
+	}
 
-   public void touch(int size)
-   {
-      int width = (int)(size * percentage);
-      if (width < maxSize && width > minSize)
-      {
-         return;
-      } 
+	public void touch(int size) {
+		int width = (int) (size * percentage);
+		if (width < maxSize && width > minSize) {
+			return;
+		}
 
-      wrapped = wrapNames(width); 
-      determineBounds(width);
-   }
+		wrapped = wrapNames(width);
+		determineBounds(width);
+	}
 
-   public void reset()
-   {
-      super.reset();
-      calculateAttributes();
-   }
+	public void reset() {
+		super.reset();
+		calculateAttributes();
+	}
 
-   public AttributedText[] wrapNames(int width)
-   {
-      LinkedList     values = new LinkedList();
-     
-      AttributedText head = rawData[0].cloneList();
+	public AttributedText[] wrapNames(int width) {
+		LinkedList values = new LinkedList();
 
-      AttributedText temp = head; // temp is essentially the tail of the new list for our wordwrapped line of text
-      while (temp.next != null) { temp = temp.next; }
+		AttributedText head = rawData[0].cloneList();
 
-      int         current = rawData[0].getWidth();
- 
-      for (int x = 1; x < rawData.length; x++)
-      {
-         current += rawData[x].getWidth();
-         
-         if (current > width)
-         {
-            values.add(head);
-            head      = rawData[x].cloneList();
-            current   = head.getWidth();
-            temp      = head;
-            while (temp.next != null) { temp = temp.next; }
-         }
-         else
-         {
-            temp.next = rawData[x].cloneList();
-            while (temp.next != null) { temp = temp.next; }
-         }
-      }
+		AttributedText temp = head; // temp is essentially the tail of the new list for our wordwrapped line of text
+		while (temp.next != null) {
+			temp = temp.next;
+		}
 
-      values.add(head);
+		int current = rawData[0].getWidth();
 
-      //
-      // convert the linked list to an array.
-      //
-      AttributedText returnValue[] = new AttributedText[values.size()];
-      int x = values.size() - 1;
-      ListIterator i = values.listIterator();
-      while (i.hasNext())
-      {
-         returnValue[x] = (AttributedText)i.next();
-         x--;
-      }
+		for (int x = 1; x < rawData.length; x++) {
+			current += rawData[x].getWidth();
 
-      return returnValue;
-   }
+			if (current > width) {
+				values.add(head);
+				head = rawData[x].cloneList();
+				current = head.getWidth();
+				temp = head;
+				while (temp.next != null) {
+					temp = temp.next;
+				}
+			} else {
+				temp.next = rawData[x].cloneList();
+				while (temp.next != null) {
+					temp = temp.next;
+				}
+			}
+		}
+
+		values.add(head);
+
+		//
+		// convert the linked list to an array.
+		//
+		AttributedText returnValue[] = new AttributedText[values.size()];
+		int x = values.size() - 1;
+		ListIterator i = values.listIterator();
+		while (i.hasNext()) {
+			returnValue[x] = (AttributedText) i.next();
+			x--;
+		}
+
+		return returnValue;
+	}
 }

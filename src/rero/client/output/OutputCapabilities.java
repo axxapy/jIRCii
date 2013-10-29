@@ -1,258 +1,216 @@
 package rero.client.output;
 
-import rero.ircfw.*;
-import rero.ircfw.data.*;
+import rero.bridges.set.SetEnvironment;
+import rero.client.Feature;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import rero.gui.UICapabilities;
+import rero.ircfw.Channel;
+import rero.ircfw.InternalDataList;
 
-import rero.bridges.event.*;
-import rero.bridges.set.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-import rero.client.*;
+public class OutputCapabilities extends Feature implements ClientStateListener {
+	protected SetEnvironment sets;
+	protected UICapabilities gui;
+	protected InternalDataList data;
 
-import java.util.*;
+	protected boolean doTimestamp;
 
-import rero.client.listeners.*;
+	public void init() {
+		sets = (SetEnvironment) getCapabilities().getDataStructure("setBridge");
+		gui = getCapabilities().getUserInterface();
+		data = (InternalDataList) getCapabilities().getDataStructure("clientInformation");
 
-import rero.gui.*;
-import rero.gui.windows.*;
-import text.*;
+		doTimestamp = ClientState.getClientState().isOption("option.timestamp", ClientDefaults.option_timestamp);
 
-import rero.util.*;
+		ClientState.getClientState().addClientStateListener("option.timestamp", this);
+	}
 
-import rero.config.*;
+	public void propertyChanged(String varname, String parm) {
+		doTimestamp = ClientState.getClientState().isOption("option.timestamp", ClientDefaults.option_timestamp);
+	}
 
-public class OutputCapabilities extends Feature implements ClientStateListener
-{
-   protected SetEnvironment      sets;
-   protected UICapabilities      gui;
-   protected InternalDataList    data;
+	/**
+	 * sets the query to be the next non /window'd channel
+	 */
+	public void cycleQuery() {
+		Set mychans = data.getMyUser().getChannels();
 
-   protected boolean             doTimestamp;
- 
-   public void init() 
-   {
-      sets    = (SetEnvironment)getCapabilities().getDataStructure("setBridge");
-      gui     = getCapabilities().getUserInterface(); 
-      data    = (InternalDataList)getCapabilities().getDataStructure("clientInformation");
+		boolean pastQuery = false;
 
-      doTimestamp = ClientState.getClientState().isOption("option.timestamp", ClientDefaults.option_timestamp);
+		if (gui.getQuery().length() == 0) {
+			pastQuery = true;
+		}
 
-      ClientState.getClientState().addClientStateListener("option.timestamp", this);
-   }
+		Iterator i = mychans.iterator();
+		while (i.hasNext()) {
+			Channel temp = (Channel) i.next();
+			if (pastQuery && !gui.isActive(temp.getName())) {
+				gui.setQuery(temp.getName());
+				return;
+			}
 
-   public void propertyChanged(String varname, String parm)
-   {
-      doTimestamp = ClientState.getClientState().isOption("option.timestamp", ClientDefaults.option_timestamp);
-   }
+			if (temp.getName().equals(gui.getQuery())) {
+				pastQuery = true;
+			}
+		}
 
-   /** sets the query to be the next non /window'd channel */
-   public void cycleQuery()
-   {
-      Set mychans = data.getMyUser().getChannels();
+		i = mychans.iterator();
+		while (i.hasNext()) {
+			Channel temp = (Channel) i.next();
+			if (!gui.isActive(temp.getName())) {
+				gui.setQuery(temp.getName());
+				return;
+			}
+		}
 
-      boolean  pastQuery = false;
- 
-      if (gui.getQuery().length() == 0)
-      {
-         pastQuery = true;
-      }
+		gui.setQuery("");
+	}
 
-      Iterator i         = mychans.iterator();
-      while (i.hasNext())
-      {
-         Channel temp = (Channel)i.next();
-         if (pastQuery && !gui.isActive(temp.getName()))
-         {
-            gui.setQuery(temp.getName());
-            return;
-         }
+	public void fireSetActive(HashMap event, String setName) {
+		gui.printActive(getSet(event, setName));
+	}
 
-         if (temp.getName().equals(gui.getQuery()))
-         {
-            pastQuery = true;
-         }
-      }
+	/**
+	 * fires a set for a query
+	 */
+	public void fireSetQuery(HashMap event, String from, String target, String setName) {
+		if (target.charAt(0) == '@' || target.charAt(0) == '+' || target.charAt(0) == '%') {
+			target = target.substring(1, target.length());
+		}
 
-      i         = mychans.iterator();
-      while (i.hasNext())
-      {
-         Channel temp = (Channel)i.next();
-         if (!gui.isActive(temp.getName()))
-         {
-            gui.setQuery(temp.getName());
-            return;
-         }
-      }
+		boolean toActive = ClientState.getClientState().isOption("active.query", ClientDefaults.active_option);
 
-      gui.setQuery(""); 
-   }
+		if (data.isChannel(target)) {
+			fireSetTarget(event, target, setName);
+		} else if (getCapabilities().getUserInterface().isWindow(from)) {
+			fireSetTarget(event, from, setName);
+		} else if (toActive) {
+			fireSetActive(event, setName);
+		} else {
+			fireSetStatus(event, setName);
+		}
+	}
 
-   public void fireSetActive(HashMap event, String setName)
-   {
-      gui.printActive(getSet(event, setName));
-   }
+	/**
+	 * fires a set for a "confusing" situation...
+	 */
+	public void fireSetConfused(HashMap event, String target, String setType, String setName) {
+		if (target != null && target.length() > 0 && (target.charAt(0) == '@' || target.charAt(0) == '+' || target.charAt(0) == '%')) {
+			target = target.substring(1, target.length());
+		}
 
-   /** fires a set for a query */
-   public void fireSetQuery(HashMap event, String from, String target, String setName)
-   {
-      if (target.charAt(0) == '@' || target.charAt(0) == '+' || target.charAt(0) == '%')
-      {
-         target = target.substring(1, target.length());
-      }
+		boolean toActive = ClientState.getClientState().isOption("active." + setType, ClientDefaults.active_option);
 
-      boolean toActive = ClientState.getClientState().isOption("active.query", ClientDefaults.active_option);
+		if (target != null && getCapabilities().getUserInterface().isWindow(target)) {
+			fireSetTarget(event, target, setName);
+		} else if (toActive) {
+			fireSetActive(event, setName);
+		} else {
+			fireSetStatus(event, setName);
+		}
+	}
 
-      if (data.isChannel(target))
-      {
-         fireSetTarget(event, target, setName);
-      }
-      else if (getCapabilities().getUserInterface().isWindow(from))
-      {
-         fireSetTarget(event, from, setName);
-      }
-      else if (toActive)
-      {
-         fireSetActive(event, setName);
-      }
-      else
-      {
-         fireSetStatus(event, setName);
-      }
-   }
+	/**
+	 * analyzes variable and determines if user has chosen for event to go to status or active window.  Fires appropriate set
+	 * based on users chosen value of variable
+	 */
+	public void fireSetOption(HashMap event, String variable, String setName) {
+		gui.printStatus(getSet(event, setName));
+	}
 
-   /** fires a set for a "confusing" situation...  */
-   public void fireSetConfused(HashMap event, String target, String setType, String setName)
-   {
-      if (target != null && target.length() > 0 && (target.charAt(0) == '@' || target.charAt(0) == '+' || target.charAt(0) == '%'))
-      {
-         target = target.substring(1, target.length());
-      }
+	public void fireSetTarget(HashMap event, String target, String setName) {
+		gui.printNormal(target, getSet(event, setName));
+	}
 
-      boolean toActive = ClientState.getClientState().isOption("active."+setType, ClientDefaults.active_option);
+	public void fireSetAllDeadTarget(HashMap event, String target, String setName) {
+		Set temp = data.getChannelsFromPriorLife(target);
+		gui.printToTargets(temp, getSet(event, setName), false);
+	}
 
-      if (target != null && getCapabilities().getUserInterface().isWindow(target))
-      {
-         fireSetTarget(event, target, setName);
-      }
-      else if (toActive)
-      {
-         fireSetActive(event, setName);
-      }
-      else
-      {
-         fireSetStatus(event, setName);
-      }
-   }
+	public void fireSetAllTarget(HashMap event, String target, String setName) {
+		echoToTarget(target, getSet(event, setName), false);
+	}
 
-   /** analyzes variable and determines if user has chosen for event to go to status or active window.  Fires appropriate set 
-       based on users chosen value of variable */
-   public void fireSetOption(HashMap event, String variable, String setName)
-   {
-      gui.printStatus(getSet(event, setName));
-   }
+	public void fireSetAllTarget2(HashMap event, String target, String setName) {
+		echoToTarget(target, getSet(event, setName), true);
+	}
 
-   public void fireSetTarget(HashMap event, String target, String setName)
-   {
-      gui.printNormal(target, getSet(event, setName));
-   }
+	/**
+	 * fires set echoing to status window
+	 */
+	public void fireSetStatus(HashMap event, String setName) {
+		gui.printStatus(getSet(event, setName));
+	}
 
-   public void fireSetAllDeadTarget(HashMap event, String target, String setName)
-   {
-      Set temp = data.getChannelsFromPriorLife(target);
-      gui.printToTargets(temp, getSet(event, setName), false);
-   }
+	/**
+	 * fires set echoing to all active windows
+	 */
+	public void fireSetAll(HashMap event, String setName) {
+		gui.printAll(getSet(event, setName));
+	}
 
-   public void fireSetAllTarget(HashMap event, String target, String setName)
-   {
-      echoToTarget(target, getSet(event, setName), false);
-   }
+	public String chooseSet(String target, String setNameActive, String setNameInActive) {
+		if (gui.isActive(target)) {
+			return setNameActive;
+		}
+		return setNameInActive;
+	}
 
-   public void fireSetAllTarget2(HashMap event, String target, String setName)
-   {
-      echoToTarget(target, getSet(event, setName), true);
-   }
+	public String getSet(HashMap event, String setName) {
+		//    System.out.println("--- \"" + setName + "\" ---");
+		//    System.out.println(event);
 
-   /** fires set echoing to status window */
-   public void fireSetStatus(HashMap event, String setName)
-   {
-      gui.printStatus(getSet(event, setName));
-   }
+		if (sets.isSet(setName)) {
+			String setData = sets.parseSet(setName, event);
 
-   /** fires set echoing to all active windows */
-   public void fireSetAll(HashMap event, String setName)
-   {
-       gui.printAll(getSet(event, setName));
-   }
+			if (setData == null || setData.equals("")) {
+				return null;
+			}
 
-   public String chooseSet(String target, String setNameActive, String setNameInActive)
-   {
-      if (gui.isActive(target))
-      {
-         return setNameActive;
-      }
-      return setNameInActive;
-   }
+			if (doTimestamp && sets.isTimeStamped(setName) && sets.isSet("TIMESTAMP")) {
+				return sets.parseSet("TIMESTAMP", event) + setData;
+			} else {
+				return setData;
+			}
+		}
 
-   public String getSet(HashMap event, String setName)
-   {
-  //    System.out.println("--- \"" + setName + "\" ---");
-  //    System.out.println(event);
+		return null;
+	}
 
-      if (sets.isSet(setName))
-      {
-          String setData = sets.parseSet(setName, event);
+	public String parseSet(HashMap event, String set_name) {
+		return sets.parseSet(set_name, event);
+	}
 
-          if (setData == null || setData.equals(""))
-          {
-              return null;
-          }
+	public boolean isSet(String setName) {
+		return sets.isSet(setName);
+	}
 
-          if (doTimestamp && sets.isTimeStamped(setName) && sets.isSet("TIMESTAMP"))
-          {
-              return sets.parseSet("TIMESTAMP", event) + setData;
-          }
-          else
-          {
-              return setData;
-          }
-      }
+	public void echoToTarget(String nickname, String text, boolean alwaysStatys) {
+		Set targets = new HashSet();
 
-      return null;
-   }
+		Iterator i = data.getUser(nickname).getChannels().iterator();
+		while (i.hasNext()) {
+			Channel temp = (Channel) i.next();
+			targets.add(temp.getName());
+		}
 
-   public String parseSet(HashMap event, String set_name)
-   {
-      return sets.parseSet(set_name, event);
-   }
+		gui.printToTargets(targets, text, alwaysStatys);
+	}
 
-   public boolean isSet(String setName)
-   {
-      return sets.isSet(setName);
-   }
+	public void echo(String window, String text[], double percentage) {
+		StringBuffer temp = new StringBuffer(text[0].length() * text.length); // pretty accurate guess at size.
+		for (int x = 0; x < text.length; x++) {
+			temp.append(text[x]);
+		}
 
-   public void echoToTarget(String nickname, String text, boolean alwaysStatys)
-   {
-      Set targets = new HashSet();
-
-      Iterator i = data.getUser(nickname).getChannels().iterator();
-      while (i.hasNext())
-      {
-         Channel temp = (Channel)i.next();
-         targets.add(temp.getName());
-      }
-
-      gui.printToTargets(targets, text, alwaysStatys);
-   }
-
-   public void echo(String window, String text[], double percentage)
-   {
-      StringBuffer temp = new StringBuffer(text[0].length() * text.length); // pretty accurate guess at size.
-      for (int x = 0; x < text.length; x++)
-      {
-         temp.append(text[x]);
-      }
-
-      gui.printChunk(window, temp.toString(), text, percentage);
-   }
+		gui.printChunk(window, temp.toString(), text, percentage);
+	}
 }
 
 

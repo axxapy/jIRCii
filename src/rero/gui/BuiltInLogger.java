@@ -1,167 +1,155 @@
 package rero.gui;
 
-import java.util.*;
-import java.io.*;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
+import rero.config.ClientStateListener;
+import rero.net.SocketInformation;
+import rero.util.ClientUtils;
+import rero.util.StringUtils;
 
-import rero.config.*;
-import rero.util.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
 
-import rero.client.*;
+public class BuiltInLogger {
+	protected static boolean isEnabled = ClientState.getClientState().isOption("log.enabled", ClientDefaults.log_enabled);
+	protected static boolean timeStamp = ClientState.getClientState().isOption("log.timestamp", ClientDefaults.log_timestamp);
+	protected static boolean stripColors = ClientState.getClientState().isOption("log.strip", ClientDefaults.log_strip);
+	protected static HashMap logHandles = new HashMap();
 
-import rero.net.*;
+	protected static ClientStateListener listener = null;
 
-public class BuiltInLogger
-{
-   protected static boolean      isEnabled    = ClientState.getClientState().isOption("log.enabled", ClientDefaults.log_enabled);
-   protected static boolean      timeStamp    = ClientState.getClientState().isOption("log.timestamp", ClientDefaults.log_timestamp);
-   protected static boolean      stripColors  = ClientState.getClientState().isOption("log.strip",     ClientDefaults.log_strip);
-   protected static HashMap      logHandles   = new HashMap();
+	protected SocketInformation socket = null;
+	protected IRCSession client = null;
 
-   protected static ClientStateListener listener = null;
+	public BuiltInLogger(IRCSession _client) {
+		client = _client;
 
-   protected SocketInformation socket            = null;
-   protected IRCSession        client            = null;
+		if (listener == null) {
+			listener = new LoggerPropListener();
 
-   public BuiltInLogger(IRCSession _client)
-   {
-      client = _client;
+			ClientState.getClientState().addClientStateListener("log.enabled", listener);
+			ClientState.getClientState().addClientStateListener("log.timestamp", listener);
+			ClientState.getClientState().addClientStateListener("log.strip", listener);
+			ClientState.getClientState().addClientStateListener("log.saveto", listener);
+		}
+	}
 
-      if (listener == null)
-      {
-         listener = new LoggerPropListener();
+	public void logMessage(String window, String text) {
+		try {
+			if (socket == null && client.getCapabilities() != null && client.getCapabilities().getSocketConnection() != null)
+				socket = client.getCapabilities().getSocketConnection().getSocketInformation();
 
-         ClientState.getClientState().addClientStateListener("log.enabled", listener);
-         ClientState.getClientState().addClientStateListener("log.timestamp", listener);
-         ClientState.getClientState().addClientStateListener("log.strip", listener);
-         ClientState.getClientState().addClientStateListener("log.saveto", listener);
-      }
-   }
+			PrintWriter writer = getFileHandle(socket, window);
 
-   public void logMessage(String window, String text)
-   {
-      try
-      {
-         if (socket == null && client.getCapabilities() != null && client.getCapabilities().getSocketConnection() != null) 
-             socket = client.getCapabilities().getSocketConnection().getSocketInformation();
- 
-         PrintWriter writer = getFileHandle(socket, window);
+			if (writer != null) {
+				if (stripColors)
+					text = StringUtils.strip(text);
 
-         if (writer != null)
-         {
-           if (stripColors)
-              text = StringUtils.strip(text);
-
-           if (timeStamp)
-              text = ClientUtils.TimeDateStamp(ClientUtils.ctime()) + " " + text;
+				if (timeStamp)
+					text = ClientUtils.TimeDateStamp(ClientUtils.ctime()) + " " + text;
 
 //           synchronized (writer)
 //           {
-              writer.println(text);
+				writer.println(text);
 //           }
-         }
-      }
-      catch (Exception ex)
-      {
-         ex.printStackTrace();
-      }
-   }
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
-   public boolean isEnabled()
-   {
-       return isEnabled;
-   }
- 
-   private static class LoggerPropListener implements ClientStateListener
-   {
-      public void propertyChanged(String prop, String parm)
-      {
-         if (prop.equals("log.enabled"))
-            isEnabled = ClientState.getClientState().isOption("log.enabled", ClientDefaults.log_enabled);
+	public boolean isEnabled() {
+		return isEnabled;
+	}
 
-         if (prop.equals("log.saveto"))
-         {
-            Iterator i = logHandles.values().iterator();
-            while (i.hasNext())
-            {
-               PrintWriter temp = (PrintWriter)i.next();
-               try { temp.flush(); temp.close(); } catch (Exception ex) { ex.printStackTrace(); }
-            }
-     
-            logHandles.clear();
-         }
+	private static class LoggerPropListener implements ClientStateListener {
+		public void propertyChanged(String prop, String parm) {
+			if (prop.equals("log.enabled"))
+				isEnabled = ClientState.getClientState().isOption("log.enabled", ClientDefaults.log_enabled);
 
-         timeStamp   = ClientState.getClientState().isOption("log.timestamp", ClientDefaults.log_timestamp);
-         stripColors = ClientState.getClientState().isOption("log.strip",     ClientDefaults.log_strip);
-      }
-   }
+			if (prop.equals("log.saveto")) {
+				Iterator i = logHandles.values().iterator();
+				while (i.hasNext()) {
+					PrintWriter temp = (PrintWriter) i.next();
+					try {
+						temp.flush();
+						temp.close();
+					} catch (Exception ex) {
+						ex.printStackTrace();
+					}
+				}
 
-   public static String getLogFileName(SocketInformation socket, String window)
-   {
-      String server = "Unknown";
-   
-      if (socket != null && socket.network != null && socket.network.length() > 0)
-          server = socket.network;
+				logHandles.clear();
+			}
 
-      if (window.length() == 0)
-          window = rero.gui.windows.StatusWindow.STATUS_NAME;
+			timeStamp = ClientState.getClientState().isOption("log.timestamp", ClientDefaults.log_timestamp);
+			stripColors = ClientState.getClientState().isOption("log.strip", ClientDefaults.log_strip);
+		}
+	}
 
-      if (window.charAt(0) == '=')
-      {
-          server = "dcc_chat";
-          window = window.substring(1, window.length());
-      }
+	public static String getLogFileName(SocketInformation socket, String window) {
+		String server = "Unknown";
 
-      File logDir = new File(ClientState.getClientState().getString("log.saveto", ClientDefaults.log_saveto));
-      logDir = new File(logDir, server);
- 
-      String filename = window.replaceAll("[^\\w\\#\\!\\$\\(\\)\\@\\^\\`\\{\\}\\']", "_"); // replace all non-word characters in the window name with the _ character...
+		if (socket != null && socket.network != null && socket.network.length() > 0)
+			server = socket.network;
 
-      File output = new File(logDir, filename + ".log");
-      return output.getAbsolutePath();
-   }
+		if (window.length() == 0)
+			window = rero.gui.windows.StatusWindow.STATUS_NAME;
 
-   private PrintWriter getFileHandle(SocketInformation socket, String window)
-   {
-      String server = "Unknown";
-   
-      if (socket != null && socket.network != null && socket.network.length() > 0)
-          server = socket.network;
+		if (window.charAt(0) == '=') {
+			server = "dcc_chat";
+			window = window.substring(1, window.length());
+		}
 
-      if (window.length() == 0)
-          window = rero.gui.windows.StatusWindow.STATUS_NAME;
+		File logDir = new File(ClientState.getClientState().getString("log.saveto", ClientDefaults.log_saveto));
+		logDir = new File(logDir, server);
 
-      if (window.charAt(0) == '=')
-      {
-          server = "dcc_chat";
-          window = window.substring(1, window.length());
-      }
+		String filename = window.replaceAll("[^\\w\\#\\!\\$\\(\\)\\@\\^\\`\\{\\}\\']", "_"); // replace all non-word characters in the window name with the _ character...
 
-      if (logHandles.containsKey(server + window))
-          return (PrintWriter)logHandles.get(server + window);
+		File output = new File(logDir, filename + ".log");
+		return output.getAbsolutePath();
+	}
 
-      try
-      {
-         File logDir = new File(ClientState.getClientState().getString("log.saveto", ClientDefaults.log_saveto));
-         logDir = new File(logDir, server);
- 
-         if (!logDir.exists())
-            logDir.mkdirs();
+	private PrintWriter getFileHandle(SocketInformation socket, String window) {
+		String server = "Unknown";
 
-         String filename = window.replaceAll("[^\\w\\#\\!\\$\\(\\)\\@\\^\\`\\{\\}\\']", "_"); // replace all non-word characters in the window name with the _ character...
+		if (socket != null && socket.network != null && socket.network.length() > 0)
+			server = socket.network;
 
-         File output = new File(logDir, filename + ".log");
- 
-         PrintWriter rv = new PrintWriter(new FileOutputStream(output, true), true);
+		if (window.length() == 0)
+			window = rero.gui.windows.StatusWindow.STATUS_NAME;
 
-         logHandles.put(server + window, rv);
+		if (window.charAt(0) == '=') {
+			server = "dcc_chat";
+			window = window.substring(1, window.length());
+		}
 
-         return rv;
-      }
-      catch (Exception ex)
-      {
-         ex.printStackTrace();
-      }
+		if (logHandles.containsKey(server + window))
+			return (PrintWriter) logHandles.get(server + window);
 
-      return null;
-   }
+		try {
+			File logDir = new File(ClientState.getClientState().getString("log.saveto", ClientDefaults.log_saveto));
+			logDir = new File(logDir, server);
+
+			if (!logDir.exists())
+				logDir.mkdirs();
+
+			String filename = window.replaceAll("[^\\w\\#\\!\\$\\(\\)\\@\\^\\`\\{\\}\\']", "_"); // replace all non-word characters in the window name with the _ character...
+
+			File output = new File(logDir, filename + ".log");
+
+			PrintWriter rv = new PrintWriter(new FileOutputStream(output, true), true);
+
+			logHandles.put(server + window, rv);
+
+			return rv;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		return null;
+	}
 }

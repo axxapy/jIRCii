@@ -1,66 +1,53 @@
 package rero.gui.script;
 
-import rero.client.output.*;
-import java.util.*;
+import rero.bridges.event.EventBridge;
+import rero.gui.IRCSession;
+import rero.gui.windows.ClientWindowEvent;
+import rero.gui.windows.ClientWindowListener;
 
-import rero.ircfw.interfaces.ChatListener;
+public class WindowStateListener implements ClientWindowListener {
+	protected IRCSession gui;
 
-import rero.gui.*;
-import rero.gui.windows.*;
+	protected ScriptedWindowStateListener active;
+	protected ScriptedWindowStateListener inactive;
+	protected ScriptedWindowStateListener close;
+	protected ScriptedWindowStateListener open;
+	protected ScriptedWindowStateListener minimize;
 
-import rero.bridges.event.*;
+	public void registerListener(EventBridge bridge) {
+		bridge.registerEvent("active", active);
+		bridge.registerEvent("inactive", inactive);
+		bridge.registerEvent("close", close);
+		bridge.registerEvent("open", open);
+		bridge.registerEvent("minimize", minimize);
+	}
 
-public class WindowStateListener implements ClientWindowListener
-{
-   protected IRCSession gui;
+	public void onActive(ClientWindowEvent ev) {
+		active.onWindowEvent(ev);
+	}
 
-   protected ScriptedWindowStateListener active;
-   protected ScriptedWindowStateListener inactive;
-   protected ScriptedWindowStateListener close;
-   protected ScriptedWindowStateListener open;
-   protected ScriptedWindowStateListener minimize;
+	public void onInactive(ClientWindowEvent ev) {
+		inactive.onWindowEvent(ev);
+	}
 
-   public void registerListener(EventBridge bridge)
-   {
-       bridge.registerEvent("active",   active);
-       bridge.registerEvent("inactive", inactive);
-       bridge.registerEvent("close",    close);
-       bridge.registerEvent("open",     open);
-       bridge.registerEvent("minimize", minimize);
-   }
+	public void onClose(ClientWindowEvent ev) {
+		close.onWindowEvent(ev);
+	}
 
-   public void onActive(ClientWindowEvent ev)
-   {
-       active.onWindowEvent(ev);
-   }
+	public void onOpen(ClientWindowEvent ev) {
+		open.onWindowEvent(ev);
+	}
 
-   public void onInactive(ClientWindowEvent ev)
-   {
-       inactive.onWindowEvent(ev);
-   }
+	public void onMinimize(ClientWindowEvent ev) {
+		minimize.onWindowEvent(ev);
+	}
 
-   public void onClose(ClientWindowEvent ev)
-   {
-       close.onWindowEvent(ev);
-   }
-
-   public void onOpen(ClientWindowEvent ev)
-   {
-       open.onWindowEvent(ev);
-   }
-
-   public void onMinimize(ClientWindowEvent ev)
-   {
-       minimize.onWindowEvent(ev);
-   }
-
-   public WindowStateListener(IRCSession _gui)
-   {
-       gui = _gui;
-       active    = new ScriptedWindowStateListener(gui);
-       inactive  = new ScriptedWindowStateListener(gui);
-       close     = new ScriptedWindowStateListener(gui);
-       open      = new ScriptedWindowStateListener(gui);
-       minimize  = new ScriptedWindowStateListener(gui);
-   }
+	public WindowStateListener(IRCSession _gui) {
+		gui = _gui;
+		active = new ScriptedWindowStateListener(gui);
+		inactive = new ScriptedWindowStateListener(gui);
+		close = new ScriptedWindowStateListener(gui);
+		open = new ScriptedWindowStateListener(gui);
+		minimize = new ScriptedWindowStateListener(gui);
+	}
 }

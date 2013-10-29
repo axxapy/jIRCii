@@ -1,112 +1,97 @@
 package rero.client.functions;
 
-import sleep.engine.*;
-import sleep.runtime.*;
-import sleep.interfaces.*;
-import sleep.bridges.*;
+import rero.client.Feature;
+import rero.util.TimerListener;
+import sleep.bridges.BridgeUtilities;
+import sleep.bridges.SleepClosure;
+import sleep.interfaces.Function;
+import sleep.interfaces.Loadable;
+import sleep.runtime.Scalar;
+import sleep.runtime.ScriptInstance;
+import sleep.runtime.SleepUtils;
 
-import rero.client.*;
-import rero.util.*;
-import java.util.*;
+import java.util.Stack;
 
-public class TimerOperators extends Feature implements Loadable
-{
-   public void init()
-   {
-      getCapabilities().getScriptCore().addBridge(this);
-   }
+public class TimerOperators extends Feature implements Loadable {
+	public void init() {
+		getCapabilities().getScriptCore().addBridge(this);
+	}
 
-   public void scriptLoaded(ScriptInstance script)
-   {
-      script.getScriptEnvironment().getEnvironment().put("&addTimer", new addTimer());
-      script.getScriptEnvironment().getEnvironment().put("&stopTimer", new stopTimer());
-      script.getScriptEnvironment().getEnvironment().put("&setTimerResolution", new setResolution());
-   }
+	public void scriptLoaded(ScriptInstance script) {
+		script.getScriptEnvironment().getEnvironment().put("&addTimer", new addTimer());
+		script.getScriptEnvironment().getEnvironment().put("&stopTimer", new stopTimer());
+		script.getScriptEnvironment().getEnvironment().put("&setTimerResolution", new setResolution());
+	}
 
-   public void scriptUnloaded(ScriptInstance script)
-   {
-   }
+	public void scriptUnloaded(ScriptInstance script) {
+	}
 
-   private class addTimer implements Function
-   {
-      public Scalar evaluate(String f, ScriptInstance si, Stack locals)
-      {
-         int repeats = -1;
-         
-         SleepClosure func = BridgeUtilities.getFunction(locals, si);
-         int          time = BridgeUtilities.getInt(locals);
+	private class addTimer implements Function {
+		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
+			int repeats = -1;
 
-         if (!locals.isEmpty())
-         {
-            repeats = BridgeUtilities.getInt(locals);
-         }
+			SleepClosure func = BridgeUtilities.getFunction(locals, si);
+			int time = BridgeUtilities.getInt(locals);
 
-         ScriptedTimer timer;
+			if (!locals.isEmpty()) {
+				repeats = BridgeUtilities.getInt(locals);
+			}
 
-         if (!locals.isEmpty())
-         {
-            timer = new ScriptedTimer(func, si, BridgeUtilities.getScalar(locals));
-         }
-         else
-         {
-            timer = new ScriptedTimer(func, si, null); 
-         }
+			ScriptedTimer timer;
 
-         getCapabilities().getTimer().addTimer(timer, time, repeats);
+			if (!locals.isEmpty()) {
+				timer = new ScriptedTimer(func, si, BridgeUtilities.getScalar(locals));
+			} else {
+				timer = new ScriptedTimer(func, si, null);
+			}
 
-         return SleepUtils.getScalar(timer);
-      }
-   }
+			getCapabilities().getTimer().addTimer(timer, time, repeats);
 
-   private class stopTimer implements Function
-   {
-      public Scalar evaluate(String f, ScriptInstance si, Stack locals)
-      {
-         ScriptedTimer timer = (ScriptedTimer)BridgeUtilities.getObject(locals);
+			return SleepUtils.getScalar(timer);
+		}
+	}
 
-         getCapabilities().getTimer().stopTimer(timer);
+	private class stopTimer implements Function {
+		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
+			ScriptedTimer timer = (ScriptedTimer) BridgeUtilities.getObject(locals);
 
-         return SleepUtils.getEmptyScalar();
-      }
-   }
+			getCapabilities().getTimer().stopTimer(timer);
 
-   private class setResolution implements Function
-   {
-      public Scalar evaluate(String f, ScriptInstance si, Stack locals)
-      {
-         getCapabilities().getTimer().setResolution((long)BridgeUtilities.getInt(locals));
-         return SleepUtils.getEmptyScalar();
-      }
-   }
+			return SleepUtils.getEmptyScalar();
+		}
+	}
 
-   private static class ScriptedTimer implements TimerListener
-   {
-      protected ScriptInstance si;
-      protected SleepClosure   func;
-      protected Scalar         args;
+	private class setResolution implements Function {
+		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
+			getCapabilities().getTimer().setResolution((long) BridgeUtilities.getInt(locals));
+			return SleepUtils.getEmptyScalar();
+		}
+	}
 
-      public ScriptedTimer(SleepClosure f, ScriptInstance script, Scalar a)
-      { 
-         func   = f;
-         si     = script;
-         args   = a;
-      }
+	private static class ScriptedTimer implements TimerListener {
+		protected ScriptInstance si;
+		protected SleepClosure func;
+		protected Scalar args;
 
-      public void timerExecute()
-      {
-         if (si == null || !si.isLoaded())
-         {
-            args = null;
-            si   = null;
-            func = null;
-            return;
-         }
+		public ScriptedTimer(SleepClosure f, ScriptInstance script, Scalar a) {
+			func = f;
+			si = script;
+			args = a;
+		}
 
-         Stack arg_stack = new Stack();
-         if (args != null)
-            arg_stack.push(args);
+		public void timerExecute() {
+			if (si == null || !si.isLoaded()) {
+				args = null;
+				si = null;
+				func = null;
+				return;
+			}
 
-         func.callClosure("timer", si, arg_stack);
-      }
-   } 
+			Stack arg_stack = new Stack();
+			if (args != null)
+				arg_stack.push(args);
+
+			func.callClosure("timer", si, arg_stack);
+		}
+	}
 }

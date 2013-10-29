@@ -1,94 +1,80 @@
 package rero.gui;
 
-import rero.client.*;
-import javax.swing.*;
-import rero.config.*;
-
-import java.util.*;
-
-import rero.dialogs.*;
-
+import rero.client.Capabilities;
+import rero.client.DataStructures;
 import rero.client.user.UserHandler;
+import rero.config.ClientState;
+import rero.dialogs.AboutWindow;
+import rero.dialogs.HelpWindow;
+import rero.dialogs.OptionWindow;
 
-public class GlobalCapabilities
-{
-   public    static JFrame  frame;
-   protected SessionManager sessions;
+import javax.swing.*;
 
-   public GlobalCapabilities (SessionManager _sessions)
-   {
-      sessions = _sessions;
-   }   
+public class GlobalCapabilities {
+	public static JFrame frame;
+	protected SessionManager sessions;
 
-   public SessionManager getSessionManager()
-   {
-      return sessions;
-   }
+	public GlobalCapabilities(SessionManager _sessions) {
+		sessions = _sessions;
+	}
 
-   public void createNewServer()
-   {
-      sessions.addSession();
-   }
+	public SessionManager getSessionManager() {
+		return sessions;
+	}
 
-   public JFrame getFrame()
-   {
-      return frame;
-   }
+	public void createNewServer() {
+		sessions.addSession();
+	}
 
-   public IRCSession getActiveSession()
-   {
-      return sessions.getActiveSession();
-   }
+	public JFrame getFrame() {
+		return frame;
+	}
 
-   public void showCoolAbout()
-   {
-      getActiveSession().createAboutWindow();
-   }
+	public IRCSession getActiveSession() {
+		return sessions.getActiveSession();
+	}
 
-   public void setTabTitle(Capabilities c, String text)
-   {
-      sessions.setTabTitle(c, text);
-   }
+	public void showCoolAbout() {
+		getActiveSession().createAboutWindow();
+	}
 
-   public void showOptionDialog(String defaultItem)
-   {
-      OptionWindow.initialize(frame);
-      OptionWindow.showDialog(null);
-      OptionWindow.displaySpecificDialog(defaultItem);
-   }
+	public void setTabTitle(Capabilities c, String text) {
+		sessions.setTabTitle(c, text);
+	}
 
-   public void QuitClient()
-   {
-      for (int x = 0; x < sessions.getTabCount(); x++)
-      {
-         IRCSession temp = sessions.getSession(sessions.getComponentAt(x));
+	public void showOptionDialog(String defaultItem) {
+		OptionWindow.initialize(frame);
+		OptionWindow.showDialog(null);
+		OptionWindow.displaySpecificDialog(defaultItem);
+	}
 
-         temp.getCapabilities().injectEvent("EXIT");
-         
-         if (temp.getCapabilities().isConnected())
-            ((UserHandler)temp.getCapabilities().getDataStructure(DataStructures.UserHandler)).runAlias("QUIT", "");
-      }
+	public void QuitClient() {
+		for (int x = 0; x < sessions.getTabCount(); x++) {
+			IRCSession temp = sessions.getSession(sessions.getComponentAt(x));
 
-      ClientState.getClientState().setBounds("desktop.bounds", frame.getBounds());
-      ClientState.getClientState().sync();
+			temp.getCapabilities().injectEvent("EXIT");
 
-      if (ClientState.getClientState().isOption("load.lame", false))
-      {
-         System.out.println("\nThis IRC Client was made possible by:\nDr. Lipensteins Penial Enlargement Pump\nStop feeling embarrassed call 1-877-PUMP\n");
-      }
+			if (temp.getCapabilities().isConnected())
+				((UserHandler) temp.getCapabilities().getDataStructure(DataStructures.UserHandler)).runAlias("QUIT", "");
+		}
 
-      System.exit(0);
-   }
+		ClientState.getClientState().setBounds("desktop.bounds", frame.getBounds());
+		ClientState.getClientState().sync();
 
-   public void showHelpDialog(String defaultItem)
-   {
-      HelpWindow.initialize(frame);
-      HelpWindow.showDialog(null);
-   }
+		if (ClientState.getClientState().isOption("load.lame", false)) {
+			System.out.println("\nThis IRC Client was made possible by:\nDr. Lipensteins Penial Enlargement Pump\nStop feeling embarrassed call 1-877-PUMP\n");
+		}
 
-   public void showAboutDialog()
-   {
-      AboutWindow.initialize(frame);
-      AboutWindow.showDialog(null);
-   }
+		System.exit(0);
+	}
+
+	public void showHelpDialog(String defaultItem) {
+		HelpWindow.initialize(frame);
+		HelpWindow.showDialog(null);
+	}
+
+	public void showAboutDialog() {
+		AboutWindow.initialize(frame);
+		AboutWindow.showDialog(null);
+	}
 }

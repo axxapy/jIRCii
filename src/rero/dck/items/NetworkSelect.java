@@ -1,216 +1,192 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientState;
+import rero.config.StringList;
+import rero.dck.SuperInput;
+import rero.dialogs.server.ServerData;
+import rero.dialogs.server.ServerGroup;
+import rero.dialogs.toolkit.ADialog;
+import rero.dialogs.toolkit.APanel;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import java.io.*;
+public class NetworkSelect extends SuperInput implements ItemListener {
+	public static final String ALL_NETWORKS = "All Networks";
 
-import rero.dck.*;
-import rero.config.*;
+	protected JComboBox networks;
+	protected JButton add;
+	protected JButton delete;
 
-import rero.dialogs.toolkit.*;
-import rero.dialogs.server.*;
+	protected String networkV;
+	protected String currentV;
+	protected StringList data;
 
-import java.util.*;
+	public NetworkSelect(String _variableNetworks, String _variableCurrent) {
+		networkV = _variableNetworks;
+		currentV = _variableCurrent;
 
-public class NetworkSelect extends SuperInput implements ItemListener
-{
-   public static final String ALL_NETWORKS = "All Networks";
+		setLayout(new BorderLayout());
 
-   protected JComboBox  networks;
-   protected JButton    add;
-   protected JButton    delete;
+		add(new JLabel(" Network:"), BorderLayout.NORTH);
 
-   protected String     networkV;
-   protected String     currentV;
-   protected StringList data;
+		networks = new JComboBox();
+		networks.setPrototypeDisplayValue("SuperLamerNet");
 
-   public NetworkSelect(String _variableNetworks, String _variableCurrent)
-   {
-      networkV = _variableNetworks;
-      currentV = _variableCurrent;
+		networks.addItemListener(this);
 
-      setLayout(new BorderLayout()); 
+		JPanel bottom = new JPanel();
+		bottom.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-      add(new JLabel(" Network:"), BorderLayout.NORTH);
+		bottom.add(networks);
 
-      networks  = new JComboBox();
-      networks.setPrototypeDisplayValue("SuperLamerNet");
+		add = new JButton("Add");
+		add.setMnemonic('A');
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				showNetworkDialog();
+			}
+		});
 
-      networks.addItemListener(this);
+		delete = new JButton("Delete");
+		delete.setMnemonic('D');
 
-      JPanel bottom = new JPanel();
-      bottom.setLayout(new FlowLayout(FlowLayout.LEFT));
+		delete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				if (networks.getSelectedIndex() > 0) // we don't want to remove the first element, so > 0...
+				{
+					ClientState.getClientState().setString(getVariable(), "");
+					ClientState.getClientState().sync();
 
-      bottom.add(networks);
-      
-      add    = new JButton("Add");
-      add.setMnemonic('A');
-      add.addActionListener(new ActionListener()
-      {
-         public void actionPerformed(ActionEvent ev)
-         {
-            showNetworkDialog();
-         }
-      });
+					int zz = networks.getSelectedIndex() - 1;
+					data.remove(networks.getSelectedItem().toString());
+					refresh();
+					networks.setSelectedIndex(zz);
+				}
+			}
+		});
 
-      delete = new JButton("Delete");
-      delete.setMnemonic('D');
+		bottom.add(add);
+		bottom.add(delete);
 
-      delete.addActionListener(new ActionListener()
-      {
-         public void actionPerformed(ActionEvent ev)
-         {
-            if (networks.getSelectedIndex() > 0) // we don't want to remove the first element, so > 0...
-            {
-               ClientState.getClientState().setString(getVariable(), "");
-               ClientState.getClientState().sync();
+		add(bottom, BorderLayout.CENTER);
+	}
 
-               int zz = networks.getSelectedIndex() - 1;
-               data.remove(networks.getSelectedItem().toString());
-               refresh();
-               networks.setSelectedIndex(zz);
-            }
-         }
-      });
- 
-      bottom.add(add);
-      bottom.add(delete);
+	public void showNetworkDialog() {
+		NetworkPanel panel = new NetworkPanel();
+		panel.setupDialog(null);
 
-      add(bottom, BorderLayout.CENTER);
-   }
+		ADialog temp = new ADialog(this, "Select a network", panel, null);
+		temp.pack();
 
-   public void showNetworkDialog()
-   {
-       NetworkPanel panel = new NetworkPanel();
-       panel.setupDialog(null);
+		String network = (String) temp.showDialog(null);
 
-       ADialog temp = new ADialog(this, "Select a network", panel, null);       
-       temp.pack();
+		if (network != null && !data.isValue(network)) {
+			data.add(network);
+			refresh();
+			networks.setSelectedIndex(networks.getItemCount() - 1);
+		}
+	}
 
-       String network = (String)temp.showDialog(null);
+	protected static class NetworkPanel extends APanel {
+		private JList list;
 
-       if (network != null && !data.isValue(network))
-       {
-          data.add(network);
-          refresh();
-          networks.setSelectedIndex(networks.getItemCount() - 1);
-       }
-   }
+		public void setupDialog(Object value) {
+			DefaultListModel model = new DefaultListModel();
 
-   protected static class NetworkPanel extends APanel
-   {
-      private JList  list;
+			Iterator i = ServerData.getServerData().getGroups().iterator();
+			i.next(); // skip "All Servers"
+			i.next(); // skip "Random Servers"
 
-      public void setupDialog(Object value)
-      {
-         DefaultListModel model = new DefaultListModel();
+			while (i.hasNext()) {
+				ServerGroup group = (ServerGroup) i.next();
+				model.addElement(group.getName());
+			}
 
-         Iterator i = ServerData.getServerData().getGroups().iterator();
-         i.next(); // skip "All Servers"
-         i.next(); // skip "Random Servers"
+			list = new JList(model);
 
-         while (i.hasNext())
-         {
-            ServerGroup group = (ServerGroup)i.next();
-            model.addElement(group.getName());
-         }
+			addComponent(new JLabel("Select a network:"));
+			addComponent(new JScrollPane(list));
+		}
 
-         list = new JList(model);
+		public void processParent(final ADialog dialog) {
+			list.addMouseListener(new MouseAdapter() {
+				public void mouseClicked(MouseEvent ev) {
+					if (ev.getClickCount() > 1) {
+						dialog.closeAndReturn();
+					}
+				}
+			});
+		}
 
-         addComponent(new JLabel("Select a network:"));
-         addComponent(new JScrollPane(list));
-      }
- 
-      public void processParent(final ADialog dialog)
-      {
-         list.addMouseListener(new MouseAdapter()
-         {
-            public void mouseClicked(MouseEvent ev)
-            {
-               if (ev.getClickCount() > 1) 
-               {
-                  dialog.closeAndReturn();
-               }
-            }
-         });
-      }
+		public Object getValue(Object value) {
+			return list.getSelectedValue();
+		}
+	}
 
-      public Object getValue(Object value)
-      {
-         return list.getSelectedValue();
-      }
-   }
+	public void save() {
+		if (data != null)
+			data.save();
+	}
 
-   public void save()
-   {
-      if (data != null)
-         data.save();
-   }
+	public int getEstimatedWidth() {
+		return 0;
+	}
 
-   public int getEstimatedWidth()
-   {
-      return 0;
-   }
+	public void setAlignWidth(int width) {
+	}
 
-   public void setAlignWidth(int width)
-   {
-   }
+	public void itemStateChanged(ItemEvent ev) {
+		if (ev.getStateChange() == ItemEvent.SELECTED) {
+			// fire an action listener event with the action command being the "network"
+			fireEvent(networks.getSelectedItem().toString());
+			notifyParent();
+		}
+	}
 
-   public void itemStateChanged(ItemEvent ev)
-   {
-      if (ev.getStateChange() == ItemEvent.SELECTED)
-      {
-         // fire an action listener event with the action command being the "network"
-         fireEvent(networks.getSelectedItem().toString());
-         notifyParent();
-      }
-   }
+	public JComponent getComponent() {
+		return this;
+	}
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
+	public void refresh() {
+		networks.removeAllItems();
+		networks.addItem(ALL_NETWORKS);
 
-   public void refresh()
-   {
-      networks.removeAllItems();
-      networks.addItem(ALL_NETWORKS);
-      
-      if (data == null)
-      {
-         data = ClientState.getClientState().getStringList(networkV);
-      }
+		if (data == null) {
+			data = ClientState.getClientState().getStringList(networkV);
+		}
 
-      LinkedList temp = data.getList();
-      Iterator i = temp.iterator();
-      while (i.hasNext())
-      {
-         networks.addItem(i.next().toString());
-      }
+		LinkedList temp = data.getList();
+		Iterator i = temp.iterator();
+		while (i.hasNext()) {
+			networks.addItem(i.next().toString());
+		}
 
-      networks.setSelectedIndex(0);
-   }
+		networks.setSelectedIndex(0);
+	}
 
-   protected LinkedList listeners = new LinkedList();
+	protected LinkedList listeners = new LinkedList();
 
-   protected void fireEvent(String command)
-   {
-      ActionEvent ev = new ActionEvent(this, 0, command);
+	protected void fireEvent(String command) {
+		ActionEvent ev = new ActionEvent(this, 0, command);
 
-      Iterator i = listeners.iterator();
-      while (i.hasNext())
-      {
-         ActionListener temp = (ActionListener)i.next();
-         temp.actionPerformed(ev);
-      }
-   }
+		Iterator i = listeners.iterator();
+		while (i.hasNext()) {
+			ActionListener temp = (ActionListener) i.next();
+			temp.actionPerformed(ev);
+		}
+	}
 
-   public void addActionListener(ActionListener l) { listeners.add(l); }
-   public void addDeleteListener(ActionListener l) { delete.addActionListener(l); }
+	public void addActionListener(ActionListener l) {
+		listeners.add(l);
+	}
+
+	public void addDeleteListener(ActionListener l) {
+		delete.addActionListener(l);
+	}
 }
 
 

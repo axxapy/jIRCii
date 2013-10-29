@@ -1,34 +1,26 @@
 package rero.gui.script;
 
-import rero.client.output.*;
-import java.util.*;
+import rero.bridges.event.ScriptedEventListener;
+import rero.gui.IRCSession;
+import rero.gui.windows.ClientWindowEvent;
 
-import rero.ircfw.interfaces.ChatListener;
+import java.util.HashMap;
 
-import rero.gui.*;
-import rero.gui.windows.*;
+public class ScriptedWindowStateListener extends ScriptedEventListener {
+	protected IRCSession gui;
 
-import rero.bridges.event.*;
+	public ScriptedWindowStateListener(IRCSession _gui) {
+		gui = _gui;
+	}
 
-public class ScriptedWindowStateListener extends ScriptedEventListener
-{
-   protected IRCSession          gui;
+	public void onWindowEvent(ClientWindowEvent ev) {
+		HashMap event = new HashMap();
 
-   public ScriptedWindowStateListener(IRCSession _gui)
-   {
-      gui    = _gui;
-   }
+		event.put("$window", gui.resolveClientWindow(ev.getSource()).getName());
+		dispatchEvent(event);
+	}
 
-   public void onWindowEvent(ClientWindowEvent ev)
-   {
-      HashMap event = new HashMap();
-
-      event.put("$window", gui.resolveClientWindow(ev.getSource()).getName());
-      dispatchEvent(event);
-   }
-
-   public void setupListener()
-   {
-      // do nothing, this will be installed by default (unfortunately)
-   }
+	public void setupListener() {
+		// do nothing, this will be installed by default (unfortunately)
+	}
 }

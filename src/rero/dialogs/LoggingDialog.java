@@ -1,59 +1,46 @@
 package rero.dialogs;
 
+import rero.config.ClientDefaults;
+import rero.dck.DGroup;
+import rero.dck.DItem;
+import rero.dck.DMain;
+import rero.dck.items.CheckboxInput;
+
 import java.awt.*;
-import java.awt.event.*;
 
-import javax.swing.*;
-import javax.swing.event.*;
+public class LoggingDialog extends DMain {
+	public String getTitle() {
+		return "Setup Logs";
+	}
 
-import java.util.*;
-import java.net.*;
+	public String getDescription() {
+		return "Message Logging Setup";
+	}
 
-import rero.dck.items.*;
-import rero.config.*;
-import rero.dck.*;
+	public void setupDialog() {
+		addBlankSpace();
+		addBlankSpace();
 
-import rero.client.dcc.*;
-
-public class LoggingDialog extends DMain
-{
-   public String getTitle()
-   {
-      return "Setup Logs";
-   }
-
-   public String getDescription()
-   {
-      return "Message Logging Setup";
-   }
-
-   public void setupDialog()
-   {
-      addBlankSpace();
-      addBlankSpace();
-
-      DGroup temp = addDialogGroup(new DGroup("Logging Options", 15)
-      {
-          public void setupDialog()
-          {
+		DGroup temp = addDialogGroup(new DGroup("Logging Options", 15) {
+			public void setupDialog() {
 
 
-      addBlankSpace();
-      DItem tempc = addDirectoryInput("log.saveto", ClientDefaults.log_saveto, "Log Directory: ", 'D', 10);
+				addBlankSpace();
+				DItem tempc = addDirectoryInput("log.saveto", ClientDefaults.log_saveto, "Log Directory: ", 'D', 10);
 
-      addBlankSpace();
+				addBlankSpace();
 
-      DItem tempa = addCheckboxInput("log.strip" ,    ClientDefaults.log_strip, "Strip colors from text", 'S', FlowLayout.LEFT);
-      DItem tempb = addCheckboxInput("log.timestamp", ClientDefaults.log_timestamp, "Timestamp logged messages", 'T', FlowLayout.LEFT);
-      addBlankSpace();
-            }
-      });
+				DItem tempa = addCheckboxInput("log.strip", ClientDefaults.log_strip, "Strip colors from text", 'S', FlowLayout.LEFT);
+				DItem tempb = addCheckboxInput("log.timestamp", ClientDefaults.log_timestamp, "Timestamp logged messages", 'T', FlowLayout.LEFT);
+				addBlankSpace();
+			}
+		});
 
-      addBlankSpace();
+		addBlankSpace();
 
-      CheckboxInput boxed = addCheckboxInput("log.enabled", ClientDefaults.log_enabled,  "Enable Logging", 'E', FlowLayout.CENTER);
-      boxed.addDependent(temp);
+		CheckboxInput boxed = addCheckboxInput("log.enabled", ClientDefaults.log_enabled, "Enable Logging", 'E', FlowLayout.CENTER);
+		boxed.addDependent(temp);
 
-      addBlankSpace();
-   }
+		addBlankSpace();
+	}
 }

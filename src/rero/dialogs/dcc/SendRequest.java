@@ -1,86 +1,81 @@
 package rero.dialogs.dcc;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.dcc.ConnectDCC;
+import rero.dcc.Receive;
+import rero.dialogs.toolkit.*;
+import rero.util.ClientUtils;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
 
-import java.util.*;
-import java.io.*;
+public class SendRequest extends APanel {
+	protected FileField fileField;
+	protected Receive receive;   // the *receiving* end - *uNF*
 
-import rero.dialogs.toolkit.*;
-import rero.dcc.*;
+	public static boolean showDialog(Component component, ConnectDCC connect) {
+		long start = System.currentTimeMillis();
+		SendRequest request = new SendRequest();
+		request.setupDialog(connect);
 
-import rero.util.*;
+		ADialog dialog = new ADialog(component, "DCC Send Request", request, null);
+		dialog.pack();
+		return (dialog.showDialog(component) != null);
+	}
 
-public class SendRequest extends APanel
-{
-    protected FileField fileField;
-    protected Receive   receive;   // the *receiving* end - *uNF*
- 
-    public static boolean showDialog(Component component, ConnectDCC connect)
-    {
-       long start = System.currentTimeMillis();
-       SendRequest request = new SendRequest();
-       request.setupDialog(connect);
+	public void setupDialog(Object value) {
+		JPanel space = new JPanel();
+		space.setPreferredSize(new Dimension(0, 15));
 
-       ADialog dialog = new ADialog(component, "DCC Send Request", request, null);
-       dialog.pack();
-       return (dialog.showDialog(component) != null);
-    }
+		JPanel space2 = new JPanel();
+		space2.setPreferredSize(new Dimension(0, 15));
 
-    public void setupDialog(Object value)
-    {
-       JPanel space = new JPanel();
-       space.setPreferredSize(new Dimension(0, 15));
+		LabelGroup labels = new LabelGroup();
+		JLabel user, file, size, saveas, host, blank;
 
-       JPanel space2 = new JPanel();
-       space2.setPreferredSize(new Dimension(0, 15));
+		user = new JLabel("User: ");
+		host = new JLabel("Host: ");
+		file = new JLabel("File: ");
+		size = new JLabel("Size: ");
+		saveas = new JLabel("Save As: ");
+		blank = new JLabel("");
 
-       LabelGroup labels = new LabelGroup();
-       JLabel user, file, size, saveas, host, blank;
+		labels.addLabel(user);
+		labels.addLabel(file);
+		labels.addLabel(size);
+		labels.addLabel(saveas);
+		labels.addLabel(blank);
+		labels.addLabel(host);
+		labels.sync(); // lines the labels up
 
-       user   = new JLabel("User: ");
-       host   = new JLabel("Host: ");
-       file   = new JLabel("File: ");
-       size   = new JLabel("Size: ");
-       saveas = new JLabel("Save As: ");
-       blank  = new JLabel("");
+		ConnectDCC info1 = (ConnectDCC) value;
+		Receive info2 = (Receive) info1.getImplementation();
 
-       labels.addLabel(user); labels.addLabel(file); labels.addLabel(size); labels.addLabel(saveas); labels.addLabel(blank); labels.addLabel(host);
-       labels.sync(); // lines the labels up
+		receive = info2;
 
-       ConnectDCC info1 = (ConnectDCC)value;
-       Receive    info2 = (Receive)info1.getImplementation();
+		PlainLabel iuser, ifile, isize, ihost;
 
-       receive = info2;
+		iuser = new PlainLabel(info2.getNickname());
+		ihost = new PlainLabel(info1.getHost() + ":" + info1.getPort());
+		ifile = new PlainLabel(info2.getFile().getName());
+		isize = new PlainLabel(ClientUtils.formatBytes(info2.getExpectedSize()));
 
-       PlainLabel iuser, ifile, isize, ihost;
+		addComponent(new PlainLabel("A user is attempting to send you a file"));
 
-       iuser = new PlainLabel(info2.getNickname());
-       ihost = new PlainLabel(info1.getHost() + ":" + info1.getPort());
-       ifile = new PlainLabel(info2.getFile().getName());
-       isize = new PlainLabel(ClientUtils.formatBytes(info2.getExpectedSize()));
+		addComponent(space2);
 
-       addComponent(new PlainLabel("A user is attempting to send you a file"));
+		addComponent(mergeComponents(user, iuser));
+		addComponent(mergeComponents(host, ihost));
+		addComponent(mergeComponents(file, ifile));
+		addComponent(mergeComponents(size, isize));
 
-       addComponent(space2);
+		addComponent(space);
 
-       addComponent(mergeComponents(user,   iuser));
-       addComponent(mergeComponents(host,   ihost));
-       addComponent(mergeComponents(file,   ifile));
-       addComponent(mergeComponents(size,   isize));
+		fileField = new FileField(info2.getFile(), false);
+		addComponent(mergeComponents(saveas, fileField, 15));
+	}
 
-       addComponent(space);
-
-       fileField = new FileField(info2.getFile(), false);
-       addComponent(mergeComponents(saveas, fileField, 15));
-    }
- 
-    public Object getValue(Object defvalue)
-    {
-       receive.setFile(fileField.getSelectedFile());  // getValue() only called when we have a confirmed acceptance       
-       return "";
-    }
+	public Object getValue(Object defvalue) {
+		receive.setFile(fileField.getSelectedFile());  // getValue() only called when we have a confirmed acceptance
+		return "";
+	}
 }

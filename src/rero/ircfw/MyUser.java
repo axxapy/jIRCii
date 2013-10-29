@@ -1,38 +1,37 @@
 package rero.ircfw;
 
-import rero.ircfw.data.*;
+import rero.ircfw.data.GenericMode;
 
-public class MyUser
-{
-    public MyUser()
-    {
+public class MyUser {
+	public MyUser() {
 
-    }
+	}
 
-    protected GenericMode myModes = new GenericMode();
+	protected GenericMode myModes = new GenericMode();
 
-    public void setMode(String m) { myModes = new GenericMode(m); }
-    public GenericMode getMode() { return myModes; }
+	public void setMode(String m) {
+		myModes = new GenericMode(m);
+	}
 
-    protected long awayTime = 0;
+	public GenericMode getMode() {
+		return myModes;
+	}
 
-    public void setAway()
-    {
-        awayTime = System.currentTimeMillis();
-    }
+	protected long awayTime = 0;
 
-    public void setBack()
-    {
-        awayTime = 0;
-    }
+	public void setAway() {
+		awayTime = System.currentTimeMillis();
+	}
 
-    public boolean isAway()
-    {
-        return (awayTime != 0);
-    }
+	public void setBack() {
+		awayTime = 0;
+	}
 
-    public long getAwayTime()
-    {
-        return System.currentTimeMillis() - awayTime;
-    }
+	public boolean isAway() {
+		return (awayTime != 0);
+	}
+
+	public long getAwayTime() {
+		return System.currentTimeMillis() - awayTime;
+	}
 }

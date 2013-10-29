@@ -1,146 +1,133 @@
 package rero.gui.mdi;
 
+import rero.gui.windows.ClientWindow;
+import rero.gui.windows.ClientWindowEvent;
+import rero.gui.windows.ClientWindowListener;
+
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import java.awt.*;
-import java.awt.event.*;
+public class ClientInternalWindow extends JInternalFrame implements ClientWindow, InternalFrameListener {
+	protected LinkedList clisteners = new LinkedList();
+	protected ClientWindowEvent cevent;
+	protected boolean isOpen = false;
 
-import java.util.*;
+	public ClientInternalWindow() {
+		super("", true, true, true, true);
 
-import rero.gui.windows.*;
+		cevent = new ClientWindowEvent(this);
+		addInternalFrameListener(this);
+	}
 
-public class ClientInternalWindow extends JInternalFrame implements ClientWindow, InternalFrameListener
-{
-   protected LinkedList        clisteners = new LinkedList();
-   protected ClientWindowEvent cevent;
-   protected boolean           isOpen = false;
+	public boolean isOpen() {
+		return isOpen;
+	}
 
-   public ClientInternalWindow()
-   {
-      super("", true, true, true, true);
+	public void setIcon(ImageIcon i) {
+		setFrameIcon(i);
+	}
 
-      cevent = new ClientWindowEvent(this);
-      addInternalFrameListener(this);
-   }
+	public void addWindowListener(ClientWindowListener l) {
+		clisteners.add(l);
+	}
 
-   public boolean isOpen()
-   {
-      return isOpen;
-   }
+	public void internalFrameActivated(InternalFrameEvent e) {
+		Iterator i = clisteners.listIterator();
+		while (i.hasNext()) {
+			ClientWindowListener temp = (ClientWindowListener) i.next();
+			temp.onActive(cevent);
+		}
+	}
 
-   public void setIcon(ImageIcon i)
-   {
-      setFrameIcon(i);
-   }
+	public void internalFrameDeactivated(InternalFrameEvent e) {
+		Iterator i = clisteners.listIterator();
+		while (i.hasNext()) {
+			ClientWindowListener temp = (ClientWindowListener) i.next();
+			temp.onInactive(cevent);
+		}
+	}
 
-   public void addWindowListener(ClientWindowListener l)
-   {
-      clisteners.add(l);
-   }
+	public void internalFrameClosed(InternalFrameEvent e) {
+		Iterator i = clisteners.listIterator();
+		while (i.hasNext()) {
+			ClientWindowListener temp = (ClientWindowListener) i.next();
+			temp.onClose(cevent);
+		}
+	}
 
-   public void internalFrameActivated(InternalFrameEvent e)
-   {
-      Iterator i = clisteners.listIterator();
-      while (i.hasNext())
-      {
-         ClientWindowListener temp = (ClientWindowListener)i.next();
-         temp.onActive(cevent);
-      } 
-   }              
+	public void internalFrameClosing(InternalFrameEvent e) {
+	}
 
-   public void internalFrameDeactivated(InternalFrameEvent e)
-   {
-      Iterator i = clisteners.listIterator();
-      while (i.hasNext())
-      {
-         ClientWindowListener temp = (ClientWindowListener)i.next();
-         temp.onInactive(cevent);
-      } 
-   }              
+	public void internalFrameDeiconified(InternalFrameEvent e) {
+	}
 
-   public void internalFrameClosed(InternalFrameEvent e)
-   {
-      Iterator i = clisteners.listIterator();
-      while (i.hasNext())
-      {
-          ClientWindowListener temp = (ClientWindowListener)i.next();
-          temp.onClose(cevent);
-      } 
-   }              
+	public void internalFrameIconified(InternalFrameEvent e) {
+		Iterator i = clisteners.listIterator();
+		while (i.hasNext()) {
+			ClientWindowListener temp = (ClientWindowListener) i.next();
+			temp.onMinimize(cevent);
+		}
+	}
 
-   public void internalFrameClosing(InternalFrameEvent e) { }              
+	public void internalFrameOpened(InternalFrameEvent e) {
+		Iterator i = clisteners.listIterator();
+		while (i.hasNext()) {
+			ClientWindowListener temp = (ClientWindowListener) i.next();
+			temp.onOpen(cevent);
+		}
+	}
 
-   public void internalFrameDeiconified(InternalFrameEvent e) { }              
+	public void closeWindow() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					setClosed(true);
+				} catch (Exception ex) {
+				}
+			}
+		});
+	}
 
-   public void internalFrameIconified(InternalFrameEvent e)
-   {
-      Iterator i = clisteners.listIterator();
-      while (i.hasNext())
-      {
-         ClientWindowListener temp = (ClientWindowListener)i.next();
-         temp.onMinimize(cevent);
-      } 
-   }              
+	public void setMaximum(boolean b) {
+		try {
+			super.setMaximum(b);
+		} catch (Exception ex) {
+		}
+	}
 
-   public void internalFrameOpened(InternalFrameEvent e)
-   {
-      Iterator i = clisteners.listIterator();
-       while (i.hasNext())
-       {
-          ClientWindowListener temp = (ClientWindowListener)i.next();
-          temp.onOpen(cevent);
-       } 
-   }              
+	public void setIcon(boolean b) {
+		try {
+			super.setIcon(b);
+		} catch (Exception ex) {
+		}
+	}
 
-    public void closeWindow()
-    {
-        SwingUtilities.invokeLater(new Runnable() 
-        { 
-            public void run()
-            {
-               try { setClosed(true); } catch (Exception ex) { }
-            }
-        });
-    }
+	public void setTitle(String aTitle) {
+		title = aTitle;
+		revalidate();
+		repaint();
+	}
 
-    public void setMaximum(boolean b)
-    {
-        try { super.setMaximum(b); } catch (Exception ex) { }
-    }
-
-    public void setIcon(boolean b)
-    {
-        try { super.setIcon(b); } catch (Exception ex) { }
-    }
-
-    public void setTitle(String aTitle)
-    {
-       title = aTitle;
-       revalidate();
-       repaint();
-    }
-  
-    public void show()
-    {
-       isOpen = true;
-       super.show();
-    }
+	public void show() {
+		isOpen = true;
+		super.show();
+	}
 
 
-    public void activate()
-    {
-        SwingUtilities.invokeLater(new Runnable() 
-        { 
-           public void run()
-           {
-              try { 
-                 if (!isOpen)
-                    show(); 
+	public void activate() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					if (!isOpen)
+						show();
 
-                 setSelected(true); 
-              } catch (Exception ex) { }
-           }
-        });
-    }
+					setSelected(true);
+				} catch (Exception ex) {
+				}
+			}
+		});
+	}
 }

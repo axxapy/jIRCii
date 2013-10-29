@@ -1,82 +1,73 @@
 package rero.dialogs.server;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class ServerGroup implements Comparable
-{
-   protected String    name;
-   protected ArrayList servers;
-   protected int       number;
+public class ServerGroup implements Comparable {
+	protected String name;
+	protected ArrayList servers;
+	protected int number;
 
-   public ServerGroup(String n)
-   {
-      this(n, new ArrayList());
-   }
+	public ServerGroup(String n) {
+		this(n, new ArrayList());
+	}
 
-   public void setNumber(int x)
-   {
-      number = x;
-   }
+	public void setNumber(int x) {
+		number = x;
+	}
 
-   public int getNumber() { return number; }
+	public int getNumber() {
+		return number;
+	}
 
-   public ServerGroup(String n, ArrayList _servers)
-   {
-      name    = n;
-      servers = _servers; 
-   }
+	public ServerGroup(String n, ArrayList _servers) {
+		name = n;
+		servers = _servers;
+	}
 
-   public void clear() { servers.clear(); }
+	public void clear() {
+		servers.clear();
+	}
 
-   public Server getServerByName(String name)
-   {
-      Iterator i = servers.iterator();
-      while (i.hasNext())
-      {
-         Server temp = (Server)i.next();
-         if (temp.getHost().equals(name))
-         {
-            return temp;
-         }
-      }
+	public Server getServerByName(String name) {
+		Iterator i = servers.iterator();
+		while (i.hasNext()) {
+			Server temp = (Server) i.next();
+			if (temp.getHost().equals(name)) {
+				return temp;
+			}
+		}
 
-      return null;
-   }
+		return null;
+	}
 
-   public ArrayList getServers()
-   {
-      return servers;
-   }
+	public ArrayList getServers() {
+		return servers;
+	}
 
-   public String getName()
-   {
-      return name;
-   }
+	public String getName() {
+		return name;
+	}
 
-   public void addServer(Server server)
-   {
-      servers.add(server);
-   }
+	public void addServer(Server server) {
+		servers.add(server);
+	}
 
-   public void removeServer(Server server)
-   {
-      servers.remove(server);
-   }
+	public void removeServer(Server server) {
+		servers.remove(server);
+	}
 
-   public String toString()
-   {
-      return name;
-   }
+	public String toString() {
+		return name;
+	}
 
-   public boolean isValid()
-   {
-      return !servers.isEmpty();
-   }
+	public boolean isValid() {
+		return !servers.isEmpty();
+	}
 
-   public int compareTo(Object o)
-   {
-      ServerGroup arg = (ServerGroup)o;
+	public int compareTo(Object o) {
+		ServerGroup arg = (ServerGroup) o;
 
-      return name.toUpperCase().compareTo(arg.getName().toUpperCase());
-   }
+		return name.toUpperCase().compareTo(arg.getName().toUpperCase());
+	}
 }

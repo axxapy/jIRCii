@@ -1,355 +1,299 @@
 package text.wrapped;
 
-import text.*;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
+import text.AttributedText;
+import text.TextSource;
 
 import javax.swing.*;
-import javax.swing.event.*;
-import java.util.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
-import rero.config.*;
+public class WrappedData implements BoundedRangeModel {
+	private static int WRAP_TOLERANCE = 2000;
+	private static int WRAP_TO = 1000;
 
-public class WrappedData implements BoundedRangeModel
-{
-    private static int WRAP_TOLERANCE = 2000;
-    private static int WRAP_TO        = 1000;
+	static {
+		WRAP_TOLERANCE = ClientState.getClientState().getInteger("ui.buffersize", ClientDefaults.ui_buffersize);
+		WRAP_TO = WRAP_TOLERANCE / 2;
+	}
 
-    static
-    {
-       WRAP_TOLERANCE = ClientState.getClientState().getInteger("ui.buffersize", ClientDefaults.ui_buffersize);
-       WRAP_TO        = WRAP_TOLERANCE / 2;
-    }
+	protected WrappedContainer last = null; // last element in our linked list of wrapped text containers
+	protected WrappedContainer text = null; // paint from this point on..
+	protected WrappedContainer head = null; // head element in our linked list of wrapped text containers
 
-    protected WrappedContainer last = null; // last element in our linked list of wrapped text containers
-    protected WrappedContainer text = null; // paint from this point on..
-    protected WrappedContainer head = null; // head element in our linked list of wrapped text containers
+	protected int tempMax = 1;
+	protected int maxValue = 1;
+	protected int currentValue = 0;
 
-    protected int tempMax      = 1; 
-    protected int maxValue     = 1;
-    protected int currentValue = 0;
+	protected boolean adjusting = false;
 
-    protected boolean adjusting = false;
+	protected LinkedList listeners = new LinkedList();
+	protected ChangeEvent event;
 
-    protected LinkedList listeners = new LinkedList();
-    protected ChangeEvent event;
+	protected int extent = 1;
+	protected int tempExtent = 1;
 
-    protected int extent     = 1;
-    protected int tempExtent = 1;
+	public WrappedData() {
+		event = new ChangeEvent(this);
+	}
 
-    public WrappedData()
-    {
-        event = new ChangeEvent(this);
-    }
+	public ListIterator find(String text) {
+		LinkedList values = new LinkedList();
 
-    public ListIterator find(String text)
-    {
-        LinkedList values = new LinkedList();
+		int x = 0;
 
-        int x = 0;
+		WrappedContainer temp = last;
+		while (temp != null) {
+			if (temp.getText().toUpperCase().indexOf(text.toUpperCase()) > -1) {
+				values.add(new Integer(x));
+			}
 
-        WrappedContainer temp = last;
-        while (temp != null)
-        {
-           if (temp.getText().toUpperCase().indexOf(text.toUpperCase()) > -1)
-           {
-               values.add(new Integer(x));
-           }
+			x++;
+			temp = temp.prev;
+		}
 
-           x++;
-           temp = temp.prev;
-        }
+		ListIterator i = values.listIterator();
 
-        ListIterator i = values.listIterator();
+		while (i.hasNext()) {
+			int tempzz = ((Integer) i.next()).intValue();
 
-        while (i.hasNext())
-        {
-           int tempzz = ( (Integer)i.next() ).intValue();
+			if (tempzz >= currentValue) {
+				i.previous();
+				break;
+			}
+		}
 
-           if (tempzz >= currentValue) 
-           { 
-              i.previous();
-              break; 
-           }
-        }
+		return i;
+	}
 
-        return i;
-    }
+	public void dirty() {
+		WrappedContainer temp = last;
+		while (temp != null) {
+			temp.reset(); // resets its parameters, tells it that we are now "dirty"
+			temp = temp.previous();
+		}
+	}
 
-    public void dirty()
-    {
-        WrappedContainer temp = last;
-        while (temp != null)
-        {
-           temp.reset(); // resets its parameters, tells it that we are now "dirty"
-           temp = temp.previous();
-        }
-    }
+	public void reset() {
+		tempMax = 1;
+		maxValue = 1;
+		currentValue = 0;
+		extent = 1;
+		tempExtent = 1;
+		head = null;
+		last = null;
+		text = null;
+		fireChangeEvent();
+	}
 
-    public void reset()
-    {
-        tempMax      = 1;
-        maxValue     = 1;
-        currentValue = 0;
-        extent       = 1;
-        tempExtent   = 1;
-        head         = null;
-        last         = null;
-        text         = null; 
-        fireChangeEvent();
-    }
+	public WrappedContainer getCurrentText() {
+		return text;
+	}
 
-    public WrappedContainer getCurrentText()
-    {
-        return text;
-    }
+	public WrappedObject getTokenAt(int height, int pixelx, int pixely) {
+		int baseline = height - 5; // gives us a 5 pixel buffer
+		// between the textbox and the textarea
 
-    public WrappedObject getTokenAt(int height, int pixelx, int pixely)
-    {
-       int baseline = height - 5; // gives us a 5 pixel buffer
-                                  // between the textbox and the textarea
+		int lineno = 0;
+		int desired = TextSource.translateToLineNumber(pixely);
 
-       int lineno  = 0;
-       int desired = TextSource.translateToLineNumber(pixely);
+		WrappedContainer head = text;
+		AttributedText[] strings;
 
-       WrappedContainer head = text;
-       AttributedText[] strings;
+		while (head != null && baseline > 0) {
+			strings = head.getWrappedText();
 
-       while (head != null && baseline > 0)
-       {
-           strings = head.getWrappedText();
+			for (int x = 0; strings != null && x < strings.length && baseline > 0; x++) {
+				if (pixely >= (baseline - TextSource.fontMetrics.getHeight() - 2)) {
+					return new WrappedObject(head.getText(), head.getTokenAt(strings[x], pixelx));
+				}
+				lineno++;
+				baseline -= (TextSource.fontMetrics.getHeight() + 2);
+			}
 
-           for (int x = 0; strings != null && x < strings.length && baseline > 0; x++)
-           {
-              if (pixely >= (baseline - TextSource.fontMetrics.getHeight() - 2))
-              {
-                 return new WrappedObject(head.getText(), head.getTokenAt(strings[x], pixelx));
-              }
-              lineno++;
-              baseline -= (TextSource.fontMetrics.getHeight() + 2);
-           }
+			head = head.next();
+		}
 
-           head = head.next();
-        }
-         
-        return null;
-    } 
+		return null;
+	}
 
-    public WrappedObject getAttributesAt(int height, int pixelx, int pixely)
-    {
-       int baseline = height - 5; // gives us a 5 pixel buffer
-                                  // between the textbox and the textarea
+	public WrappedObject getAttributesAt(int height, int pixelx, int pixely) {
+		int baseline = height - 5; // gives us a 5 pixel buffer
+		// between the textbox and the textarea
 
-       int lineno  = 0;
-       int desired = TextSource.translateToLineNumber(pixely);
+		int lineno = 0;
+		int desired = TextSource.translateToLineNumber(pixely);
 
-       WrappedContainer head = text;
-       AttributedText[] strings;
+		WrappedContainer head = text;
+		AttributedText[] strings;
 
-       while (head != null && baseline > 0)
-       {
-           strings = head.getWrappedText();
+		while (head != null && baseline > 0) {
+			strings = head.getWrappedText();
 
-           for (int x = 0; x < strings.length && baseline > 0; x++)
-           {
-              if (pixely >= (baseline - TextSource.fontMetrics.getHeight() - 2))
-              {
-                 return new WrappedObject(head.getText(), head.getAttributedTextAt(strings[x], pixelx));
-              }
-              lineno++;
-              baseline -= (TextSource.fontMetrics.getHeight() + 2);
-           }
+			for (int x = 0; x < strings.length && baseline > 0; x++) {
+				if (pixely >= (baseline - TextSource.fontMetrics.getHeight() - 2)) {
+					return new WrappedObject(head.getText(), head.getAttributedTextAt(strings[x], pixelx));
+				}
+				lineno++;
+				baseline -= (TextSource.fontMetrics.getHeight() + 2);
+			}
 
-           head = head.next();
-        }
-         
-        return null;
-    } 
+			head = head.next();
+		}
 
-    protected Runnable changeEventTask = new Runnable()
-    {
-        public void run() 
-        {
-           fireChangeEvent();
-        }
-    };
+		return null;
+	}
 
-    public void fireChangeEvent()
-    {
-        ListIterator i = listeners.listIterator();
-        while (i.hasNext())
-        {
-           ChangeListener temp = (ChangeListener)i.next();
-           temp.stateChanged(event);
-        }
-    }
+	protected Runnable changeEventTask = new Runnable() {
+		public void run() {
+			fireChangeEvent();
+		}
+	};
 
-    public void addChangeListener(ChangeListener x)
-    {
-        listeners.add(x);
-    }
+	public void fireChangeEvent() {
+		ListIterator i = listeners.listIterator();
+		while (i.hasNext()) {
+			ChangeListener temp = (ChangeListener) i.next();
+			temp.stateChanged(event);
+		}
+	}
 
-    public void removeChangeListener(ChangeListener x)
-    {
-        listeners.remove(x);
-    }
+	public void addChangeListener(ChangeListener x) {
+		listeners.add(x);
+	}
 
-    public void addText(WrappedContainer container)
-    {
-        boolean jump = true;
+	public void removeChangeListener(ChangeListener x) {
+		listeners.remove(x);
+	}
 
-        if (head == null)
-        {
-           head = container;
-           text = container;
-           last = container;
-        }
-        else
-        {
-           container.setNext(head);
-           head.setPrevious(container);
+	public void addText(WrappedContainer container) {
+		boolean jump = true;
 
-           head = container;
+		if (head == null) {
+			head = container;
+			text = container;
+			last = container;
+		} else {
+			container.setNext(head);
+			head.setPrevious(container);
 
-           if (text.previous() != head)  // if the current text has a previous text, then we're scrolled up
-           {
-              maxValue++;              
-           }
-           else if (!getValueIsAdjusting()) 
-           {
-              text = container;
+			head = container;
 
-              if (maxValue > WRAP_TOLERANCE)
-              {
-                 while (maxValue > WRAP_TO && last.hasPrevious())
-                 {
-                    last = last.previous();
-                    maxValue--;
-                 } 
-                 last.setNext(null);
-              }
+			if (text.previous() != head)  // if the current text has a previous text, then we're scrolled up
+			{
+				maxValue++;
+			} else if (!getValueIsAdjusting()) {
+				text = container;
 
-              currentValue = maxValue;
-              maxValue++;
-           }
-           else
-           {
-              tempMax++;
-           }
-        }
+				if (maxValue > WRAP_TOLERANCE) {
+					while (maxValue > WRAP_TO && last.hasPrevious()) {
+						last = last.previous();
+						maxValue--;
+					}
+					last.setNext(null);
+				}
 
-        SwingUtilities.invokeLater(changeEventTask); // this is in place to prevent a case of deadlock
-    }
+				currentValue = maxValue;
+				maxValue++;
+			} else {
+				tempMax++;
+			}
+		}
 
-    public int getExtent()
-    { 
-        return 1; 
-    }
+		SwingUtilities.invokeLater(changeEventTask); // this is in place to prevent a case of deadlock
+	}
 
-    public int getMaximum()
-    {
-        return maxValue;
-    }
+	public int getExtent() {
+		return 1;
+	}
 
-    public int getMinimum()
-    {
-        return 0;
-    }
+	public int getMaximum() {
+		return maxValue;
+	}
 
-    public int getValue()
-    {
-        return currentValue;
-    }
+	public int getMinimum() {
+		return 0;
+	}
 
-    public boolean getValueIsAdjusting()
-    {
-        return adjusting;
-    }
+	public int getValue() {
+		return currentValue;
+	}
 
-    public void setExtent(int x)
-    {
-        // do a check on is adjusting if we're going to choose wether or not to update the extent.
+	public boolean getValueIsAdjusting() {
+		return adjusting;
+	}
 
-        extent = x;
-    }
+	public void setExtent(int x) {
+		// do a check on is adjusting if we're going to choose wether or not to update the extent.
 
-    public void setMaximum(int x)
-    {
-    }
+		extent = x;
+	}
 
-    public void setMinimum(int x)
-    {
-    }
+	public void setMaximum(int x) {
+	}
 
-    public void setRangeProperties(int newValue, int extent, int min, int max, boolean adjusting)
-    {
-    }
+	public void setMinimum(int x) {
+	}
 
-    public void setValue (int newValue)
-    {
-        if (head == null)
-            return;
+	public void setRangeProperties(int newValue, int extent, int min, int max, boolean adjusting) {
+	}
 
-        if (currentValue > newValue)
-        {
-             // move down to new value using next values           
+	public void setValue(int newValue) {
+		if (head == null)
+			return;
 
-            while (currentValue > newValue && text.hasNext())
-            {
-                text = text.next();
-                currentValue--;
-            }
-        }
-        else if (currentValue < newValue)
-        {
-            // move up to new value using prev values;
+		if (currentValue > newValue) {
+			// move down to new value using next values
 
-            while (currentValue < newValue && text.hasPrevious())
-            {
-                text = text.previous();
-                currentValue++;
-            }
-        }
+			while (currentValue > newValue && text.hasNext()) {
+				text = text.next();
+				currentValue--;
+			}
+		} else if (currentValue < newValue) {
+			// move up to new value using prev values;
 
-        currentValue = newValue;
+			while (currentValue < newValue && text.hasPrevious()) {
+				text = text.previous();
+				currentValue++;
+			}
+		}
 
-        if (currentValue >= maxValue)
-        {
-            currentValue = maxValue - 1;
-        }
-        if (currentValue < 0)
-        {
-            currentValue = 0;
-        }
+		currentValue = newValue;
 
-        //System.out.println(currentValue + " versus possible is: " + 
+		if (currentValue >= maxValue) {
+			currentValue = maxValue - 1;
+		}
+		if (currentValue < 0) {
+			currentValue = 0;
+		}
+
+		//System.out.println(currentValue + " versus possible is: " +
 //maxValue + " and extent is: " + extent);
 
-        fireChangeEvent();
-    }
+		fireChangeEvent();
+	}
 
-    public void setValueIsAdjusting(boolean b)
-    {
-        adjusting = b;
-        if (!b && tempMax > maxValue)
-        {
-           maxValue   = tempMax;
-        }
-        else
-        {
-           tempMax    = maxValue;
-        } 
-    }
+	public void setValueIsAdjusting(boolean b) {
+		adjusting = b;
+		if (!b && tempMax > maxValue) {
+			maxValue = tempMax;
+		} else {
+			tempMax = maxValue;
+		}
+	}
 
-    protected SelectionSpace selection;
+	protected SelectionSpace selection;
 
-    public void setSelection(SelectionSpace select)
-    {
-        selection = select;
-    }
+	public void setSelection(SelectionSpace select) {
+		selection = select;
+	}
 
-    public SelectionSpace getSelection()
-    {
-        return selection;
-    }
+	public SelectionSpace getSelection() {
+		return selection;
+	}
 }
 
 

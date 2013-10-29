@@ -1,98 +1,82 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.dck.DContainer;
+import rero.dck.DItem;
+import rero.dck.DParent;
+import rero.dck.DTab;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
+import java.util.Iterator;
+import java.util.LinkedList;
 
-import rero.config.*;
-import rero.dck.*;
+public class TabbedInput extends JPanel implements DItem {
+	protected LinkedList items = new LinkedList();
+	protected JTabbedPane tabs;
 
-import java.util.*;
+	public TabbedInput() {
+		setLayout(new BorderLayout());
 
-public class TabbedInput extends JPanel implements DItem
-{
-   protected LinkedList  items = new LinkedList();
-   protected JTabbedPane tabs;
+		tabs = new JTabbedPane();
+		add(tabs, BorderLayout.CENTER);
+	}
 
-   public TabbedInput()
-   {
-      setLayout(new BorderLayout());
+	public void addTab(DTab item) {
+		tabs.addTab(item.getTitle(), null, item.getDialog(), item.getDescription());
+		items.add(item);
+	}
 
-      tabs = new JTabbedPane();
-      add(tabs, BorderLayout.CENTER);
-   }
+	public Dimension getPreferredSize() {
+		return new Dimension(0, (int) super.getPreferredSize().getHeight());
+	}
 
-   public void addTab(DTab item)
-   {
-      tabs.addTab(item.getTitle(), null, item.getDialog(), item.getDescription());
-      items.add(item);
-   }
+	public void setEnabled(boolean b) {
+		Iterator i = items.iterator();
+		while (i.hasNext()) {
+			((DContainer) i.next()).setEnabled(b);
+		}
 
-   public Dimension getPreferredSize()
-   {
-      return new Dimension(0, (int)super.getPreferredSize().getHeight());
-   }
+		tabs.setEnabled(b);
+	}
 
-   public void setEnabled(boolean b)
-   {
-      Iterator i = items.iterator();
-      while (i.hasNext())
-      {
-         ((DContainer)i.next()).setEnabled(b);
-      }
+	public void save() {
+		Iterator i = items.iterator();
+		while (i.hasNext()) {
+			((DContainer) i.next()).save();
+		}
+	}
 
-      tabs.setEnabled(b);
-   }
+	public int getEstimatedWidth() {
+		return 0;
+	}
 
-   public void save()
-   {
-      Iterator i = items.iterator();
-      while (i.hasNext())
-      {
-         ((DContainer)i.next()).save();
-      }
-   }
+	public void setAlignWidth(int width) {
+	}
 
-   public int getEstimatedWidth()
-   {
-      return 0;
-   }
+	public void setParent(DParent parent) {
+		Iterator i = items.iterator();
+		while (i.hasNext()) {
+			((DContainer) i.next()).setParent(parent);
+		}
+	}
 
-   public void setAlignWidth(int width)
-   {
-   }
+	public JComponent getComponent() {
+		return this;
+	}
 
-   public void setParent(DParent parent)
-   {
-      Iterator i = items.iterator();
-      while (i.hasNext())
-      {
-         ((DContainer)i.next()).setParent(parent);
-      }
-   }
+	public void refresh() {
+		int count = 0;
+		Iterator i = items.iterator();
+		while (i.hasNext()) {
+			DTab item = (DTab) i.next();
+			item.refresh();
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
+			tabs.setEnabledAt(count, item.isEnabled());
+			item.setEnabled(item.isEnabled());
 
-   public void refresh()
-   {
-      int count = 0;
-      Iterator i = items.iterator();
-      while (i.hasNext())
-      {
-         DTab item = (DTab)i.next();        
-         item.refresh();
-
-         tabs.setEnabledAt(count, item.isEnabled());
-         item.setEnabled(item.isEnabled());
-
-         count++;
-      }
-   }
+			count++;
+		}
+	}
 }
 
 

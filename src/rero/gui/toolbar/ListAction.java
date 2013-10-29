@@ -1,33 +1,22 @@
 package rero.gui.toolbar;
 
-import rero.gui.*;
+import rero.client.Capabilities;
+import rero.gui.SessionManager;
 
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.event.MouseEvent;
 
-import javax.swing.*;
-import javax.swing.event.*;
+public class ListAction implements ToolAction {
+	public void actionPerformed(MouseEvent ev) {
+		Capabilities client = SessionManager.getGlobalCapabilities().getActiveSession().getCapabilities();
 
-import rero.client.*;
+		SessionManager.getGlobalCapabilities().getActiveSession().executeCommand("/list -gui");
+	}
 
-import rero.bridges.menu.*;
+	public String getDescription() {
+		return "List Channels";
+	}
 
-public class ListAction implements ToolAction
-{
-   public void actionPerformed(MouseEvent ev)
-   {
-      Capabilities client = SessionManager.getGlobalCapabilities().getActiveSession().getCapabilities();
-
-      SessionManager.getGlobalCapabilities().getActiveSession().executeCommand("/list -gui");
-   }
-
-   public String getDescription()
-   {
-      return "List Channels";
-   } 
-
-   public int getIndex()
-   {
-      return 7;
-   }
+	public int getIndex() {
+		return 7;
+	}
 }

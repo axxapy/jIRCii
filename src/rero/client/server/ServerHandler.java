@@ -1,241 +1,216 @@
 package rero.client.server;
 
-import rero.ircfw.*;
-import rero.ircfw.interfaces.*;
+import rero.client.Feature;
+import rero.client.notify.NotifyData;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
+import rero.ident.IdentDaemon;
+import rero.ident.IdentListener;
+import rero.ircfw.Channel;
+import rero.ircfw.InternalDataList;
+import rero.ircfw.User;
+import rero.ircfw.interfaces.ChatListener;
+import rero.ircfw.interfaces.FrameworkConstants;
+import rero.net.SocketConnection;
+import rero.net.SocketEvent;
+import rero.net.interfaces.SocketStatusListener;
+import rero.util.ClientUtils;
 
-import rero.net.*;
-import rero.net.interfaces.*;
-
-import rero.client.*;
-import rero.client.notify.*;
-import rero.bridges.set.*;
-
-import rero.dialogs.server.*;
-import rero.dck.items.NetworkSelect;
-
-import rero.ident.*;
-
-import java.util.*;
-import rero.util.*;
-import rero.config.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
- *  Responsible for the following:
-    - miscellaneous features i.e. responding to server PING's etc
-    - send altnick IF we're not connected yet and get a reply of nick in use.
+ * Responsible for the following:
+ * - miscellaneous features i.e. responding to server PING's etc
+ * - send altnick IF we're not connected yet and get a reply of nick in use.
  */
-public class ServerHandler extends Feature implements FrameworkConstants, SocketStatusListener, ChatListener, IdentListener
-{
-   protected NotifyData notify;
-   protected InternalDataList data;
-   protected SocketConnection socket;
+public class ServerHandler extends Feature implements FrameworkConstants, SocketStatusListener, ChatListener, IdentListener {
+	protected NotifyData notify;
+	protected InternalDataList data;
+	protected SocketConnection socket;
 
-   protected User restoreInformation = null;
-   protected String restoreServer;
+	protected User restoreInformation = null;
+	protected String restoreServer;
 
-   protected IgnoreHandler     ignoreHandler;
-   protected NickInUseListener nickListener = null;
+	protected IgnoreHandler ignoreHandler;
+	protected NickInUseListener nickListener = null;
 
-   public void init()
-   {
-      getCapabilities().getChatFramework().getProtocolDispatcher().setInternalListener(this); // make sure we are the first 
-                                                                                              // listener to handle this stuff...
-      getCapabilities().getSocketConnection().addSocketStatusListener(this);
-      socket = getCapabilities().getSocketConnection();
+	public void init() {
+		getCapabilities().getChatFramework().getProtocolDispatcher().setInternalListener(this); // make sure we are the first
+		// listener to handle this stuff...
+		getCapabilities().getSocketConnection().addSocketStatusListener(this);
+		socket = getCapabilities().getSocketConnection();
 
-      data = (InternalDataList)getCapabilities().getDataStructure("clientInformation");
+		data = (InternalDataList) getCapabilities().getDataStructure("clientInformation");
 
-      notify = (NotifyData)getCapabilities().getDataStructure("notify");
+		notify = (NotifyData) getCapabilities().getDataStructure("notify");
 
-      ignoreHandler = new IgnoreHandler(); // handles processing for the ignore list
+		ignoreHandler = new IgnoreHandler(); // handles processing for the ignore list
 
-      IdentDaemon.getIdentDaemon().addIdentListener(this);
-   }
+		IdentDaemon.getIdentDaemon().addIdentListener(this);
+	}
 
-   public void identRequest(String host, String text)
-   {
-       getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(host, text), "IDENT_REQUEST");
-   }
-   
-   public void cleanup()
-   {
-      data.reset();
-      notify.reset();
-      data.setMyNick("<Unknown>");
+	public void identRequest(String host, String text) {
+		getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(host, text), "IDENT_REQUEST");
+	}
 
-      restoreInformation = null;
-   }
+	public void cleanup() {
+		data.reset();
+		notify.reset();
+		data.setMyNick("<Unknown>");
 
-   public int fireChatEvent (HashMap eventDescription)
-   {
-      String event = (String)eventDescription.get($EVENT$);
+		restoreInformation = null;
+	}
 
-      if (event.equals("376")) // end of MOTD command.
-      {
-         if (restoreInformation != null)
-         {
-            Iterator i = restoreInformation.getChannels().iterator();
-            while (i.hasNext())
-            {
-               Channel temp = (Channel)i.next();
-               getCapabilities().sendln("JOIN " + temp.getName() + " :" + temp.getKey()); // TODO: Investigate -- is this right? With a colon before the key? Because JOIN in BuiltInCommands.java doesn't use the colon.
-            }
+	public int fireChatEvent(HashMap eventDescription) {
+		String event = (String) eventDescription.get($EVENT$);
 
-            restoreInformation = null;
-         }
- 
-         return EVENT_DONE;
-      }
+		if (event.equals("376")) // end of MOTD command.
+		{
+			if (restoreInformation != null) {
+				Iterator i = restoreInformation.getChannels().iterator();
+				while (i.hasNext()) {
+					Channel temp = (Channel) i.next();
+					getCapabilities().sendln("JOIN " + temp.getName() + " :" + temp.getKey()); // TODO: Investigate -- is this right? With a colon before the key? Because JOIN in BuiltInCommands.java doesn't use the colon.
+				}
 
-      if (event.equals("PING"))
-      {
-         getCapabilities().sendln("PONG :" + eventDescription.get($PARMS$));
-         return EVENT_HALT;
-      }
+				restoreInformation = null;
+			}
 
-      if (ignoreHandler.isIgnore((String)eventDescription.get($NICK$), (String)eventDescription.get($ADDRESS$)))
-      {
-         return EVENT_HALT;
-      }
-      else
-      {
-         return EVENT_DONE;
-      }
-   }
+			return EVENT_DONE;
+		}
 
-   public boolean isChatEvent(String eventId, HashMap eventDescription)
-   {
-      if (ignoreHandler.isCheckingIgnore() && (eventId.equals("NOTICE") || eventId.equals("PRIVMSG") || eventId.equals("REPLY") || eventId.equals("REQUEST") || eventId.equals("ACTION"))) { return true; }
-      if (eventId.equals("376")) { return true; }
-      if (eventId.equals("PING")) { return true; }  // yeaperz, we handle PING events.
+		if (event.equals("PING")) {
+			getCapabilities().sendln("PONG :" + eventDescription.get($PARMS$));
+			return EVENT_HALT;
+		}
 
-      return false;
-   }
+		if (ignoreHandler.isIgnore((String) eventDescription.get($NICK$), (String) eventDescription.get($ADDRESS$))) {
+			return EVENT_HALT;
+		} else {
+			return EVENT_DONE;
+		}
+	}
 
-   public void socketStatusChanged(SocketEvent ev)
-   {
-       if (ev.data.isConnected)
-       {
-           getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(ev.data.hostname, "connected"), "IRC_CONNECT");
+	public boolean isChatEvent(String eventId, HashMap eventDescription) {
+		if (ignoreHandler.isCheckingIgnore() && (eventId.equals("NOTICE") || eventId.equals("PRIVMSG") || eventId.equals("REPLY") || eventId.equals("REQUEST") || eventId.equals("ACTION"))) {
+			return true;
+		}
+		if (eventId.equals("376")) {
+			return true;
+		}
+		if (eventId.equals("PING")) {
+			return true;
+		}  // yeaperz, we handle PING events.
 
-           String[] parms = ClientState.getClientState().getString("user.email", "jircii@127.0.0.1").split("@");
+		return false;
+	}
 
-           if (parms.length == 1)
-           {
-               parms = new String[] { parms[0], "127.0.0.1" };
+	public void socketStatusChanged(SocketEvent ev) {
+		if (ev.data.isConnected) {
+			getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(ev.data.hostname, "connected"), "IRC_CONNECT");
 
-               if (parms[0].length() == 0) { parms[0] = "jircii"; }
-           }
+			String[] parms = ClientState.getClientState().getString("user.email", "jircii@127.0.0.1").split("@");
 
-           if (ev.data.password != null)
-           {
-              getCapabilities().sendln("PASS " + ev.data.password);
-           }
+			if (parms.length == 1) {
+				parms = new String[]{parms[0], "127.0.0.1"};
 
-           String user, nick;
+				if (parms[0].length() == 0) {
+					parms[0] = "jircii";
+				}
+			}
 
-           if (rero.test.QuickConnect.IsQuickConnect())
-           {
-              user = ClientState.getClientState().getString("user.rname", "jIRCii Web User: http://www.jircii.org/");
-              nick = ClientState.getClientState().getString("user.nick",  rero.test.QuickConnect.GetInformation().getNickname());
-           }
-           else if ((System.currentTimeMillis() % 5) == 0) // haveing some more fun...
-           {
-              user = ClientState.getClientState().getString("user.rname", "I'm to lame to read mIRC.hlp");
-              nick = ClientState.getClientState().getString("user.nick", "madgoat");
-           }
-           else
-           {
-              user = ClientState.getClientState().getString("user.rname", ClientUtils.tagline());
-              nick = ClientState.getClientState().getString("user.nick", "IRCFrEAK");
-           }
+			if (ev.data.password != null) {
+				getCapabilities().sendln("PASS " + ev.data.password);
+			}
 
-           if (restoreInformation != null)
-           {
-              nick = restoreInformation.getNick();
-           }
+			String user, nick;
 
-           getCapabilities().sendln("USER " + parms[0] + " " + parms[1] + " " + parms[1] +  " :" + user);
-           getCapabilities().sendln("NICK " + nick);
+			if (rero.test.QuickConnect.IsQuickConnect()) {
+				user = ClientState.getClientState().getString("user.rname", "jIRCii Web User: http://www.jircii.org/");
+				nick = ClientState.getClientState().getString("user.nick", rero.test.QuickConnect.GetInformation().getNickname());
+			} else if ((System.currentTimeMillis() % 5) == 0) // haveing some more fun...
+			{
+				user = ClientState.getClientState().getString("user.rname", "I'm to lame to read mIRC.hlp");
+				nick = ClientState.getClientState().getString("user.nick", "madgoat");
+			} else {
+				user = ClientState.getClientState().getString("user.rname", ClientUtils.tagline());
+				nick = ClientState.getClientState().getString("user.nick", "IRCFrEAK");
+			}
 
-           if (nickListener == null || ! nickListener.isArmed())
-           {
-               nickListener = new NickInUseListener();
-               getCapabilities().addTemporaryListener(nickListener);
-           }
-       }
-       else
-       {
-           boolean isDone = false;
+			if (restoreInformation != null) {
+				nick = restoreInformation.getNick();
+			}
 
-           getCapabilities().getOutputCapabilities().fireSetAll(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_DISCONNECT");
-	   
-	   if (ClientState.getClientState().attentionEnabledActions())
-	   	 ClientUtils.getAttention(); // Get attention for disconnect
+			getCapabilities().sendln("USER " + parms[0] + " " + parms[1] + " " + parms[1] + " :" + user);
+			getCapabilities().sendln("NICK " + nick);
 
-           if (data.getMyUser().getChannels().size() > 0)
-           {
-               if (ClientState.getClientState().isOption("option.reconnect", ClientDefaults.option_reconnect))
-               {
-                  //System.out.println("Reconnecting is an option");
+			if (nickListener == null || !nickListener.isArmed()) {
+				nickListener = new NickInUseListener();
+				getCapabilities().addTemporaryListener(nickListener);
+			}
+		} else {
+			boolean isDone = false;
 
-                  restoreInformation = data.getMyUser().copy();
-                  restoreServer      = ev.data.hostname;
- 
-                  getCapabilities().getOutputCapabilities().fireSetAll(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_RECONNECT");
-                  getCapabilities().getGlobalCapabilities().setTabTitle(getCapabilities(), "reconnecting");
-                  socket.connect(ev.data.hostname, ev.data.port, ClientState.getClientState().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
+			getCapabilities().getOutputCapabilities().fireSetAll(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_DISCONNECT");
 
-                  isDone = true;
-               }
-           }
+			if (ClientState.getClientState().attentionEnabledActions())
+				ClientUtils.getAttention(); // Get attention for disconnect
 
-           data.reset();
-           notify.reset();
-           data.setMyNick("<Unknown>");
+			if (data.getMyUser().getChannels().size() > 0) {
+				if (ClientState.getClientState().isOption("option.reconnect", ClientDefaults.option_reconnect)) {
+					//System.out.println("Reconnecting is an option");
 
-           if (restoreInformation != null && !isDone)
-           {
-               getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_RECONNECT");
-               getCapabilities().getGlobalCapabilities().setTabTitle(getCapabilities(), "reconnecting");
-               socket.connect(ev.data.hostname, ev.data.port, ClientState.getClientState().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
-           }
-       }
-   }
+					restoreInformation = data.getMyUser().copy();
+					restoreServer = ev.data.hostname;
 
-   protected class NickInUseListener implements ChatListener
-   {
-       protected String altNick = ClientState.getClientState().getString("user.altnick", "lamer" + System.currentTimeMillis());
-       protected boolean armed  = true;
+					getCapabilities().getOutputCapabilities().fireSetAll(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_RECONNECT");
+					getCapabilities().getGlobalCapabilities().setTabTitle(getCapabilities(), "reconnecting");
+					socket.connect(ev.data.hostname, ev.data.port, ClientState.getClientState().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
 
-       public boolean isChatEvent(String event, HashMap data)
-       {
-          return event.equals("001") || event.equals("433");
-       }
- 
-       public boolean isArmed()
-       {
-          return armed;
-       }
+					isDone = true;
+				}
+			}
 
-       public int fireChatEvent(HashMap desc)
-       {
-          String event = (String)desc.get($EVENT$);
+			data.reset();
+			notify.reset();
+			data.setMyNick("<Unknown>");
 
-          if (event.equals("433"))
-          {
-              if (rero.test.QuickConnect.IsQuickConnect() && rero.test.QuickConnect.GetInformation().getURL().getUserInfo() != null)
-              {
-                  // set a new alternate alt nick iff a user is quick connecting and a default nickname has been specified...
-                  // otherwise lamer will do just fine...
+			if (restoreInformation != null && !isDone) {
+				getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_RECONNECT");
+				getCapabilities().getGlobalCapabilities().setTabTitle(getCapabilities(), "reconnecting");
+				socket.connect(ev.data.hostname, ev.data.port, ClientState.getClientState().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
+			}
+		}
+	}
 
-                  altNick = ClientState.getClientState().getString("user.nick",  rero.test.QuickConnect.GetInformation().getNickname()) + System.currentTimeMillis();
-              }
-              getCapabilities().sendln("NICK " + altNick);
-          }
+	protected class NickInUseListener implements ChatListener {
+		protected String altNick = ClientState.getClientState().getString("user.altnick", "lamer" + System.currentTimeMillis());
+		protected boolean armed = true;
 
-          armed = false;
-          return EVENT_DONE | REMOVE_LISTENER;
-       }
-  }
+		public boolean isChatEvent(String event, HashMap data) {
+			return event.equals("001") || event.equals("433");
+		}
+
+		public boolean isArmed() {
+			return armed;
+		}
+
+		public int fireChatEvent(HashMap desc) {
+			String event = (String) desc.get($EVENT$);
+
+			if (event.equals("433")) {
+				if (rero.test.QuickConnect.IsQuickConnect() && rero.test.QuickConnect.GetInformation().getURL().getUserInfo() != null) {
+					// set a new alternate alt nick iff a user is quick connecting and a default nickname has been specified...
+					// otherwise lamer will do just fine...
+
+					altNick = ClientState.getClientState().getString("user.nick", rero.test.QuickConnect.GetInformation().getNickname()) + System.currentTimeMillis();
+				}
+				getCapabilities().sendln("NICK " + altNick);
+			}
+
+			armed = false;
+			return EVENT_DONE | REMOVE_LISTENER;
+		}
+	}
 }

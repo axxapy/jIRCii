@@ -1,106 +1,93 @@
 package rero.dck.items;
 
-import java.awt.*;
-import java.awt.event.*;
+import rero.config.ClientState;
+import rero.dck.SuperInput;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 
-import rero.config.*;
-import rero.dck.*;
+public class FloatInput extends SuperInput implements ChangeListener {
+	protected JLabel label;
+	protected JTextField text;
+	protected JSlider slider;
 
-public class FloatInput extends SuperInput implements ChangeListener
-{
-   protected JLabel     label;
-   protected JTextField text;
-   protected JSlider    slider;
+	protected float value;
 
-   protected float  value;
+	public FloatInput(String var, float _value, String _label) {
+		variable = var;
+		value = _value;
 
-   public FloatInput(String var, float _value, String _label)
-   {
-      variable = var;
-      value = _value;
+		setLayout(new BorderLayout(5, 5));
 
-      setLayout(new BorderLayout(5, 5));
+		label = new JLabel(_label);
 
-      label = new JLabel(_label);
-       
-      add(label, BorderLayout.WEST);
+		add(label, BorderLayout.WEST);
 
-      int defValue = (int)(_value * 100);
+		int defValue = (int) (_value * 100);
 
-      slider = new JSlider(JSlider.HORIZONTAL, 0, 100, defValue);
-      slider.setMajorTickSpacing(25);
-      slider.setMinorTickSpacing(5);
-      slider.setPaintTicks(true);
-      slider.setPaintLabels(false);
+		slider = new JSlider(JSlider.HORIZONTAL, 0, 100, defValue);
+		slider.setMajorTickSpacing(25);
+		slider.setMinorTickSpacing(5);
+		slider.setPaintTicks(true);
+		slider.setPaintLabels(false);
 
-      slider.addChangeListener(this);
+		slider.addChangeListener(this);
 
-      add(slider, BorderLayout.CENTER);
-       
-      text = new JTextField();
-      text.setEditable(false);
-      text.setColumns(4);
+		add(slider, BorderLayout.CENTER);
 
-      refresh();
+		text = new JTextField();
+		text.setEditable(false);
+		text.setColumns(4);
 
-      JPanel temp = new JPanel();
-      temp.setLayout(new FlowLayout(FlowLayout.CENTER));
+		refresh();
 
-      temp.add(text);
+		JPanel temp = new JPanel();
+		temp.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-      add(temp, BorderLayout.EAST);
-   }
+		temp.add(text);
 
-   public void stateChanged(ChangeEvent ev)
-   {
-      if (slider.getValue() == 0)
-      {
-         text.setText("off");
-      }
-      else
-      {
-         text.setText(slider.getValue()+"%");    
-      }
-      notifyParent();
-   }
+		add(temp, BorderLayout.EAST);
+	}
 
-   public void save()
-   {
-      ClientState.getClientState().setFloat(getVariable(), (float)slider.getValue() / 100f);
-   }
+	public void stateChanged(ChangeEvent ev) {
+		if (slider.getValue() == 0) {
+			text.setText("off");
+		} else {
+			text.setText(slider.getValue() + "%");
+		}
+		notifyParent();
+	}
 
-   public int getEstimatedWidth()
-   {
-      return (int)label.getPreferredSize().getWidth();
-   }
+	public void save() {
+		ClientState.getClientState().setFloat(getVariable(), (float) slider.getValue() / 100f);
+	}
 
-   public void setAlignWidth(int width)
-   {
-      label.setPreferredSize(new Dimension(width, 0));
-      revalidate();
-   }
+	public int getEstimatedWidth() {
+		return (int) label.getPreferredSize().getWidth();
+	}
 
-   public JComponent getComponent()
-   {
-      return this;
-   }
+	public void setAlignWidth(int width) {
+		label.setPreferredSize(new Dimension(width, 0));
+		revalidate();
+	}
 
-   public void refresh()
-   {
-      int defValue = (int)(ClientState.getClientState().getFloat(getVariable(), value) * 100);
-      slider.setValue(defValue);
+	public JComponent getComponent() {
+		return this;
+	}
 
-      if (defValue == 0)
-      {
-         text.setText("off");
-         return;
-      }
+	public void refresh() {
+		int defValue = (int) (ClientState.getClientState().getFloat(getVariable(), value) * 100);
+		slider.setValue(defValue);
 
-      text.setText(defValue + "%");
-   }
+		if (defValue == 0) {
+			text.setText("off");
+			return;
+		}
+
+		text.setText(defValue + "%");
+	}
 }
 
 

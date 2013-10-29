@@ -1,29 +1,32 @@
 package rero.gui.windows;
 
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 
-public interface ClientWindow
-{
-    public void setTitle(String title);
-    public void setContentPane(Container c);
+public interface ClientWindow {
+	public void setTitle(String title);
 
-    public void setIcon(ImageIcon i);
+	public void setContentPane(Container c);
 
-    public void show();
+	public void setIcon(ImageIcon i);
 
-    public void addWindowListener(ClientWindowListener l);
-    public String getTitle();
+	public void show();
 
-    public boolean isSelected();
+	public void addWindowListener(ClientWindowListener l);
 
-    public void closeWindow();
+	public String getTitle();
 
-    public void setMaximum(boolean b);
-    public void setIcon(boolean b);
+	public boolean isSelected();
 
-    public boolean isMaximum();
-    public boolean isIcon();
+	public void closeWindow();
 
-    public void activate();
+	public void setMaximum(boolean b);
+
+	public void setIcon(boolean b);
+
+	public boolean isMaximum();
+
+	public boolean isIcon();
+
+	public void activate();
 }

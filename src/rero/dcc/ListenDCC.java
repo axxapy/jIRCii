@@ -1,61 +1,55 @@
 package rero.dcc;
 
-import java.net.*;
-import rero.config.*;
+import rero.config.ClientDefaults;
+import rero.config.ClientState;
 
-public class ListenDCC extends GenericDCC
-{
-   protected ServerSocket server = null;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 
-   protected static int offset     = 0;
-   protected static int timeout    = 60 * 1000;
+public class ListenDCC extends GenericDCC {
+	protected ServerSocket server = null;
 
-   public static int getNextPort()
-   {
-       int rangeStart = ClientState.getClientState().getInteger("dcc.low", ClientDefaults.dcc_low);
-       int rangeStop  = ClientState.getClientState().getInteger("dcc.high", ClientDefaults.dcc_high);
+	protected static int offset = 0;
+	protected static int timeout = 60 * 1000;
 
-       offset += 1;
-       offset = offset % (rangeStop - rangeStart);
+	public static int getNextPort() {
+		int rangeStart = ClientState.getClientState().getInteger("dcc.low", ClientDefaults.dcc_low);
+		int rangeStop = ClientState.getClientState().getInteger("dcc.high", ClientDefaults.dcc_high);
 
-       return rangeStart + offset;
-   }
+		offset += 1;
+		offset = offset % (rangeStop - rangeStart);
 
-   /** instructs the class to listen for a connection on some port, returns the port as an integer.  A return value of -1 
-       indicates there was a problem binding to the port.  Doh!@ */
-   public int getListenerPort()
-   {
-       try
-       {
-          server = new ServerSocket(getNextPort());
-          return server.getLocalPort();
-       }
-       catch (Exception ex)
-       {
-          ex.printStackTrace();
-       }
+		return rangeStart + offset;
+	}
 
-       return -1;
-   }
+	/**
+	 * instructs the class to listen for a connection on some port, returns the port as an integer.  A return value of -1
+	 * indicates there was a problem binding to the port.  Doh!@
+	 */
+	public int getListenerPort() {
+		try {
+			server = new ServerSocket(getNextPort());
+			return server.getLocalPort();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 
-   public Socket establishConnection()
-   {
-       try
-       {
-          server.setSoTimeout(timeout);
-          return server.accept();
-       }
-       catch (SocketTimeoutException stex)
-       {
-          getImplementation().fireError("timed out waiting for connection");
-       }
-       catch (Exception ex)
-       {
-          ex.printStackTrace();
+		return -1;
+	}
 
-          getImplementation().fireError(ex.getMessage());
-       }
+	public Socket establishConnection() {
+		try {
+			server.setSoTimeout(timeout);
+			return server.accept();
+		} catch (SocketTimeoutException stex) {
+			getImplementation().fireError("timed out waiting for connection");
+		} catch (Exception ex) {
+			ex.printStackTrace();
 
-       return null;
-   }
+			getImplementation().fireError(ex.getMessage());
+		}
+
+		return null;
+	}
 }

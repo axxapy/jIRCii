@@ -4,67 +4,58 @@
     Exports Structures, capabilities, and event wiring for the socket 
     subsystem.  Fun, eh?
 
-*/                   
+*/
 
 package rero.net;
-
-import java.util.WeakHashMap;
 
 import rero.net.interfaces.SocketDataListener;
 import rero.net.interfaces.SocketStatusListener;
 
-public class SocketSystem
-{
-   protected SocketConnection aConnection;
+import java.util.WeakHashMap;
 
-   public SocketSystem()
-   {
-      aConnection = new SocketConnection();
-   }
-   
-   public SocketConnection getSocket()
-   {
-      return aConnection;      
-   }
+public class SocketSystem {
+	protected SocketConnection aConnection;
 
-   // === Export Data Structures ========================================================================================
+	public SocketSystem() {
+		aConnection = new SocketConnection();
+	}
 
-   public void storeDataStructures(WeakHashMap centralDataRepository)
-   {
-      centralDataRepository.put("socketInformation", aConnection.getSocketInformation());
-   }
+	public SocketConnection getSocket() {
+		return aConnection;
+	}
 
-   // === Export Capabilities ============================================================================================
+	// === Export Data Structures ========================================================================================
 
-         // (note: capabilities are exported in this manner solely to
-         //  facilitate a quick and easy way to access them.  For stable
-         //  API's capability proxies should just access the reference
-         //  with the API directly to avoid the extra function call overhead).
+	public void storeDataStructures(WeakHashMap centralDataRepository) {
+		centralDataRepository.put("socketInformation", aConnection.getSocketInformation());
+	}
 
-   public void println (String message)
-   {
-      getSocket().println(message);
-   }
+	// === Export Capabilities ============================================================================================
 
-   public void connect (String host, int port)
-   {
-      getSocket().connect(host, port);
-   }
+	// (note: capabilities are exported in this manner solely to
+	//  facilitate a quick and easy way to access them.  For stable
+	//  API's capability proxies should just access the reference
+	//  with the API directly to avoid the extra function call overhead).
 
-   public void disconnect()
-   {
-      getSocket().disconnect();
-   }
+	public void println(String message) {
+		getSocket().println(message);
+	}
 
-   // === Export Events ==================================================================================================
-   
-   public void addSocketDataListener(SocketDataListener l)
-   {
-      getSocket().addSocketDataListener(l);
-   }
+	public void connect(String host, int port) {
+		getSocket().connect(host, port);
+	}
 
-   public void addSocketStatusListener(SocketStatusListener l)
-   {
-      getSocket().addSocketStatusListener(l);
-   }
+	public void disconnect() {
+		getSocket().disconnect();
+	}
+
+	// === Export Events ==================================================================================================
+
+	public void addSocketDataListener(SocketDataListener l) {
+		getSocket().addSocketDataListener(l);
+	}
+
+	public void addSocketStatusListener(SocketStatusListener l) {
+		getSocket().addSocketStatusListener(l);
+	}
 }

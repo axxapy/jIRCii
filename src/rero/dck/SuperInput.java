@@ -1,69 +1,50 @@
 package rero.dck;
 
-import java.awt.*;
-import java.awt.event.*;
-
 import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.*;
 
-import java.util.*;
+public abstract class SuperInput extends JPanel implements DItem {
+	protected String variable;
+	protected DParent parent;
 
-import rero.config.*;
-import rero.dck.*;
+	public void setEnabled(boolean b) {
+		disableComponents(this, b);
+		super.setEnabled(b);
+	}
 
-public abstract class SuperInput extends JPanel implements DItem
-{
-   protected String     variable;
-   protected DParent    parent;
+	private void disableComponents(Container cont, boolean b) {
+		Component[] blah = cont.getComponents();
+		for (int x = 0; x < blah.length; x++) {
+			blah[x].setEnabled(b);
 
-   public void setEnabled(boolean b)
-   {
-      disableComponents(this, b);
-      super.setEnabled(b);
-   }
+			if (blah[x] instanceof Container) {
+				disableComponents((Container) blah[x], b);
+			}
+		}
+	}
 
-   private void disableComponents(Container cont, boolean b)
-   {
-      Component[] blah = cont.getComponents();
-      for (int x = 0; x < blah.length; x++)
-      {
-         blah[x].setEnabled(b);
+	public String getVariable() {
+		if (parent == null) {
+			return variable;
+		}
 
-         if (blah[x] instanceof Container)
-         {
-            disableComponents((Container)blah[x], b);
-         }
-      }
-   }
+		return parent.getVariable(variable);
+	}
 
-   public String getVariable()
-   {
-      if (parent == null)
-      {
-         return variable;
-      }
+	public void notifyParent() {
+		if (parent != null) {
+			save();
+			parent.notifyParent(getVariable());
+		}
+	}
 
-      return parent.getVariable(variable);
-   }
-  
-   public void notifyParent()
-   {
-      if (parent != null)
-      {
-         save();
-         parent.notifyParent(getVariable());
-      }
-   }
+	public void setParent(DParent parent) {
+		this.parent = parent;
+	}
 
-   public void setParent(DParent parent)
-   {
-      this.parent = parent;
-   }
-
-   public JComponent getComponent()
-   {
-      return this;
-   }
+	public JComponent getComponent() {
+		return this;
+	}
 }
 
 

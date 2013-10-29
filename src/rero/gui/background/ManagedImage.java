@@ -2,66 +2,56 @@
 package rero.gui.background;
 
 import java.awt.*;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.VolatileImage;
 
-public class ManagedImage
-{
-   protected VolatileImage hwImage;
-   protected BufferedImage swImage;
-   protected Component     source;
+public class ManagedImage {
+	protected VolatileImage hwImage;
+	protected BufferedImage swImage;
+	protected Component source;
 
-   private void createImage()
-   {
-      hwImage = source.getGraphicsConfiguration().createCompatibleVolatileImage(getWidth(), getHeight());
-   }
+	private void createImage() {
+		hwImage = source.getGraphicsConfiguration().createCompatibleVolatileImage(getWidth(), getHeight());
+	}
 
-   private void renderImage()
-   {
-      Graphics2D g = hwImage.createGraphics();
-      g.drawImage(swImage, 0, 0, null);
-      g.dispose();
-   }
+	private void renderImage() {
+		Graphics2D g = hwImage.createGraphics();
+		g.drawImage(swImage, 0, 0, null);
+		g.dispose();
+	}
 
-   public ManagedImage(BufferedImage _image, Component c)
-   {
-      source  = c;
-      swImage = _image;
-      
-      createImage();
-      renderImage();
-   }
+	public ManagedImage(BufferedImage _image, Component c) {
+		source = c;
+		swImage = _image;
 
-   public int getWidth()
-   {
-      return swImage.getWidth();
-   }
+		createImage();
+		renderImage();
+	}
 
-   public int getHeight()
-   {
-      return swImage.getHeight();
-   }
+	public int getWidth() {
+		return swImage.getWidth();
+	}
 
-   public Image getDrawableImage()
-   {
-      int state = hwImage.validate(source.getGraphicsConfiguration());
-      if (state == VolatileImage.IMAGE_RESTORED)   
-      {
-         renderImage();
-      }
-      else if (state == VolatileImage.IMAGE_INCOMPATIBLE)
-      {
-         createImage();
-         renderImage();
-      }
+	public int getHeight() {
+		return swImage.getHeight();
+	}
 
-      if (hwImage.contentsLost())
-      {
-         System.out.println("Resorting to software image...  worthless peice of crap");
-         return swImage;
-      } 
+	public Image getDrawableImage() {
+		int state = hwImage.validate(source.getGraphicsConfiguration());
+		if (state == VolatileImage.IMAGE_RESTORED) {
+			renderImage();
+		} else if (state == VolatileImage.IMAGE_INCOMPATIBLE) {
+			createImage();
+			renderImage();
+		}
 
-      System.out.println("hwImage: " + hwImage.getCapabilities());
+		if (hwImage.contentsLost()) {
+			System.out.println("Resorting to software image...  worthless peice of crap");
+			return swImage;
+		}
 
-      return hwImage;
-   }
+		System.out.println("hwImage: " + hwImage.getCapabilities());
+
+		return hwImage;
+	}
 }

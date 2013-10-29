@@ -1,23 +1,19 @@
 package rero.gui.toolbar;
 
-import rero.gui.*;
+import rero.gui.SessionManager;
 
-import java.awt.event.*;
+import java.awt.event.MouseEvent;
 
-public class HelpAction implements ToolAction
-{
-   public void actionPerformed(MouseEvent ev)
-   {
-      SessionManager.getGlobalCapabilities().showHelpDialog("Help");
-   }
+public class HelpAction implements ToolAction {
+	public void actionPerformed(MouseEvent ev) {
+		SessionManager.getGlobalCapabilities().showHelpDialog("Help");
+	}
 
-   public String getDescription()
-   {
-      return "View jIRCii Help";
-   }
+	public String getDescription() {
+		return "View jIRCii Help";
+	}
 
-    public int getIndex()
-    {
-       return 35;
-    }
+	public int getIndex() {
+		return 35;
+	}
 }
