@@ -19,7 +19,7 @@ To compile jIRCii: from the top level of the extracted files type:
 
 To run jIRCii from the command line... 
 
-[raffi@beardsley ~/rero]$ java -classpath ./bin:./lib/sleep.jar:./resources rero.test.WindowTest
+[raffi@beardsley ~/rero]$ java -classpath ./bin:./lib/sleep.jar:./resources rero.Application
 
 (use the -settings command line option to specify a directory to dump your test settings to)
 

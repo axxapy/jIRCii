@@ -499,12 +499,12 @@ Begin jIRCii FAQ:
 
     MacOS X, Linux, and other UNIX OS's:
     java -classpath /path-to/jerk.jar:/path-to/liquidlnf.jar 
-                    rero.test.WindowTest 
+                    rero.Application
                     -lnf com.birosoft.liquid.LiquidLookAndFeel
 
     Windows (you can't use jircii.exe to do this):
     javaw -classpath c:\path-to\jerk.jar;c:\path-to\liquidlnf.jar 
-                     rero.test.WindowTest 
+                     rero.Application
                      -lnf com.birosoft.liquid.LiquidLookAndFeel
 
 30. How do I make my statusbar transparent?

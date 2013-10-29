@@ -1,23 +1,19 @@
-package rero.test;
+package rero;
 
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
-import rero.gui.GlobalCapabilities;
-import rero.gui.SessionManager;
+import rero.gui.windows.MainWindow;
 import rero.ident.IdentDaemon;
+import rero.test.ProxySettings;
+import rero.test.QuickConnect;
 import rero.util.ClientUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 import java.net.URI;
 
-
-public class WindowTest {
+public class Application {
 	private static void checkEnvironment() {
 		boolean invalidenv = false;
 
@@ -130,47 +126,6 @@ public class WindowTest {
 		//
 		// Open the window and launch this bad boy irc client
 		//
-		new WindowTest();
-	}
-
-	protected JFrame frame;
-
-	public WindowTest() {
-		frame = new JFrame("jIRCii");
-
-		GlobalCapabilities.frame = frame;
-
-		frame.getContentPane().setLayout(new BorderLayout());
-
-		frame.getContentPane().add(new SessionManager(frame), BorderLayout.CENTER);
-
-		frame.setIconImage(ClientState.getClientState().getIcon("jirc.icon", "jicon.jpg").getImage());
-
-		int inset = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
-
-		frame.setBounds(ClientState.getClientState().getBounds("desktop.bounds", Toolkit.getDefaultToolkit().getScreenSize(), new Dimension(640, 480)));
-
-		frame.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent ev) {
-				SessionManager.getGlobalCapabilities().QuitClient();
-			}
-		});
-
-		frame.addComponentListener(new ComponentAdapter() {
-			public void componentMoved(ComponentEvent ev) {
-				if (ClientState.getClientState().isOption("desktop.relative", false) ||
-						ClientState.getClientState().isOption("window.relative", false) ||
-						ClientState.getClientState().isOption("statusbar.relative", false)
-						) {
-					frame.validate();
-					ClientState.getClientState().fireChange("desktop");
-					ClientState.getClientState().fireChange("window");
-					ClientState.getClientState().fireChange("statusbar");
-					frame.repaint();
-				}
-			}
-		});
-
-		frame.show();
+		new MainWindow().setVisible(true);
 	}
 }

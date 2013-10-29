@@ -60,7 +60,7 @@
          includes="**/*">
        <manifest>
          <attribute name="Built-By" value="${user.name}"/>
-         <attribute name="Main-Class" value="rero.test.WindowTest"/>
+         <attribute name="Main-Class" value="rero.Application"/>
       </manifest>
      </jar>
    </target>

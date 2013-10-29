@@ -34,7 +34,7 @@
 	<key>Java</key>
 	<dict>
 		<key>MainClass</key>
-		<string>rero.test.WindowTest</string>
+		<string>rero.Application</string>
 		<key>JVMVersion</key>
 		<string>1.4+</string>
 		<key>ClassPath</key>
