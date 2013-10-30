@@ -40,7 +40,7 @@ public class StringInput extends SuperInput {
 	}
 
 	public void save() {
-		ClientState.getClientState().setString(getVariable(), text.getText());
+		ClientState.getInstance().setString(getVariable(), text.getText());
 	}
 
 	public int getEstimatedWidth() {
@@ -57,7 +57,7 @@ public class StringInput extends SuperInput {
 	}
 
 	public void refresh() {
-		text.setText(ClientState.getClientState().getString(getVariable(), value));
+		text.setText(ClientState.getInstance().getString(getVariable(), value));
 	}
 }
 

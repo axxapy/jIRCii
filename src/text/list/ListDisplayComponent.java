@@ -17,7 +17,7 @@ public class ListDisplayComponent extends JComponent implements ChangeListener, 
 		setOpaque(false);
 		setDoubleBuffered(false);
 
-		ClientState.getClientState().addClientStateListener("listbox.width", this);
+		ClientState.getInstance().addClientStateListener("listbox.width", this);
 
 		propertyChanged(null, null);
 	}
@@ -30,7 +30,7 @@ public class ListDisplayComponent extends JComponent implements ChangeListener, 
 	private static final String widthstring = "1234567890123456789012345678901234567890123456789012345678901234567890";
 
 	public void propertyChanged(String a, String b) {
-		test_string = widthstring.substring(0, ClientState.getClientState().getInteger("listbox.width", ClientDefaults.listbox_width));
+		test_string = widthstring.substring(0, ClientState.getInstance().getInteger("listbox.width", ClientDefaults.listbox_width));
 		revalidate();
 	}
 

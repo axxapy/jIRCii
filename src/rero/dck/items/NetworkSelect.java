@@ -58,8 +58,8 @@ public class NetworkSelect extends SuperInput implements ItemListener {
 			public void actionPerformed(ActionEvent ev) {
 				if (networks.getSelectedIndex() > 0) // we don't want to remove the first element, so > 0...
 				{
-					ClientState.getClientState().setString(getVariable(), "");
-					ClientState.getClientState().sync();
+					ClientState.getInstance().setString(getVariable(), "");
+					ClientState.getInstance().sync();
 
 					int zz = networks.getSelectedIndex() - 1;
 					data.remove(networks.getSelectedItem().toString());
@@ -156,7 +156,7 @@ public class NetworkSelect extends SuperInput implements ItemListener {
 		networks.addItem(ALL_NETWORKS);
 
 		if (data == null) {
-			data = ClientState.getClientState().getStringList(networkV);
+			data = ClientState.getInstance().getStringList(networkV);
 		}
 
 		LinkedList temp = data.getList();

@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class StringList {
-	protected LinkedList values;
+	protected LinkedList<String> values;
 	protected String key;
 
 	public StringList(String _key) {
@@ -13,7 +13,7 @@ public class StringList {
 	}
 
 	public void load() {
-		String value = ClientState.getClientState().getString(key, null);
+		String value = ClientState.getInstance().getString(key, null);
 		LinkedList rv = new LinkedList();
 
 		if (value != null) {
@@ -48,7 +48,7 @@ public class StringList {
 			}
 		}
 
-		ClientState.getClientState().setString(key, value.toString());
+		ClientState.getInstance().setString(key, value.toString());
 	}
 
 	public void add(String element) {
@@ -64,12 +64,12 @@ public class StringList {
 		}
 
 		save();
-		ClientState.getClientState().fireChange(key, element);
+		ClientState.getInstance().fireChange(key, element);
 	}
 
 	public void clear() {
 		values = new LinkedList();
 		save();
-		ClientState.getClientState().fireChange(key);
+		ClientState.getInstance().fireChange(key);
 	}
 }

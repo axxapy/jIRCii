@@ -58,7 +58,7 @@ public class AboutWindow extends JDialog {
 		super(frame, "About jIRCii", false);
 
 		if (logo == null) {
-			logo = ClientState.getClientState().getIcon("about.logo", "logo.jpg");
+			logo = ClientState.getInstance().getIcon("about.logo", "logo.jpg");
 		}
 
 		JButton closeButton = new JButton("Close");

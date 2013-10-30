@@ -29,7 +29,7 @@ public class HelpData {
 	}
 
 	public HelpData() {
-		URL url = ClientState.getClientState().getPackagedResource("aliases", "help");
+		URL url = ClientState.getInstance().getPackagedResource("aliases", "help");
 
 		if (url != null) {
 			try {

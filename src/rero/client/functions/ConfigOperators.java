@@ -38,7 +38,7 @@ public class ConfigOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 
 			Scalar value = SleepUtils.getArrayScalar();
-			Iterator i = ClientState.getClientState().getStringList(a).getList().iterator();
+			Iterator i = ClientState.getInstance().getStringList(a).getList().iterator();
 			while (i.hasNext()) {
 				value.getArray().push(SleepUtils.getScalar(i.next().toString()));
 			}
@@ -52,7 +52,7 @@ public class ConfigOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 			Scalar b = (Scalar) locals.pop();
 
-			StringList list = ClientState.getClientState().getStringList(a);
+			StringList list = ClientState.getInstance().getStringList(a);
 
 			list.clear();
 
@@ -75,7 +75,7 @@ public class ConfigOperators extends Feature implements Loadable {
 				def = locals.pop().toString();
 			}
 
-			return SleepUtils.getScalar(ClientState.getClientState().getString(a, def));
+			return SleepUtils.getScalar(ClientState.getInstance().getString(a, def));
 		}
 	}
 
@@ -84,7 +84,7 @@ public class ConfigOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 			String b = locals.pop().toString();
 
-			ClientState.getClientState().setString(a, b);
+			ClientState.getInstance().setString(a, b);
 
 			return SleepUtils.getEmptyScalar();
 		}
@@ -94,7 +94,7 @@ public class ConfigOperators extends Feature implements Loadable {
 		public boolean decide(String f, ScriptInstance si, Stack locals) {
 			String a = locals.pop().toString();
 
-			return ClientState.getClientState().isOption(a, true);
+			return ClientState.getInstance().isOption(a, true);
 		}
 	}
 
@@ -102,13 +102,13 @@ public class ConfigOperators extends Feature implements Loadable {
 		public boolean decide(String f, ScriptInstance si, Stack locals) {
 			String a = locals.pop().toString();
 
-			return ClientState.getClientState().isOption(a, false);
+			return ClientState.getInstance().isOption(a, false);
 		}
 	}
 
 	private static class getBaseDirectory implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			return SleepUtils.getScalar(ClientState.getClientState().getBaseDirectory().getAbsolutePath());
+			return SleepUtils.getScalar(ClientState.getInstance().getBaseDirectory().getAbsolutePath());
 		}
 	}
 }

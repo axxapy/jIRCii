@@ -138,7 +138,7 @@ public class ChannelWindow extends StatusWindow implements ChannelDataWatch {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getClientState().getResource("channel.gif"));
+			icon = new ImageIcon(ClientState.getInstance().getResource("channel.gif"));
 		}
 
 		return icon;

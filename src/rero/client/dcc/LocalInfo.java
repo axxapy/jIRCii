@@ -59,7 +59,7 @@ public class LocalInfo extends Feature implements FrameworkConstants, ClientStat
 	}
 
 	public void init() {
-		ClientState.getClientState().addClientStateListener("dcc.localinfo", this);
+		ClientState.getInstance().addClientStateListener("dcc.localinfo", this);
 		processLocalInfoSettings();
 	}
 
@@ -70,20 +70,20 @@ public class LocalInfo extends Feature implements FrameworkConstants, ClientStat
 		if (localHost != null)  // localhost has already been processed... f00.
 			return;
 
-		if (ClientState.getClientState().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_AUTOMATIC)) {
+		if (ClientState.getInstance().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_AUTOMATIC)) {
 			(new Thread(new Runnable() {
 				public void run() {
 					localip();
 				}
 			})).start();
-		} else if (ClientState.getClientState().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_FROM_SERVER)) {
+		} else if (ClientState.getInstance().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_FROM_SERVER)) {
 			if (!resolveProcessed) {
 				getCapabilities().addTemporaryListener(new ResolveLocalInfo());
 			} else {
 				localHost = resolveHost;
 			}
 		} else {
-			localHost = ClientState.getClientState().getString("dcc.localinfo", "127.0.0.1");
+			localHost = ClientState.getInstance().getString("dcc.localinfo", "127.0.0.1");
 		}
 	}
 

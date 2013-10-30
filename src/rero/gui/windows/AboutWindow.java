@@ -15,7 +15,7 @@ public class AboutWindow extends StatusWindow implements Runnable {
 	Random random = new Random(System.currentTimeMillis());
 	boolean showKow = false;
 	Color background = null;
-	String me = ClientState.getClientState().getString("user.nick", "lamer");
+	String me = ClientState.getInstance().getString("user.nick", "lamer");
 	//    String  nnn        = "14\u038715\u00F810\u0387";
 	String nnn = "04\u202216\u00F804\u2022";
 	String name = "";
@@ -69,7 +69,7 @@ public class AboutWindow extends StatusWindow implements Runnable {
 		JList lusers = new JList(users);
 		lusers.setBorder(null);
 
-		lusers.setFont(ClientState.getClientState().getFont("ui.font", ClientDefaults.ui_font));
+		lusers.setFont(ClientState.getInstance().getFont("ui.font", ClientDefaults.ui_font));
 		JScrollPane scroller = new JScrollPane(lusers, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroller.setBorder(null);
 
@@ -372,7 +372,7 @@ public class AboutWindow extends StatusWindow implements Runnable {
 			setForeground(temp);
 			setCaretColor(temp.brighter());
 
-			setFont(ClientState.getClientState().getFont("ui.font", ClientDefaults.ui_font));
+			setFont(ClientState.getInstance().getFont("ui.font", ClientDefaults.ui_font));
 
 			revalidate();
 		}
@@ -416,7 +416,7 @@ public class AboutWindow extends StatusWindow implements Runnable {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getClientState().getResource("jsmall.gif"));
+			icon = new ImageIcon(ClientState.getInstance().getResource("jsmall.gif"));
 		}
 
 		return icon;

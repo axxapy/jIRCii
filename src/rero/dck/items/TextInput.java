@@ -53,7 +53,7 @@ public class TextInput extends SuperInput implements ActionListener {
 	}
 
 	public void refresh() {
-		StringList string = ClientState.getClientState().getStringList(getVariable());
+		StringList string = ClientState.getInstance().getStringList(getVariable());
 		StringBuffer data = new StringBuffer();
 
 		Iterator i = string.getList().iterator();

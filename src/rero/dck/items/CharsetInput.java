@@ -44,7 +44,7 @@ public class CharsetInput extends SuperInput {
 	}
 
 	public void save() {
-		ClientState.getClientState().setString(getVariable(), name.getSelectedItem().toString());
+		ClientState.getInstance().setString(getVariable(), name.getSelectedItem().toString());
 	}
 
 	public JComponent getComponent() {
@@ -57,7 +57,7 @@ public class CharsetInput extends SuperInput {
 
 	public void refresh() {
 		if (!listing) {
-			name.setSelectedItem(ClientState.getClientState().getString(getVariable(), DEFAULT_CHARSET));
+			name.setSelectedItem(ClientState.getInstance().getString(getVariable(), DEFAULT_CHARSET));
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

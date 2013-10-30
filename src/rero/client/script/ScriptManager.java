@@ -33,7 +33,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 		loader = (ScriptLoader) getCapabilities().getDataStructure(DataStructures.ScriptLoader);
 		environment = (Hashtable) getCapabilities().getDataStructure(DataStructures.SharedEnv);
 
-		ClientState.getClientState().addClientStateListener("script.files", this);
+		ClientState.getInstance().addClientStateListener("script.files", this);
 	}
 
 	public void storeDataStructures(WeakHashMap data) {
@@ -50,14 +50,14 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 
 		// Traverse through the loaded scripts and correct the script paths to absolute paths, as that's the format in which we've stored them.
 		configured = new LinkedHashSet();
-		Iterator si = ClientState.getClientState().getStringList("script.files").getList().iterator();
+		Iterator si = ClientState.getInstance().getStringList("script.files").getList().iterator();
 
 		while (si.hasNext()) {
 			File absScript = new File(si.next().toString());
 			configured.add(absScript.getAbsolutePath());
 		}
 
-		//configured.addAll(ClientState.getClientState().getStringList("script.files").getList());
+		//configured.addAll(ClientState.getInstance().getStringList("script.files").getList());
 
 		load = loader.getScriptsToLoad(configured);
 		unload = loader.getScriptsToUnload(configured);
@@ -76,7 +76,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 			String tt = (String) i.next();
 			loader.unloadScript(tt);
 
-			if (ClientState.getClientState().isOption("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
+			if (ClientState.getInstance().isOption("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
 				getCapabilities().getUserInterface().printStatus("Successfully unloaded script " + tt);
 			}
 		}
@@ -105,7 +105,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 	// Checks whether a script is in the script.files property list. It determines via getAbsolutePath() on each iteration of script.files, and of the passed argument filename.
 	public boolean isInScriptList(String filename) {
 		File fn = ClientUtils.getFile(filename);
-		Iterator si = ClientState.getClientState().getStringList("script.files").getList().iterator();
+		Iterator si = ClientState.getInstance().getStringList("script.files").getList().iterator();
 
 		while (si.hasNext()) {
 			File siFn = new File(si.next().toString());
@@ -118,7 +118,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 	}
 
 	public void addScript(String filename) {
-		StringList temp = ClientState.getClientState().getStringList("script.files");
+		StringList temp = ClientState.getInstance().getStringList("script.files");
 
 		// Sanity checks
 		File fn = ClientUtils.getFile(filename);
@@ -133,7 +133,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 			// Must not be present -- we made it this far.
 			temp.add(fn.getAbsolutePath());
 			temp.save();
-			ClientState.getClientState().sync();    // This triggers a rehash
+			ClientState.getInstance().sync();    // This triggers a rehash
 		} else {
 			getCapabilities().getUserInterface().printStatus("Error loading script: " + fn.getName() + " (" + fn.getAbsolutePath() + ") does not exist!");
 		}
@@ -231,13 +231,13 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 	}
 
 	public boolean removeScript(String filename) {
-		StringList temp = ClientState.getClientState().getStringList("script.files");
+		StringList temp = ClientState.getInstance().getStringList("script.files");
 		String remMe = findScript(filename);
 
 		if (remMe != null) {
 			temp.remove(remMe);
 			temp.save();
-			ClientState.getClientState().sync(); // this will cause all the script values to be rehashed...
+			ClientState.getInstance().sync(); // this will cause all the script values to be rehashed...
 
 			return true;
 		} else
@@ -250,7 +250,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 		try {
 			if (lame) {
 				ScriptInstance defaults =
-						loader.loadScript("lame", ClientState.getClientState().getResourceAsStream("lame.irc"), environment);
+						loader.loadScript("lame", ClientState.getInstance().getResourceAsStream("lame.irc"), environment);
 
 				defaults.addWarningWatcher(this);
 				defaults.runScript();
@@ -277,27 +277,27 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 
 		// TODO: Deal with all of this stuff.
 		try {
-			if (ClientState.getClientState().isOption("load.default", true)) {
+			if (ClientState.getInstance().isOption("load.default", true)) {
 				long start = System.currentTimeMillis();
 				ScriptInstance defaults =
-						loader.loadScript("default", ClientState.getClientState().getResourceAsStream("default.irc"), environment);
+						loader.loadScript("default", ClientState.getInstance().getResourceAsStream("default.irc"), environment);
 //            System.out.println("Default script loaded in: " + (System.currentTimeMillis() - start));
 
 				defaults.addWarningWatcher(this);
 				defaults.runScript();
 			}
 
-			if (ClientState.getClientState().isOption("load.menus", true)) {
+			if (ClientState.getInstance().isOption("load.menus", true)) {
 				long start = System.currentTimeMillis();
 				ScriptInstance defaults =
-						loader.loadScript("menus", ClientState.getClientState().getResourceAsStream("menus.irc"), environment);
+						loader.loadScript("menus", ClientState.getInstance().getResourceAsStream("menus.irc"), environment);
 //            System.out.println("Menu script loaded in: " + (System.currentTimeMillis() - start));
 
 				defaults.addWarningWatcher(this);
 				defaults.runScript();
 			}
 
-			if (ClientState.getClientState().isOption("load.lame", false)) {
+			if (ClientState.getInstance().isOption("load.lame", false)) {
 				loadLameScripts();
 			}
 		} catch (YourCodeSucksException ex) {
@@ -306,7 +306,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 			ex.printStackTrace();
 		}
 
-		Iterator i = ClientState.getClientState().getStringList("script.files").getList().iterator();
+		Iterator i = ClientState.getInstance().getStringList("script.files").getList().iterator();
 		while (i.hasNext()) {
 			internalScriptLoad((String) i.next());
 		}
@@ -348,7 +348,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 			}
 
 			ScriptInstance scripti = null;
-			InputStream ii = ClientState.getClientState().getResourceAsStream(scriptFile);
+			InputStream ii = ClientState.getInstance().getResourceAsStream(scriptFile);
 
 			if (ii != null) {
 				scripti = loader.loadScript(fScript.getAbsolutePath(), ii, environment);
@@ -374,7 +374,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 
 			scripti.addWarningWatcher(this);
 
-			if (ClientState.getClientState().isOption("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
+			if (ClientState.getInstance().isOption("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
 				getCapabilities().getUserInterface().printStatus("Successfully loaded script " + new File(scriptFile).getName());
 			}
 
@@ -438,7 +438,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 	}
 
 	public void processScriptWarning(ScriptWarning warn) {
-		if (!ClientState.getClientState().isOption("script.ignoreWarnings", ClientDefaults.script_ignoreWarnings)) {
+		if (!ClientState.getInstance().isOption("script.ignoreWarnings", ClientDefaults.script_ignoreWarnings)) {
 			String[] temp = warn.getMessage().split("\n");
 
 

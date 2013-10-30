@@ -37,11 +37,11 @@ public class ColorInput extends SuperInput implements ActionListener {
 	}
 
 	public void save() {
-		ClientState.getClientState().setColor(getVariable(), colorIcon.getColor());
+		ClientState.getInstance().setColor(getVariable(), colorIcon.getColor());
 	}
 
 	public void refresh() {
-		colorIcon.setColor(ClientState.getClientState().getColor(getVariable(), initial));
+		colorIcon.setColor(ClientState.getInstance().getColor(getVariable(), initial));
 		button.repaint();
 	}
 

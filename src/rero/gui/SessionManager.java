@@ -44,7 +44,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		bridge = (MenuBridge) getActiveSession().getCapabilities().getDataStructure("menuBridge");
 		rero.util.ClientUtils.invokeLater(new Runnable() {
 			public void run() {
-				if (ClientState.getClientState().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
+				if (ClientState.getInstance().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
 					JMenuBar menu = new JMenuBar();
 					bridge.installMenubar(menu);
 					frame.setJMenuBar(menu);
@@ -93,11 +93,11 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// do this before doing anything else... dig?
-				if (!ClientState.getClientState().isOption("ui.showtabs", ClientDefaults.ui_showtabs)) {
+				if (!ClientState.getInstance().isOption("ui.showtabs", ClientDefaults.ui_showtabs)) {
 					setUI(new MinimalTabUI());
 				}
 
-				StringList temp = ClientState.getClientState().getStringList("auto.connect");
+				StringList temp = ClientState.getInstance().getStringList("auto.connect");
 
 				if (QuickConnect.IsQuickConnect()) {
 					addSession();
@@ -126,18 +126,14 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 
 		frame = _frame;
 
-		if (ClientState.getClientState().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
-			frame.setJMenuBar(new JMenuBar());
-		}
-
 		if (getMouseListeners().length > 0)
 			removeMouseListener(getMouseListeners()[0]);
 
 		popups = new PopupManager();
 		addMouseListener(popups);
 
-		ClientState.getClientState().addClientStateListener("loaded.scripts", this);
-		ClientState.getClientState().addClientStateListener("ui.showbar", this);
+		ClientState.getInstance().addClientStateListener("loaded.scripts", this);
+		ClientState.getInstance().addClientStateListener("ui.showbar", this);
 	}
 
 
@@ -185,7 +181,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		propertyChanged(null, null);
 		revalidate();
 
-		if (ClientState.getClientState().getString("user.nick", null) == null && !QuickConnect.IsQuickConnect()) {
+		if (ClientState.getInstance().getString("user.nick", null) == null && !QuickConnect.IsQuickConnect()) {
 			getGlobalCapabilities().showOptionDialog(null);
 			session.getStatusWindow().getInput().requestFocus(); // give status window focus after first time setup...
 		}

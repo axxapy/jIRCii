@@ -29,7 +29,7 @@ public class FileListInput extends SuperInput implements ActionListener, ListSel
 
 		setLayout(new BorderLayout());
 
-		data = ClientState.getClientState().getStringList(variable);
+		data = ClientState.getInstance().getStringList(variable);
 		data.load();
 
 		model = new InputListModel();

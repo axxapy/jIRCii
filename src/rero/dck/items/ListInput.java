@@ -23,7 +23,7 @@ public class ListInput extends SuperInput implements ActionListener {
 
 		setLayout(new BorderLayout());
 
-		data = ClientState.getClientState().getStringList(variable);
+		data = ClientState.getInstance().getStringList(variable);
 		data.load();
 
 		model = new InputListModel();

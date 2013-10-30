@@ -14,7 +14,7 @@ public class QueryWindow extends StatusWindow {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getClientState().getResource("query.gif"));
+			icon = new ImageIcon(ClientState.getInstance().getResource("query.gif"));
 		}
 
 		return icon;

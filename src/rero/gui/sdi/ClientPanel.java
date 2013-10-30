@@ -26,7 +26,7 @@ public class ClientPanel extends WindowManager implements ActionListener, Client
 
 	public void propertyChanged(String key, String value) {
 		if (key.equals("switchbar.position")) {
-			int orientation = ClientState.getClientState().getInteger("switchbar.position", ClientDefaults.switchbar_position);
+			int orientation = ClientState.getInstance().getInteger("switchbar.position", ClientDefaults.switchbar_position);
 
 			top.remove(button);
 			if (orientation == 2 || orientation == 3) {
@@ -95,7 +95,7 @@ public class ClientPanel extends WindowManager implements ActionListener, Client
 
 		new MantainActiveFocus(this);
 
-		ClientState.getClientState().addClientStateListener("switchbar.position", this);
+		ClientState.getInstance().addClientStateListener("switchbar.position", this);
 	}
 
 	public void addWindow(StatusWindow window, boolean selected) {

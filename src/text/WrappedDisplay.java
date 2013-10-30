@@ -107,7 +107,7 @@ public class WrappedDisplay extends JComponent implements MouseWheelListener, Mo
 //      setBorder(null);
 		setBorder(BorderFactory.createEmptyBorder(0, TextSource.UNIVERSAL_TWEAK, 0, 0));
 
-		ClientState.getClientState().addClientStateListener("ui.font", this);
+		ClientState.getInstance().addClientStateListener("ui.font", this);
 	}
 
 	public void mousePressed(MouseEvent ev) {

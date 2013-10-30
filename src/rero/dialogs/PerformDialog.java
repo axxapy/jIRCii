@@ -30,7 +30,7 @@ public class PerformDialog extends DMain implements DParent, ActionListener {
 	}
 
 	public void notifyParent(String variable) {
-		ClientState.getClientState().fireChange("perform");
+		ClientState.getInstance().fireChange("perform");
 		itemc.refresh();
 	}
 

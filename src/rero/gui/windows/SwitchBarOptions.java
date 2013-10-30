@@ -18,8 +18,8 @@ public class SwitchBarOptions implements ClientStateListener {
 		container = c;
 		switchbar = s;
 
-		ClientState.getClientState().addClientStateListener("switchbar.position", this);
-		ClientState.getClientState().addClientStateListener("switchbar.enabled", this);
+		ClientState.getInstance().addClientStateListener("switchbar.position", this);
+		ClientState.getInstance().addClientStateListener("switchbar.enabled", this);
 
 		rehash();
 
@@ -38,8 +38,8 @@ public class SwitchBarOptions implements ClientStateListener {
 
 	public void rehash() {
 		container.remove(switchbar);
-		boolean enabled = ClientState.getClientState().isOption("switchbar.enabled", true);
-		int position = ClientState.getClientState().getInteger("switchbar.position", 0);
+		boolean enabled = ClientState.getInstance().isOption("switchbar.enabled", true);
+		int position = ClientState.getInstance().getInteger("switchbar.position", 0);
 
 		if (enabled) {
 			switch (position) {
@@ -69,15 +69,15 @@ public class SwitchBarOptions implements ClientStateListener {
 		protected boolean hilight;
 
 		public ColorListener() {
-			ClientState.getClientState().addClientStateListener("switchbar.color", this);
-			ClientState.getClientState().addClientStateListener("switchbar.hilight", this);
+			ClientState.getInstance().addClientStateListener("switchbar.color", this);
+			ClientState.getInstance().addClientStateListener("switchbar.hilight", this);
 
 			propertyChanged(null, null);
 		}
 
 		public void propertyChanged(String key, String value) {
-			theColor = ClientState.getClientState().getColor("switchbar.color", ClientDefaults.switchbar_color);
-			hilight = ClientState.getClientState().isOption("switchbar.hilight", ClientDefaults.switchbar_hilight);
+			theColor = ClientState.getInstance().getColor("switchbar.color", ClientDefaults.switchbar_color);
+			hilight = ClientState.getInstance().isOption("switchbar.hilight", ClientDefaults.switchbar_hilight);
 		}
 
 		public boolean isHilightOn() {

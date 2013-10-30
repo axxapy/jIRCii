@@ -16,7 +16,7 @@ public class WrappedData implements BoundedRangeModel {
 	private static int WRAP_TO = 1000;
 
 	static {
-		WRAP_TOLERANCE = ClientState.getClientState().getInteger("ui.buffersize", ClientDefaults.ui_buffersize);
+		WRAP_TOLERANCE = ClientState.getInstance().getInteger("ui.buffersize", ClientDefaults.ui_buffersize);
 		WRAP_TO = WRAP_TOLERANCE / 2;
 	}
 

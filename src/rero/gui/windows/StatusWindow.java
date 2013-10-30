@@ -197,7 +197,7 @@ public class StatusWindow extends BackgroundPanel implements IRCAwareComponent, 
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getClientState().getResource("status.gif"));
+			icon = new ImageIcon(ClientState.getInstance().getResource("status.gif"));
 		}
 
 		return icon;

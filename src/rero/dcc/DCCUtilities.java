@@ -36,7 +36,7 @@ public class DCCUtilities {
 	 */
 	public static final int DetermineResumeOption(Capabilities c, ConnectDCC connect) {
 		int resumeOption = -1;
-		int selectedOption = ClientState.getClientState().getInteger("dcc.exists", ClientDefaults.dcc_accept);
+		int selectedOption = ClientState.getInstance().getInteger("dcc.exists", ClientDefaults.dcc_accept);
 
 		switch (selectedOption) {
 			case ASK_RESUME_OPTION_SET:

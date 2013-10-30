@@ -52,7 +52,7 @@ public class BackgroundProperties implements ClientStateListener {
 	public BackgroundProperties(String _type, Color defaultColor, int defaultType, int defaultStyle, float defaultTint) {
 		type = _type;
 
-		ClientState.getClientState().addClientStateListener(type, this);
+		ClientState.getInstance().addClientStateListener(type, this);
 		init(defaultColor, defaultType, defaultStyle, defaultTint);
 	}
 
@@ -67,12 +67,12 @@ public class BackgroundProperties implements ClientStateListener {
 		boolean _isRelative;
 		String _name;
 
-		_name = ClientState.getClientState().getString(type + ".image", "background.jpg");
-		_bgType = ClientState.getClientState().getInteger(type + ".bgtype", defaultType);
-		_bgColor = ClientState.getClientState().getColor(type + ".color", defaultColor);
-		_bgTint = ClientState.getClientState().getFloat(type + ".tint", defaultTint);
-		_bgStyle = ClientState.getClientState().getInteger(type + ".bgstyle", defaultStyle);
-		_isRelative = ClientState.getClientState().isOption(type + ".relative", false);
+		_name = ClientState.getInstance().getString(type + ".image", "background.jpg");
+		_bgType = ClientState.getInstance().getInteger(type + ".bgtype", defaultType);
+		_bgColor = ClientState.getInstance().getColor(type + ".color", defaultColor);
+		_bgTint = ClientState.getInstance().getFloat(type + ".tint", defaultTint);
+		_bgStyle = ClientState.getInstance().getInteger(type + ".bgstyle", defaultStyle);
+		_isRelative = ClientState.getInstance().isOption(type + ".relative", false);
 
 		if (!_name.equals(name) || bgColor == null || bgType != _bgType || !bgColor.equals(_bgColor) || bgTint != _bgTint || bgStyle != _bgStyle || isRelative != _isRelative) {
 			name = _name;
@@ -88,7 +88,7 @@ public class BackgroundProperties implements ClientStateListener {
 
 	public Image getImage(Component c) {
 		if (image == null) {
-			String imageName = ClientState.getClientState().getString(type + ".image", "background.jpg");
+			String imageName = ClientState.getInstance().getString(type + ".image", "background.jpg");
 			image = BackgroundUtil.getManagedImage(c, imageName, bgTint, bgColor);
 		}
 

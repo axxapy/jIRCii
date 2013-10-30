@@ -15,7 +15,7 @@ public class ClickableURLHandler extends Feature implements ClickListener {
 
 	public void wordClicked(ClickEvent ev) {
 		int clickCount = ev.getEvent().getClickCount();
-		boolean dclick = ClientState.getClientState().isOption("dclick.links", ClientDefaults.dclick_links);
+		boolean dclick = ClientState.getInstance().isOption("dclick.links", ClientDefaults.dclick_links);
 		int need_clicks = dclick ? 2 : 1;
 
 		if (clickCount == need_clicks) {

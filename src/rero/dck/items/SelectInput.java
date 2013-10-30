@@ -53,7 +53,7 @@ public class SelectInput extends SuperInput implements ItemListener {
 	}
 
 	public void save() {
-		ClientState.getClientState().setInteger(getVariable(), select.getSelectedIndex());
+		ClientState.getInstance().setInteger(getVariable(), select.getSelectedIndex());
 	}
 
 	public int getEstimatedWidth() {
@@ -70,7 +70,7 @@ public class SelectInput extends SuperInput implements ItemListener {
 	}
 
 	public void refresh() {
-		select.setSelectedIndex(ClientState.getClientState().getInteger(getVariable(), defaultVal));
+		select.setSelectedIndex(ClientState.getInstance().getInteger(getVariable(), defaultVal));
 	}
 
 	public void itemStateChanged(ItemEvent ev) {

@@ -14,7 +14,7 @@ public class BackgroundPanel extends JPanel implements ClientStateListener {
 			bgProperties = new BackgroundProperties("window", Color.black, BackgroundUtil.BG_SOLID);
 		}
 
-		ClientState.getClientState().addClientStateListener("window", this);  // forces a repaint when the window gets changed
+		ClientState.getInstance().addClientStateListener("window", this);  // forces a repaint when the window gets changed
 	}
 
 	public void propertyChanged(String property, String parms) {

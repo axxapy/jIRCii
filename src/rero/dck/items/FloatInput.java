@@ -61,7 +61,7 @@ public class FloatInput extends SuperInput implements ChangeListener {
 	}
 
 	public void save() {
-		ClientState.getClientState().setFloat(getVariable(), (float) slider.getValue() / 100f);
+		ClientState.getInstance().setFloat(getVariable(), (float) slider.getValue() / 100f);
 	}
 
 	public int getEstimatedWidth() {
@@ -78,7 +78,7 @@ public class FloatInput extends SuperInput implements ChangeListener {
 	}
 
 	public void refresh() {
-		int defValue = (int) (ClientState.getClientState().getFloat(getVariable(), value) * 100);
+		int defValue = (int) (ClientState.getInstance().getFloat(getVariable(), value) * 100);
 		slider.setValue(defValue);
 
 		if (defValue == 0) {

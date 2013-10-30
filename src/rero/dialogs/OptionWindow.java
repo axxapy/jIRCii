@@ -31,7 +31,7 @@ public class OptionWindow extends JDialog implements DCapabilities, TreeSelectio
 	public void forceSave() {
 		if (current != null) {
 			current.save();
-			ClientState.getClientState().sync();
+			ClientState.getInstance().sync();
 		}
 	}
 
@@ -48,7 +48,7 @@ public class OptionWindow extends JDialog implements DCapabilities, TreeSelectio
 	public void saveCurrent(DMain newDialog) {
 		if (current != null) {
 			current.save();
-			ClientState.getClientState().sync();
+			ClientState.getInstance().sync();
 		}
 
 		current = newDialog;

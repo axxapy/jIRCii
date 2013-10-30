@@ -118,8 +118,8 @@ public class InputField extends JTextField implements KeyListener, ActionListene
 
 		rehashColors();
 
-		ClientState.getClientState().addClientStateListener("ui.editcolor", this);
-		ClientState.getClientState().addClientStateListener("ui.font", this);
+		ClientState.getInstance().addClientStateListener("ui.editcolor", this);
+		ClientState.getInstance().addClientStateListener("ui.font", this);
 
 		// Instantiate the command history -oracel
 		this.commandHistory = new ArrayList(maxCommands + 1);
@@ -132,12 +132,12 @@ public class InputField extends JTextField implements KeyListener, ActionListene
 	}
 
 	public void rehashColors() {
-		Color temp = ClientState.getClientState().getColor("ui.editcolor", ClientDefaults.ui_editcolor);
+		Color temp = ClientState.getInstance().getColor("ui.editcolor", ClientDefaults.ui_editcolor);
 
 		setForeground(temp);
 		setCaretColor(temp.brighter());
 
-		setFont(ClientState.getClientState().getFont("ui.font", ClientDefaults.ui_font));
+		setFont(ClientState.getInstance().getFont("ui.font", ClientDefaults.ui_font));
 
 		revalidate();
 	}

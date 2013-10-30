@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 public class EvilAction implements ToolAction {
 	public void actionPerformed(MouseEvent ev) {
 		if (ev.getClickCount() > 2) {
-			boolean lame = !ClientState.getClientState().isOption("load.lame", false);
+			boolean lame = !ClientState.getInstance().isOption("load.lame", false);
 			String message = "";
 
 			if (lame) {
@@ -22,7 +22,7 @@ public class EvilAction implements ToolAction {
 			}
 
 			JOptionPane.showMessageDialog(null, message, "Your favorite holiday...", JOptionPane.INFORMATION_MESSAGE);
-			ClientState.getClientState().setOption("load.lame", lame);
+			ClientState.getInstance().setOption("load.lame", lame);
 		}
 	}
 

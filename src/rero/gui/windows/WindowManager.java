@@ -28,7 +28,7 @@ public abstract class WindowManager extends JPanel implements ClientStateListene
 	}
 
 	public void addToSwitchbar(StatusWindow window) {
-		if (ClientState.getClientState().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
+		if (ClientState.getInstance().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
 			Iterator i = windows.iterator();
 			int pos = 0;
 			while (i.hasNext()) {
@@ -88,9 +88,9 @@ public abstract class WindowManager extends JPanel implements ClientStateListene
 	}
 
 	public void propertyChanged(String key, String value) {
-		isRelative = ClientState.getClientState().isOption("window.relative", false);
+		isRelative = ClientState.getInstance().isOption("window.relative", false);
 
-		if (ClientState.getClientState().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
+		if (ClientState.getInstance().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
 			switchbar.removeAll();
 
 			Collections.sort(windows);
@@ -107,9 +107,9 @@ public abstract class WindowManager extends JPanel implements ClientStateListene
 
 	public WindowManager() {
 		init();
-		ClientState.getClientState().addClientStateListener("switchbar.sort", this);
-		ClientState.getClientState().addClientStateListener("window", this);
-		isRelative = ClientState.getClientState().isOption("window.relative", false);
+		ClientState.getInstance().addClientStateListener("switchbar.sort", this);
+		ClientState.getInstance().addClientStateListener("window", this);
+		isRelative = ClientState.getInstance().isOption("window.relative", false);
 	}
 
 	public LinkedList getAllWindows() {

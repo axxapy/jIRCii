@@ -21,13 +21,13 @@ public class IgnoreHandler implements ClientStateListener {
 	}
 
 	public void hash() {
-		ignoreMasks = ClientState.getClientState().getStringList("ignore.masks");
+		ignoreMasks = ClientState.getInstance().getStringList("ignore.masks");
 		checkIgnore = ignoreMasks.getList().size() > 0;
 	}
 
 	public IgnoreHandler() {
 		hash();
-		ClientState.getClientState().addClientStateListener("ignore.masks", this);
+		ClientState.getInstance().addClientStateListener("ignore.masks", this);
 	}
 
 	public boolean isCheckingIgnore() {

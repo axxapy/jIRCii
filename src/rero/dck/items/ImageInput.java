@@ -61,7 +61,7 @@ public class ImageInput extends SuperInput implements ActionListener {
 	}
 
 	public void save() {
-		ClientState.getClientState().setString(getVariable(), text.getText());
+		ClientState.getInstance().setString(getVariable(), text.getText());
 	}
 
 	public int getEstimatedWidth() {
@@ -78,7 +78,7 @@ public class ImageInput extends SuperInput implements ActionListener {
 	}
 
 	public void refresh() {
-		text.setText(ClientState.getClientState().getString(getVariable(), value));
+		text.setText(ClientState.getInstance().getString(getVariable(), value));
 	}
 
 	protected class ImagePreview extends JPanel implements PropertyChangeListener {

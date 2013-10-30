@@ -75,7 +75,7 @@ public class FontInput extends SuperInput implements ItemListener {
 	}
 
 	public void save() {
-		ClientState.getClientState().setFont(getVariable(), preview.getFont());
+		ClientState.getInstance().setFont(getVariable(), preview.getFont());
 	}
 
 	public int getEstimatedWidth() {
@@ -100,7 +100,7 @@ public class FontInput extends SuperInput implements ItemListener {
 
 	public void refresh() {
 		if (!listing) {
-			Font f = ClientState.getClientState().getFont(getVariable(), value);
+			Font f = ClientState.getInstance().getFont(getVariable(), value);
 
 			name.setSelectedItem(f.getFamily());
 			size.setSelectedItem(f.getSize() + "");

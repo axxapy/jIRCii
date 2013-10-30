@@ -30,14 +30,14 @@ public class Chat extends ProtocolDCC implements ClientStateListener {
 
 	public Chat(String _nickname) {
 		nickname = _nickname;
-		ClientState.getClientState().addClientStateListener("client.encoding", this);
+		ClientState.getInstance().addClientStateListener("client.encoding", this);
 	}
 
 	public void propertyChanged(String property, String value) {
 		try {
 			if (input != null && socket.isConnected()) {
-				input = new BufferedReader(ClientState.getClientState().getProperInputStream(socket.getInputStream()));
-				output = ClientState.getClientState().getProperPrintStream(socket.getOutputStream());
+				input = new BufferedReader(ClientState.getInstance().getProperInputStream(socket.getInputStream()));
+				output = ClientState.getInstance().getProperPrintStream(socket.getOutputStream());
 			}
 		} catch (Exception ex) {
 			System.out.println("Unable to switch encodings...");
@@ -79,8 +79,8 @@ public class Chat extends ProtocolDCC implements ClientStateListener {
 		String text;
 
 		try {
-			output = ClientState.getClientState().getProperPrintStream(socket.getOutputStream());
-			input = new BufferedReader(ClientState.getClientState().getProperInputStream(socket.getInputStream()));
+			output = ClientState.getInstance().getProperPrintStream(socket.getOutputStream());
+			input = new BufferedReader(ClientState.getInstance().getProperInputStream(socket.getInputStream()));
 
 			while (socket.isConnected()) {
 				text = input.readLine();

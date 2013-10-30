@@ -58,10 +58,10 @@ public class GlobalCapabilities {
 				((UserHandler) temp.getCapabilities().getDataStructure(DataStructures.UserHandler)).runAlias("QUIT", "");
 		}
 
-		ClientState.getClientState().setBounds("desktop.bounds", frame.getBounds());
-		ClientState.getClientState().sync();
+		ClientState.getInstance().setBounds("desktop.bounds", frame.getBounds());
+		ClientState.getInstance().sync();
 
-		if (ClientState.getClientState().isOption("load.lame", false)) {
+		if (ClientState.getInstance().isOption("load.lame", false)) {
 			System.out.println("\nThis IRC Client was made possible by:\nDr. Lipensteins Penial Enlargement Pump\nStop feeling embarrassed call 1-877-PUMP\n");
 		}
 

@@ -14,8 +14,8 @@ public class ListenDCC extends GenericDCC {
 	protected static int timeout = 60 * 1000;
 
 	public static int getNextPort() {
-		int rangeStart = ClientState.getClientState().getInteger("dcc.low", ClientDefaults.dcc_low);
-		int rangeStop = ClientState.getClientState().getInteger("dcc.high", ClientDefaults.dcc_high);
+		int rangeStart = ClientState.getInstance().getInteger("dcc.low", ClientDefaults.dcc_low);
+		int rangeStop = ClientState.getInstance().getInteger("dcc.high", ClientDefaults.dcc_high);
 
 		offset += 1;
 		offset = offset % (rangeStop - rangeStart);

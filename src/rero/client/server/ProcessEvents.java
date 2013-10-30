@@ -43,16 +43,16 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				output.fireSetTarget(eventDescription, channel, output.chooseSet(channel, "CHANNEL_TEXT", "CHANNEL_TEXT_INACTIVE"));
 				touchUser(nick, target);
 
-				if (ClientState.getClientState().attentionEnabledChannelChat())
+				if (ClientState.getInstance().attentionEnabledChannelChat())
 					ClientUtils.getAttention(); // Get attention for channel chat
 			} else {
-				if (ClientState.getClientState().isOption("auto.query", ClientDefaults.auto_option)) {
-					boolean isSelected = !ClientState.getClientState().isOption("auto.hide", ClientDefaults.auto_option);
+				if (ClientState.getInstance().isOption("auto.query", ClientDefaults.auto_option)) {
+					boolean isSelected = !ClientState.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
 					getCapabilities().getUserInterface().openQueryWindow(nick, isSelected);
 				}
 				output.fireSetQuery(eventDescription, nick, target, "PRIVMSG");
 
-				if (ClientState.getClientState().attentionEnabledMsg())
+				if (ClientState.getInstance().attentionEnabledMsg())
 					ClientUtils.getAttention(); // Get attention for private message
 			}
 		} else if (event.equals("MODE")) {
@@ -70,16 +70,16 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 			} else if (ircData.isChannel(target)) {
 				output.fireSetConfused(eventDescription, target, "notice", "NOTICE");
 
-				if (ClientState.getClientState().attentionEnabledChannelChat())
+				if (ClientState.getInstance().attentionEnabledChannelChat())
 					ClientUtils.getAttention(); // Get attention for channel notice
-			} else if (ClientState.getClientState().isOption("active.notice", ClientDefaults.active_option)) {
+			} else if (ClientState.getInstance().isOption("active.notice", ClientDefaults.active_option)) {
 				output.fireSetConfused(eventDescription, target, "notice", "NOTICE");
 
-				if (ClientState.getClientState().attentionEnabledNotice())
+				if (ClientState.getInstance().attentionEnabledNotice())
 					ClientUtils.getAttention(); // Get attention for a private notice?
 			} else {
 				output.fireSetAllTarget2(eventDescription, nick, "NOTICE");
-				if (ClientState.getClientState().attentionEnabledNotice())
+				if (ClientState.getInstance().attentionEnabledNotice())
 					ClientUtils.getAttention(); // Get attention for a private notice?
 			}
 
@@ -88,16 +88,16 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 			if (ircData.isChannel(target)) {
 				output.fireSetTarget(eventDescription, channel, output.chooseSet(channel, "ACTION", "ACTION_INACTIVE"));
 				touchUser(nick, target);
-				if (ClientState.getClientState().attentionEnabledChannelChat())
+				if (ClientState.getInstance().attentionEnabledChannelChat())
 					ClientUtils.getAttention(); // Get attention for channel action message
 			} else {
-				if (ClientState.getClientState().isOption("auto.query", ClientDefaults.auto_option)) {
-					boolean isSelected = !ClientState.getClientState().isOption("auto.hide", ClientDefaults.auto_option);
+				if (ClientState.getInstance().isOption("auto.query", ClientDefaults.auto_option)) {
+					boolean isSelected = !ClientState.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
 					getCapabilities().getUserInterface().openQueryWindow(nick, isSelected);
 				}
 
 				output.fireSetTarget(eventDescription, nick, "PRIVACTION");
-				if (ClientState.getClientState().attentionEnabledMsg())
+				if (ClientState.getInstance().attentionEnabledMsg())
 					ClientUtils.getAttention(); // Get attention for private action message
 			}
 		} else if (event.equals("JOIN")) {
@@ -109,7 +109,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				// make this an option later
 				//
 
-				if (ClientState.getClientState().isOption("update.ial", ClientDefaults.update_ial)) {
+				if (ClientState.getInstance().isOption("update.ial", ClientDefaults.update_ial)) {
 					UpdateIAL checkIAL = new UpdateIAL();
 					getCapabilities().addTemporaryListener(checkIAL);
 					getCapabilities().sendln("WHO " + channel.toString());
@@ -118,7 +118,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				//
 				// auto /window on join
 				//
-				if (ClientState.getClientState().isOption("auto.join", ClientDefaults.auto_option)) {
+				if (ClientState.getInstance().isOption("auto.join", ClientDefaults.auto_option)) {
 					getCapabilities().getUserInterface().openChannelWindow(ircData.getChannel(channel));
 				} else {
 					getCapabilities().getUserInterface().setQuery(channel.toString());
@@ -130,7 +130,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 			if (eventDescription.get("$nick").equals(ircData.getMyNick())) {
 				output.cycleQuery();
 
-				if (ClientState.getClientState().attentionEnabledActions())
+				if (ClientState.getInstance().attentionEnabledActions())
 					ClientUtils.getAttention(); // Get attention for KICK action
 			}
 			output.fireSetTarget(eventDescription, channel, "CHANNEL_KICK");
@@ -139,7 +139,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				output.cycleQuery();
 			}
 
-			if (ClientState.getClientState().isOption("auto.part", ClientDefaults.auto_option) && ClientState.getClientState().isOption("auto.join", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(channel)) {
+			if (ClientState.getInstance().isOption("auto.part", ClientDefaults.auto_option) && ClientState.getInstance().isOption("auto.join", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(channel)) {
 				// do nothing if there is no window open and we have the option set to part the channel on closing the window.
 			} else {
 				output.fireSetTarget(eventDescription, channel, "CHANNEL_PART");
@@ -189,8 +189,8 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 		} else if (event.equals("CHAT_OPEN")) {
 			nick = "=" + eventDescription.get("$nick");
 
-			if (ClientState.getClientState().isOption("auto.chat", ClientDefaults.auto_option)) {
-				boolean isSelected = !ClientState.getClientState().isOption("auto.hide", ClientDefaults.auto_option);
+			if (ClientState.getInstance().isOption("auto.chat", ClientDefaults.auto_option)) {
+				boolean isSelected = !ClientState.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
 				getCapabilities().getUserInterface().openQueryWindow(nick, isSelected);
 			}
 
@@ -201,14 +201,14 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 			output.fireSetTarget(eventDescription, nick, "CHATMSG");
 
 			// TODO: Find out if this belongs here for DCC chat
-			//if (ClientState.getClientState().attentionEnabledMsg())
+			//if (ClientState.getInstance().attentionEnabledMsg())
 			//   ClientUtils.getAttention(); // Get attention for private message (dcc)
 		} else if (event.equals("ERROR")) {
 			output.fireSetAll(eventDescription, "SERVER_ERROR");
 		} else if (event.equals("CHAT_CLOSE")) {
 			nick = "=" + eventDescription.get("$nick");
 
-			if (ClientState.getClientState().isOption("auto.chatclose", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(nick)) {
+			if (ClientState.getInstance().isOption("auto.chatclose", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(nick)) {
 				// we don't have a window anymore, and we have something enabled to close the chat on closing the window as such
 				// we'll do nothing now.
 			} else {
@@ -320,7 +320,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 			data.tokenize(" ");
 
 			output.fireSetTarget(eventDescription, data.getToken(0), "CHANNEL_BANLIST_END");
-		} else if ((event.equals("375") || event.equals("376") || event.equals("372")) && !ClientState.getClientState().isOption("option.showmotd", ClientDefaults.option_showmotd)) {
+		} else if ((event.equals("375") || event.equals("376") || event.equals("372")) && !ClientState.getInstance().isOption("option.showmotd", ClientDefaults.option_showmotd)) {
 			// do nothing as 372 is the MOTD reply
 		} else if (eventDescription.get($NUMERIC$) != null) {
 			String numeric = (String) eventDescription.get($NUMERIC$);

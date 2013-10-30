@@ -37,7 +37,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 	}
 
 	public void notifyParent(String variable) {
-		ClientState.getClientState().fireChange(current);
+		ClientState.getInstance().fireChange(current);
 		preview.repaint();
 
 		if (variable.equals(current + ".bgtype"))
@@ -75,7 +75,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 		}
 
 		public boolean isEnabled() {
-			int type = ClientState.getClientState().getInteger(current + ".bgtype", 0);
+			int type = ClientState.getInstance().getInteger(current + ".bgtype", 0);
 			return type == 2 || type == 3;
 		}
 
@@ -94,7 +94,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 		}
 
 		public boolean isEnabled() {
-			return ClientState.getClientState().getInteger(current + ".bgtype", 0) != 0;
+			return ClientState.getInstance().getInteger(current + ".bgtype", 0) != 0;
 		}
 
 		public String getDescription() {
@@ -113,7 +113,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 		}
 
 		public boolean isEnabled() {
-			return ClientState.getClientState().getInteger(current + ".bgtype", 0) == 3;
+			return ClientState.getInstance().getInteger(current + ".bgtype", 0) == 3;
 		}
 
 		public String getDescription() {

@@ -64,11 +64,11 @@ public class ClientState {
 	}
 
 	public static InputStreamReader getProperInputStream(InputStream stream) {
-		if (ClientState.getClientState().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.dck.items.CharsetInput.DEFAULT_CHARSET)) {
+		if (ClientState.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.dck.items.CharsetInput.DEFAULT_CHARSET)) {
 			return new InputStreamReader(stream);
 		} else {
 			try {
-				return new InputStreamReader(stream, ClientState.getClientState().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET));
+				return new InputStreamReader(stream, ClientState.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return new InputStreamReader(stream);
@@ -77,11 +77,11 @@ public class ClientState {
 	}
 
 	public static PrintStream getProperPrintStream(OutputStream stream) {
-		if (ClientState.getClientState().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.dck.items.CharsetInput.DEFAULT_CHARSET)) {
+		if (ClientState.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.dck.items.CharsetInput.DEFAULT_CHARSET)) {
 			return new PrintStream(stream, true);
 		} else {
 			try {
-				return new PrintStream(stream, true, ClientState.getClientState().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET));
+				return new PrintStream(stream, true, ClientState.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return new PrintStream(stream, true);
@@ -98,17 +98,16 @@ public class ClientState {
 		return baseDirectory;
 	}
 
-	protected static ClientState clientState = null;
+	private static ClientState instance = null;
 
-	public static ClientState getClientState() {
-		if (clientState == null) {
-			clientState = new ClientState();
+	public static ClientState getInstance() {
+		if (instance == null) {
+			instance = new ClientState();
 		}
-
-		return clientState;
+		return instance;
 	}
 
-	public ClientState() {
+	private ClientState() {
 		state = new Properties();
 		try {
 			FileInputStream istream = new FileInputStream(new File(getBaseDirectory(), "jirc.prop"));
@@ -167,6 +166,7 @@ public class ClientState {
 	}
 
 	public String getString(String key, String defaultValue) {
+		if (key == null) return defaultValue;
 		String temp = state.getProperty(key);
 
 		if (temp == null || temp.length() == 0) {

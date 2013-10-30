@@ -74,7 +74,7 @@ public class ListDisplay extends JComponent implements MouseWheelListener, Mouse
 		setOpaque(false);
 		setDoubleBuffered(false);
 
-		ClientState.getClientState().addClientStateListener("ui.font", this);
+		ClientState.getInstance().addClientStateListener("ui.font", this);
 	}
 
 	public void mousePressed(MouseEvent ev) {

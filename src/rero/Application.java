@@ -85,7 +85,7 @@ public class Application {
 			if ((ARGNO + 1) < args.length && args[ARGNO].equals("-lnf")) {
 				UIManager.setLookAndFeel(args[ARGNO + 1]);
 				ARGNO += 2;
-			} else if (ClientState.getClientState().isOption("ui.native", ClientDefaults.ui_native)) {
+			} else if (ClientState.getInstance().isOption("ui.native", ClientDefaults.ui_native)) {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} else {
 				UIManager.LookAndFeelInfo[] feels = UIManager.getInstalledLookAndFeels();

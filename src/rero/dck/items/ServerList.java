@@ -38,7 +38,7 @@ public class ServerList extends JPanel implements DItem {
 	public ServerList(ServerData _data, int _width, int _height, DCapabilities _capabilities) {
 		data = _data;
 
-		autoConnect = ClientState.getClientState().getStringList("auto.connect");
+		autoConnect = ClientState.getInstance().getStringList("auto.connect");
 
 		capabilities = _capabilities;
 
@@ -143,14 +143,14 @@ public class ServerList extends JPanel implements DItem {
 
 	public void save() {
 		if (network.getSelectedItem() != null) {
-			ClientState.getClientState().setInteger("sdialog.selected", ((ServerGroup) network.getSelectedItem()).getNumber());
+			ClientState.getInstance().setInteger("sdialog.selected", ((ServerGroup) network.getSelectedItem()).getNumber());
 		}
 		data.save();
 	}
 
 	public void refresh() {
 		try {
-			network.setSelectedIndex(ClientState.getClientState().getInteger("sdialog.selected", 0));
+			network.setSelectedIndex(ClientState.getInstance().getInteger("sdialog.selected", 0));
 			data.update();
 			((ServerListModel) list.getModel()).fireChange();
 		} catch (Exception ex) {

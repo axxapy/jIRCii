@@ -45,7 +45,7 @@ public class PerformOnConnect extends Feature implements ChatListener {
 			newConnect = true; // flag this as a new connection...
 		} else if ((event.equals("376") || event.equals("422")) && newConnect) // 422 = no motd, 376 = end of /motd
 		{
-			if (ClientState.getClientState().isOption("perform.enabled", false)) {
+			if (ClientState.getInstance().isOption("perform.enabled", false)) {
 				Server myserver =
 						ServerData.getServerData().getServerByName(getCapabilities().getSocketConnection().getSocketInformation().hostname);
 				StringList actions;
@@ -55,15 +55,15 @@ public class PerformOnConnect extends Feature implements ChatListener {
 					network = myserver.getNetwork();
 				}
 
-				if (ClientState.getClientState().getString("perform." + network.toLowerCase(), null) != null) {
-					actions = ClientState.getClientState().getStringList("perform." + network.toLowerCase());
-				} else if (ClientState.getClientState().getString("perform." + network, null) != null) {
+				if (ClientState.getInstance().getString("perform." + network.toLowerCase(), null) != null) {
+					actions = ClientState.getInstance().getStringList("perform." + network.toLowerCase());
+				} else if (ClientState.getInstance().getString("perform." + network, null) != null) {
 					// this is a hack to help users migrate their jIRCii perform settings...
 
-					actions = ClientState.getClientState().getStringList("perform." + network);
+					actions = ClientState.getInstance().getStringList("perform." + network);
 				} else {
 					actions =
-							ClientState.getClientState().getStringList("perform." + NetworkSelect.ALL_NETWORKS.toLowerCase());
+							ClientState.getInstance().getStringList("perform." + NetworkSelect.ALL_NETWORKS.toLowerCase());
 				}
 
 				Iterator ii = actions.getList().iterator();

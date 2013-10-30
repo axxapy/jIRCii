@@ -54,9 +54,9 @@ public class WindowStatusBar extends BackgroundToolBar implements IRCAwareCompon
 
 		rehashValues();
 
-		ClientState.getClientState().addClientStateListener("ui.sbarlines", this);
-		ClientState.getClientState().addClientStateListener("ui.showsbar", this);
-		ClientState.getClientState().addClientStateListener("ui.font", this);
+		ClientState.getInstance().addClientStateListener("ui.sbarlines", this);
+		ClientState.getInstance().addClientStateListener("ui.showsbar", this);
+		ClientState.getInstance().addClientStateListener("ui.font", this);
 	}
 
 	public Dimension getPreferredSize() {
@@ -67,8 +67,8 @@ public class WindowStatusBar extends BackgroundToolBar implements IRCAwareCompon
 	}
 
 	public void rehashValues() {
-		if (ClientState.getClientState().isOption("ui.showsbar", true)) {
-			int lines = ClientState.getClientState().getInteger("ui.sbarlines", ClientDefaults.ui_sbarlines);
+		if (ClientState.getInstance().isOption("ui.showsbar", true)) {
+			int lines = ClientState.getInstance().getInteger("ui.sbarlines", ClientDefaults.ui_sbarlines);
 			contents.setNumberOfLines(lines);
 		} else {
 			contents.setNumberOfLines(0);

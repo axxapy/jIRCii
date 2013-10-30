@@ -14,8 +14,8 @@ public class ListBoxOptions implements ClientStateListener {
 		container = c;
 		listbox = l;
 
-		ClientState.getClientState().addClientStateListener("listbox.position", this);
-		ClientState.getClientState().addClientStateListener("listbox.enabled", this);
+		ClientState.getInstance().addClientStateListener("listbox.position", this);
+		ClientState.getInstance().addClientStateListener("listbox.enabled", this);
 
 		rehash();
 	}
@@ -24,8 +24,8 @@ public class ListBoxOptions implements ClientStateListener {
 		synchronized (listbox) {
 			container.remove(listbox);
 
-			boolean enabled = ClientState.getClientState().isOption("listbox.enabled", true);
-			int position = ClientState.getClientState().getInteger("listbox.position", 1); // default to right...
+			boolean enabled = ClientState.getInstance().isOption("listbox.enabled", true);
+			int position = ClientState.getInstance().getInteger("listbox.position", 1); // default to right...
 
 			if (enabled) {
 				if (position == 0) {

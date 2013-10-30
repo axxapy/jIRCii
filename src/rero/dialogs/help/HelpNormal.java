@@ -45,7 +45,7 @@ public class HelpNormal extends HelperObject implements TreeSelectionListener {
 		lastKey = key;
 
 		if (helpData.get(key) == null) {
-			String text = ClientState.getClientState().getHelpString(key);
+			String text = ClientState.getInstance().getHelpString(key);
 
 			if (text != null) {
 				helpData.put(key, text);

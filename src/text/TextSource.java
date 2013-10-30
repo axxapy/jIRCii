@@ -36,12 +36,12 @@ public class TextSource {
 			ex.printStackTrace();
 		}
 
-		ClientState.getClientState().fireChange("color.map", null);
+		ClientState.getInstance().fireChange("color.map", null);
 	}
 
 	static {
 		try {
-			ObjectInputStream p = new ObjectInputStream(ClientState.getClientState().getResourceAsStream("color.map"));
+			ObjectInputStream p = new ObjectInputStream(ClientState.getInstance().getResourceAsStream("color.map"));
 			colorTable = (Color[]) p.readObject();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -142,19 +142,19 @@ public class TextSource {
 
 	protected static class TextSourceListener implements ClientStateListener {
 		public TextSourceListener() {
-			ClientState.getClientState().addClientStateListener("ui.font", this);
-			ClientState.getClientState().addClientStateListener("ui.antialias", this);
+			ClientState.getInstance().addClientStateListener("ui.font", this);
+			ClientState.getInstance().addClientStateListener("ui.antialias", this);
 			rehashValue();
 		}
 
 		public void rehashValue() {
-			if (ClientState.getClientState().isOption("ui.antialias", ClientDefaults.ui_antialias)) {
+			if (ClientState.getInstance().isOption("ui.antialias", ClientDefaults.ui_antialias)) {
 				antiAliasHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 			} else {
 				antiAliasHint = RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
 			}
 
-			clientFont = ClientState.getClientState().getFont("ui.font", ClientDefaults.ui_font);
+			clientFont = ClientState.getInstance().getFont("ui.font", ClientDefaults.ui_font);
 			fontMetrics = new AdjustedFontMetrics(clientFont, Toolkit.getDefaultToolkit().getFontMetrics(clientFont));
 		}
 

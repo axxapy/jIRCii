@@ -47,7 +47,7 @@ public class ClientDesktop extends WindowManager implements ClientWindowListener
 		ClientInternalWindow temp = new ClientInternalWindow();
 		window.init(temp);
 
-		Rectangle bounds = ClientState.getClientState().getBounds(window.getWindowType() + ".size", desktop.getSize(), new Dimension(480, 300));
+		Rectangle bounds = ClientState.getInstance().getBounds(window.getWindowType() + ".size", desktop.getSize(), new Dimension(480, 300));
 
 		temp.setBounds(bounds);
 
@@ -193,9 +193,9 @@ public class ClientDesktop extends WindowManager implements ClientWindowListener
 		JInternalFrame temp = (JInternalFrame) window.getWindow();
 
 		if (window.getWindow().isMaximum()) {
-			ClientState.getClientState().setBounds(window.getWindowType() + ".size", new Rectangle(0, 0, (int) desktop.getSize().getWidth(), (int) desktop.getSize().getHeight()));
+			ClientState.getInstance().setBounds(window.getWindowType() + ".size", new Rectangle(0, 0, (int) desktop.getSize().getWidth(), (int) desktop.getSize().getHeight()));
 		} else {
-			ClientState.getClientState().setBounds(window.getWindowType() + ".size", temp.getBounds());
+			ClientState.getInstance().setBounds(window.getWindowType() + ".size", temp.getBounds());
 		}
 	}
 

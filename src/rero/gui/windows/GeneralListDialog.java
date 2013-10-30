@@ -118,7 +118,7 @@ public class GeneralListDialog extends EmptyWindow {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getClientState().getResource("jsmall.gif"));
+			icon = new ImageIcon(ClientState.getInstance().getResource("jsmall.gif"));
 		}
 
 		return icon;

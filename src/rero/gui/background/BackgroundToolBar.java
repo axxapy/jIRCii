@@ -14,7 +14,7 @@ public class BackgroundToolBar extends JToolBar implements ClientStateListener {
 			bgProperties = new BackgroundProperties("statusbar", BackgroundUtil.BG_DEFAULT);
 		}
 
-		ClientState.getClientState().addClientStateListener("statusbar", this);
+		ClientState.getInstance().addClientStateListener("statusbar", this);
 	}
 
 	public boolean isOpaque() {

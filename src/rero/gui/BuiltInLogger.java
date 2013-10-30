@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class BuiltInLogger {
-	protected static boolean isEnabled = ClientState.getClientState().isOption("log.enabled", ClientDefaults.log_enabled);
-	protected static boolean timeStamp = ClientState.getClientState().isOption("log.timestamp", ClientDefaults.log_timestamp);
-	protected static boolean stripColors = ClientState.getClientState().isOption("log.strip", ClientDefaults.log_strip);
+	protected static boolean isEnabled = ClientState.getInstance().isOption("log.enabled", ClientDefaults.log_enabled);
+	protected static boolean timeStamp = ClientState.getInstance().isOption("log.timestamp", ClientDefaults.log_timestamp);
+	protected static boolean stripColors = ClientState.getInstance().isOption("log.strip", ClientDefaults.log_strip);
 	protected static HashMap logHandles = new HashMap();
 
 	protected static ClientStateListener listener = null;
@@ -30,10 +30,10 @@ public class BuiltInLogger {
 		if (listener == null) {
 			listener = new LoggerPropListener();
 
-			ClientState.getClientState().addClientStateListener("log.enabled", listener);
-			ClientState.getClientState().addClientStateListener("log.timestamp", listener);
-			ClientState.getClientState().addClientStateListener("log.strip", listener);
-			ClientState.getClientState().addClientStateListener("log.saveto", listener);
+			ClientState.getInstance().addClientStateListener("log.enabled", listener);
+			ClientState.getInstance().addClientStateListener("log.timestamp", listener);
+			ClientState.getInstance().addClientStateListener("log.strip", listener);
+			ClientState.getInstance().addClientStateListener("log.saveto", listener);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class BuiltInLogger {
 	private static class LoggerPropListener implements ClientStateListener {
 		public void propertyChanged(String prop, String parm) {
 			if (prop.equals("log.enabled"))
-				isEnabled = ClientState.getClientState().isOption("log.enabled", ClientDefaults.log_enabled);
+				isEnabled = ClientState.getInstance().isOption("log.enabled", ClientDefaults.log_enabled);
 
 			if (prop.equals("log.saveto")) {
 				Iterator i = logHandles.values().iterator();
@@ -85,8 +85,8 @@ public class BuiltInLogger {
 				logHandles.clear();
 			}
 
-			timeStamp = ClientState.getClientState().isOption("log.timestamp", ClientDefaults.log_timestamp);
-			stripColors = ClientState.getClientState().isOption("log.strip", ClientDefaults.log_strip);
+			timeStamp = ClientState.getInstance().isOption("log.timestamp", ClientDefaults.log_timestamp);
+			stripColors = ClientState.getInstance().isOption("log.strip", ClientDefaults.log_strip);
 		}
 	}
 
@@ -104,7 +104,7 @@ public class BuiltInLogger {
 			window = window.substring(1, window.length());
 		}
 
-		File logDir = new File(ClientState.getClientState().getString("log.saveto", ClientDefaults.log_saveto));
+		File logDir = new File(ClientState.getInstance().getString("log.saveto", ClientDefaults.log_saveto));
 		logDir = new File(logDir, server);
 
 		String filename = window.replaceAll("[^\\w\\#\\!\\$\\(\\)\\@\\^\\`\\{\\}\\']", "_"); // replace all non-word characters in the window name with the _ character...
@@ -131,7 +131,7 @@ public class BuiltInLogger {
 			return (PrintWriter) logHandles.get(server + window);
 
 		try {
-			File logDir = new File(ClientState.getClientState().getString("log.saveto", ClientDefaults.log_saveto));
+			File logDir = new File(ClientState.getInstance().getString("log.saveto", ClientDefaults.log_saveto));
 			logDir = new File(logDir, server);
 
 			if (!logDir.exists())

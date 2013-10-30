@@ -128,7 +128,7 @@ public class ServerData {
 		allServers = new ServerGroup("All Servers");
 
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(ClientState.getClientState().getResourceAsStream("servers.ini")));
+			BufferedReader in = new BufferedReader(new InputStreamReader(ClientState.getInstance().getResourceAsStream("servers.ini")));
 
 			String data = in.readLine();
 			while (data != null) {
@@ -151,7 +151,7 @@ public class ServerData {
 	// Generate the servers.ini file
 	public void save() {
 		try {
-			PrintWriter out = new PrintWriter(new FileOutputStream(ClientState.getClientState().getFile("servers.ini"), false));
+			PrintWriter out = new PrintWriter(new FileOutputStream(ClientState.getInstance().getFile("servers.ini"), false));
 
 			int x = 0;
 

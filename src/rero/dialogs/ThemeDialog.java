@@ -36,7 +36,7 @@ public class ThemeDialog extends DMain implements ActionListener {
 			String name = ClientUtils.generateThemeScript(null);
 
 			if (name != null) {
-				ClientState.getClientState().setString("current.theme", name);
+				ClientState.getInstance().setString("current.theme", name);
 			}
 		}
 	}
@@ -78,7 +78,7 @@ public class ThemeDialog extends DMain implements ActionListener {
 	}
 
 	public void refresh() {
-		label.setText("Current Theme: " + ClientState.getClientState().getString("current.theme", ClientDefaults.current_theme));
+		label.setText("Current Theme: " + ClientState.getInstance().getString("current.theme", ClientDefaults.current_theme));
 	}
 }
 

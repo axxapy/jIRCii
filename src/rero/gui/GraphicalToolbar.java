@@ -26,7 +26,7 @@ public class GraphicalToolbar extends JToolBar {
 		state = new StateListener();
 		state.propertyChanged("ui.usetoolbar", "");
 
-		ClientState.getClientState().addClientStateListener("ui.usetoolbar", state);
+		ClientState.getInstance().addClientStateListener("ui.usetoolbar", state);
 	}
 
 	/**
@@ -49,7 +49,7 @@ public class GraphicalToolbar extends JToolBar {
 			if (toolbar != null)
 				SessionManager.getGlobalCapabilities().getFrame().getContentPane().remove(toolbar);
 
-			if (ClientState.getClientState().isOption("ui.usetoolbar", ClientDefaults.ui_usetoolbar)) {
+			if (ClientState.getInstance().isOption("ui.usetoolbar", ClientDefaults.ui_usetoolbar)) {
 				if (toolbar == null)
 					toolbar = new GraphicalToolbar();
 
@@ -65,7 +65,7 @@ public class GraphicalToolbar extends JToolBar {
 		int[] tiles;
 		ToolAction[] actions;
 
-		if (ClientState.getClientState().isOption("ui.sdi", ClientDefaults.ui_sdi)) {
+		if (ClientState.getInstance().isOption("ui.sdi", ClientDefaults.ui_sdi)) {
 			tiles = new int[]{0, -1, 4, 7, -1, 10, -1, 22, 23, 24, -1, 26, 28, -1, 35, 36};
 			actions = new ToolAction[]{
 					new ConnectAction(),
@@ -171,7 +171,7 @@ public class GraphicalToolbar extends JToolBar {
 	}
 
 	private static BufferedImage LoadToolbarImage() {
-		ImageIcon original = ClientState.getClientState().getIcon("jirc.toolbar", "toolbar.gif");
+		ImageIcon original = ClientState.getInstance().getIcon("jirc.toolbar", "toolbar.gif");
 
 		Image image = original.getImage();
 		BufferedImage value = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);

@@ -53,7 +53,7 @@ public class CheckboxInput extends SuperInput implements ChangeListener {
 	public void save() {
 		//System.out.println("Saving: " + getVariable());
 
-		ClientState.getClientState().setOption(getVariable(), box.isSelected());
+		ClientState.getInstance().setOption(getVariable(), box.isSelected());
 	}
 
 	public int getEstimatedWidth() {
@@ -70,7 +70,7 @@ public class CheckboxInput extends SuperInput implements ChangeListener {
 	public void refresh() {
 		//System.out.println("Refreshing: " + getVariable());
 
-		box.setSelected(ClientState.getClientState().isOption(getVariable(), defaultVal));
+		box.setSelected(ClientState.getInstance().isOption(getVariable(), defaultVal));
 		handleDependents();
 	}
 

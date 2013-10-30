@@ -18,7 +18,7 @@ public class BackgroundDesktop extends JPanel implements ClientStateListener {
 			bgProperties = new BackgroundProperties("desktop", BackgroundUtil.BG_DEFAULT);
 		}
 
-		ClientState.getClientState().addClientStateListener("desktop", this);
+		ClientState.getInstance().addClientStateListener("desktop", this);
 	}
 
 	public Dimension getSize() {

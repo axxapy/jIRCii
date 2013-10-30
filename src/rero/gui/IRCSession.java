@@ -55,7 +55,7 @@ public class IRCSession {
 
 		// init our gui stuff...
 
-		if (ClientState.getClientState().isOption("ui.sdi", ClientDefaults.ui_sdi)) {
+		if (ClientState.getInstance().isOption("ui.sdi", ClientDefaults.ui_sdi)) {
 			desktop = new ClientPanel();
 		} else {
 			desktop = new ClientDesktop();
@@ -243,7 +243,7 @@ public class IRCSession {
 	// perform actions related to the window closing...
 	public void postProcessWindow(StatusWindow window) {
 		if (window instanceof ChannelWindow) {
-			if (ClientState.getClientState().isOption("auto.part", ClientDefaults.auto_option)) {
+			if (ClientState.getInstance().isOption("auto.part", ClientDefaults.auto_option)) {
 				InternalDataList ircData = (InternalDataList) getCapabilities().getDataStructure(DataStructures.InternalDataList);
 
 				if (ircData.getChannel(window.getName()) != null) {
@@ -251,7 +251,7 @@ public class IRCSession {
 				}
 			}
 		} else if (window.getName().charAt(0) == '=' && window.isLegalWindow()) {
-			if (ClientState.getClientState().isOption("auto.chatclose", ClientDefaults.auto_option)) {
+			if (ClientState.getInstance().isOption("auto.chatclose", ClientDefaults.auto_option)) {
 				DataDCC dccData = (DataDCC) getCapabilities().getDataStructure("dcc");
 				dccData.closeChat(window.getName().substring(1, window.getName().length()));
 			}

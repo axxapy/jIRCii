@@ -316,7 +316,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 					parms = parms + "!*@*";
 				}
 
-				StringList templ = ClientState.getClientState().getStringList("ignore.masks");
+				StringList templ = ClientState.getInstance().getStringList("ignore.masks");
 				templ.add(parms);
 				templ.save();
 
@@ -347,7 +347,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				}
 				break;
 			case K:
-				temp = ClientState.getClientState().getString("kick.message", "I know... I'm a \002jIRC\002");
+				temp = ClientState.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
 				target = ircData.nickComplete(tokens.getToken(0), gui.getQuery());
 
 				if (tokens.getTotalTokens() > 1) {
@@ -357,7 +357,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				getCapabilities().sendln("KICK " + gui.getQuery() + " " + target + " :" + temp);
 				break;
 			case KB:
-				temp = ClientState.getClientState().getString("kick.message", "I know... I'm a \002jIRC\002");
+				temp = ClientState.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
 				target = ircData.nickComplete(tokens.getToken(0), gui.getQuery());
 
 				if (tokens.getTotalTokens() > 1) {
@@ -375,7 +375,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 
 				break;
 			case KICK:
-				temp = ClientState.getClientState().getString("kick.message", "I know... I'm a \002jIRC\002");
+				temp = ClientState.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
 
 				if (tokens.getTotalTokens() > 2) {
 					temp = tokens.getTokenFrom(2);
@@ -384,7 +384,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				getCapabilities().sendln("KICK " + tokens.getToken(0) + " " + tokens.getToken(1) + " :" + temp);
 				break;
 			case KILL:
-				temp = ClientState.getClientState().getString("kill.message", "I know... I'm a \002jIRC\002");
+				temp = ClientState.getInstance().getString("kill.message", "I know... I'm a \002jIRC\002");
 
 				if (tokens.getTotalTokens() > 1) {
 					temp = tokens.getTokenFrom(1);
@@ -517,7 +517,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 					parms = tokens.getTokenFrom(1);
 				}
 
-				if (ClientState.getClientState().isOption("auto.part", ClientDefaults.auto_option) && gui.isWindow(target)) {
+				if (ClientState.getInstance().isOption("auto.part", ClientDefaults.auto_option) && gui.isWindow(target)) {
 					getCapabilities().getUserInterface().closeWindow(target);
 				} else {
 					getCapabilities().sendln("PART " + target + " :" + parms);
@@ -556,7 +556,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				break;
 			case QUIT:
 				if (parms.length() == 0) {
-					parms = ClientState.getClientState().getString("message.quit", "jIRCii - http://www.oldschoolirc.com");
+					parms = ClientState.getInstance().getString("message.quit", "jIRCii - http://www.oldschoolirc.com");
 				}
 
 				if (getCapabilities().isConnected()) {
@@ -656,7 +656,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				getCapabilities().sendln("MODE " + gui.getQuery() + " +b");
 				break;
 			case UNIGNORE:
-				StringList templw = ClientState.getClientState().getStringList("ignore.masks");
+				StringList templw = ClientState.getInstance().getStringList("ignore.masks");
 				templw.remove(parms);
 				templw.save();
 

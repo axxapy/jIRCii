@@ -74,7 +74,7 @@ public class UIOperators implements Function, Loadable {
 
 	public Scalar evaluate(String function, ScriptInstance script, Stack locals) {
 		if (function.equals("&refreshMenubar")) {
-			ClientState.getClientState().fireChange("loaded.scripts", null);
+			ClientState.getInstance().fireChange("loaded.scripts", null);
 		} else if (function.equals("&showOptionDialog")) {
 			session.getCapabilities().getGlobalCapabilities().showOptionDialog(BridgeUtilities.getString(locals, ""));
 		} else if (function.equals("&showHelpDialog")) {

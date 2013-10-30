@@ -54,7 +54,7 @@ public class MinimalTabUI extends TabbedPaneUI implements ChangeListener {
 		JTabbedPane temp = (JTabbedPane) c;
 		c.setLayout(new MinimalLayout());
 
-		int size = ClientState.getClientState().getInteger("notabs.border", ClientDefaults.notabs_border);
+		int size = ClientState.getInstance().getInteger("notabs.border", ClientDefaults.notabs_border);
 
 		c.setBorder(BorderFactory.createEmptyBorder(size, size, size, size));
 		temp.addChangeListener(this);

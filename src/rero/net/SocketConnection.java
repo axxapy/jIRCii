@@ -202,7 +202,7 @@ public class SocketConnection implements Runnable, ClientStateListener {
 
 	private static class StripCodesListener implements ClientStateListener {
 		public void propertyChanged(String key, String value) {
-			stripcodes = ClientState.getClientState().isOption("client.stripcodes", ClientDefaults.client_stripcodes);
+			stripcodes = ClientState.getInstance().isOption("client.stripcodes", ClientDefaults.client_stripcodes);
 		}
 	}
 
@@ -212,12 +212,12 @@ public class SocketConnection implements Runnable, ClientStateListener {
 		event.socket = this;
 		event.data = connectionInformation;
 
-		ClientState.getClientState().addClientStateListener("client.encoding", this);
+		ClientState.getInstance().addClientStateListener("client.encoding", this);
 
 		if (listener2 == null) {
 			listener2 = new StripCodesListener();
 			listener2.propertyChanged(null, null);
-			ClientState.getClientState().addClientStateListener("client.stripcodes", listener2);
+			ClientState.getInstance().addClientStateListener("client.stripcodes", listener2);
 		}
 	}
 

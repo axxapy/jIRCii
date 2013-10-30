@@ -32,7 +32,7 @@ public class NotifyData extends Feature implements ChatListener, TimerListener, 
 	public void hashUsers() {
 		HashMap newUsers = new HashMap();
 
-		Iterator i = ClientState.getClientState().getStringList("notify.users").getList().iterator();
+		Iterator i = ClientState.getInstance().getStringList("notify.users").getList().iterator();
 		while (i.hasNext()) {
 			String temp = (String) i.next();
 			if (users.containsKey(temp)) {
@@ -47,17 +47,17 @@ public class NotifyData extends Feature implements ChatListener, TimerListener, 
 
 	public void addUser(String nickname) // *permanently adds user to notify list*
 	{
-		StringList temp = ClientState.getClientState().getStringList("notify.users");
+		StringList temp = ClientState.getInstance().getStringList("notify.users");
 		temp.add(nickname);
 		temp.save();
-		ClientState.getClientState().sync();
+		ClientState.getInstance().sync();
 	}
 
 	public void removeUser(String nickname) {
-		StringList temp = ClientState.getClientState().getStringList("notify.users");
+		StringList temp = ClientState.getInstance().getStringList("notify.users");
 		temp.remove(nickname);
 		temp.save();
-		ClientState.getClientState().sync();
+		ClientState.getInstance().sync();
 	}
 
 	public Set getSignedOnUsers() {
@@ -98,7 +98,7 @@ public class NotifyData extends Feature implements ChatListener, TimerListener, 
 		getCapabilities().addChatListener(this);
 		getCapabilities().getTimer().addTimer(this, 60 * 1000); // check the notify list every 60 seconds.
 
-		ClientState.getClientState().addClientStateListener("notify.users", this);
+		ClientState.getInstance().addClientStateListener("notify.users", this);
 	}
 
 	public void cleanup() {
