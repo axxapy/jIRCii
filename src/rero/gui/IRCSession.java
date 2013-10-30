@@ -48,7 +48,7 @@ public class IRCSession {
 	}
 
 	public IRCSession() {
-		client = new InternetRelayChatClient();
+		client = new InternetRelayChatClient(0);
 		client.init(new UICapabilities(this));   // UI Capabilities provides interface for stable irc code to this lame gui code
 
 		userInput = (UserHandler) client.getCapabilities().getDataStructure("commands");

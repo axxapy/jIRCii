@@ -1,6 +1,6 @@
 package rero.dialogs.toolkit;
 
-import rero.dck.SmallButton;
+import rero.gui.dck.SmallButton;
 
 import javax.swing.*;
 import java.awt.*;

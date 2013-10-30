@@ -1,8 +1,8 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.dck.DMain;
-import rero.dck.items.FileListInput;
+import rero.gui.dck.DMain;
+import rero.gui.dck.items.FileListInput;
 
 import java.awt.*;
 

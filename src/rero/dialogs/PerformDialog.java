@@ -1,12 +1,12 @@
 package rero.dialogs;
 
 import rero.config.ClientState;
-import rero.dck.DItem;
-import rero.dck.DMain;
-import rero.dck.DParent;
-import rero.dck.items.CheckboxInput;
-import rero.dck.items.NetworkSelect;
-import rero.dck.items.TextInput;
+import rero.gui.dck.DItem;
+import rero.gui.dck.DMain;
+import rero.gui.dck.DParent;
+import rero.gui.dck.items.CheckboxInput;
+import rero.gui.dck.items.NetworkSelect;
+import rero.gui.dck.items.TextInput;
 
 import javax.swing.*;
 import java.awt.*;

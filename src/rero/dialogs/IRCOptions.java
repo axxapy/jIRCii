@@ -1,8 +1,8 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.dck.DGroup;
-import rero.dck.DMain;
+import rero.gui.dck.DGroup;
+import rero.gui.dck.DMain;
 
 public class IRCOptions extends DMain {
 	public String getTitle() {

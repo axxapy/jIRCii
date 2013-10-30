@@ -9,6 +9,8 @@ import rero.script.ScriptCore;
 import java.util.WeakHashMap;
 
 public class InternetRelayChatClient {
+	private int id;
+
 	protected WeakHashMap data = new WeakHashMap();   // Client central data repository.
 
 	//
@@ -19,6 +21,14 @@ public class InternetRelayChatClient {
 	protected ScriptCore script = new ScriptCore();
 
 	protected Capabilities actions;
+
+	public InternetRelayChatClient(int id) {
+		this.id = id;
+	}
+
+	public int getId() {
+		return id;
+	}
 
 	public void init(UICapabilities gui) {
 		ircfw.storeDataStructures(data);

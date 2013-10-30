@@ -189,4 +189,14 @@ public class Config {
 	public StringList getStringList(String key) {
 		return new StringList(key);
 	}
+
+	/*public ServerParams[] getServers() {
+		;
+	}
+
+	public void saveServers(ServerParams[] list) {
+		for (ServerParams i : list) {
+			String str = i.
+		}
+	}*/
 }

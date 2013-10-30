@@ -1,5 +1,6 @@
 package rero.gui.windows;
 
+import rero.ApplicationContext;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.Config;
@@ -15,7 +16,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class MainWindow extends JFrame {
-	public MainWindow() {
+	public MainWindow(ApplicationContext Context) {
 		super("jIRCii");
 
 		GlobalCapabilities.frame = this;
@@ -24,9 +25,9 @@ public class MainWindow extends JFrame {
 			setJMenuBar(new JMenuBar());
 		}
 
-		//getContentPane().add(new ServersTree(), BorderLayout.WEST);
-
 		getContentPane().add(new SessionManager(this), BorderLayout.CENTER);
+
+		//getContentPane().add(new ServersTree(), BorderLayout.WEST);
 
 		setIconImage(Resources.getInstance().getIcon("jirc.icon", "jicon.jpg").getImage());
 

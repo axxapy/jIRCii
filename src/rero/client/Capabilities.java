@@ -148,7 +148,6 @@ public class Capabilities {
 	public TimerUtil getTimer() {
 		return timer;
 	}
-
 	public void cleanup() {
 		ListIterator i = featureList.listIterator();
 		while (i.hasNext()) {
@@ -234,5 +233,9 @@ public class Capabilities {
 
 	public GlobalCapabilities getGlobalCapabilities() {
 		return SessionManager.getGlobalCapabilities();
+	}
+
+	public void executeCommand(String command) {
+		((UserHandler) getDataStructure("commands")).processCommand(command);
 	}
 }

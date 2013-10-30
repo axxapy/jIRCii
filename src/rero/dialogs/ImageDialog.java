@@ -2,10 +2,10 @@ package rero.dialogs;
 
 import rero.config.ClientState;
 import rero.config.Config;
-import rero.dck.DMain;
-import rero.dck.DParent;
-import rero.dck.DTab;
-import rero.dck.items.*;
+import rero.gui.dck.DMain;
+import rero.gui.dck.DParent;
+import rero.gui.dck.DTab;
+import rero.gui.dck.items.*;
 
 import javax.swing.*;
 import java.awt.*;

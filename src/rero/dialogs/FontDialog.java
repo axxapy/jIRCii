@@ -1,7 +1,7 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.dck.DMain;
+import rero.gui.dck.DMain;
 
 import java.awt.*;
 

@@ -124,9 +124,11 @@ public class Application {
 			ARGNO++;
 		}
 
+		ApplicationContext Context = new ApplicationContext();
+
 		//
 		// Open the window and launch this bad boy irc client
 		//
-		new MainWindow().setVisible(true);
+		new MainWindow(Context).setVisible(true);
 	}
 }

@@ -1,9 +1,9 @@
 package rero.dialogs;
 
-import rero.dck.DGroup;
-import rero.dck.DItem;
-import rero.dck.DMain;
-import rero.dck.items.ServerList;
+import rero.gui.dck.DGroup;
+import rero.gui.dck.DItem;
+import rero.gui.dck.DMain;
+import rero.gui.dck.items.ServerList;
 import rero.dialogs.server.ServerData;
 
 import javax.swing.*;

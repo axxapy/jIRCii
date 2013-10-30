@@ -1,8 +1,8 @@
 package rero.dialogs;
 
 import rero.config.Config;
-import rero.dck.DCapabilities;
-import rero.dck.DMain;
+import rero.gui.dck.DCapabilities;
+import rero.gui.dck.DMain;
 import rero.gui.KeyBindings;
 import rero.util.ClientUtils;
 

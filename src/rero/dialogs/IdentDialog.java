@@ -1,9 +1,9 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.dck.DGroup;
-import rero.dck.DMain;
-import rero.dck.items.CheckboxInput;
+import rero.gui.dck.DGroup;
+import rero.gui.dck.DMain;
+import rero.gui.dck.items.CheckboxInput;
 
 import java.awt.*;
 

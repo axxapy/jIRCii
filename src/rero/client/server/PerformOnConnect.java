@@ -6,7 +6,7 @@ import rero.client.script.ScriptManager;
 import rero.client.user.UserHandler;
 import rero.config.Config;
 import rero.config.StringList;
-import rero.dck.items.NetworkSelect;
+import rero.gui.dck.items.NetworkSelect;
 import rero.dialogs.server.Server;
 import rero.dialogs.server.ServerData;
 import rero.ircfw.interfaces.ChatListener;

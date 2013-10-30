@@ -1,6 +1,6 @@
 package rero.dialogs;
 
-import rero.dck.DMain;
+import rero.gui.dck.DMain;
 
 public class NotifyDialog extends DMain {
 	public String getTitle() {

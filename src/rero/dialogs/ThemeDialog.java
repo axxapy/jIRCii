@@ -2,7 +2,7 @@ package rero.dialogs;
 
 import rero.config.ClientDefaults;
 import rero.config.Config;
-import rero.dck.DMain;
+import rero.gui.dck.DMain;
 import rero.gui.SessionManager;
 import rero.util.ClientUtils;
 

@@ -57,11 +57,11 @@ public class ClientState {
 	}
 
 	public static InputStreamReader getProperInputStream(InputStream stream) {
-		if (Config.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.dck.items.CharsetInput.DEFAULT_CHARSET)) {
+		if (Config.getInstance().getString("client.encoding", rero.gui.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.gui.dck.items.CharsetInput.DEFAULT_CHARSET)) {
 			return new InputStreamReader(stream);
 		} else {
 			try {
-				return new InputStreamReader(stream, Config.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET));
+				return new InputStreamReader(stream, Config.getInstance().getString("client.encoding", rero.gui.dck.items.CharsetInput.DEFAULT_CHARSET));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return new InputStreamReader(stream);
@@ -70,11 +70,11 @@ public class ClientState {
 	}
 
 	public static PrintStream getProperPrintStream(OutputStream stream) {
-		if (Config.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.dck.items.CharsetInput.DEFAULT_CHARSET)) {
+		if (Config.getInstance().getString("client.encoding", rero.gui.dck.items.CharsetInput.DEFAULT_CHARSET).equals(rero.gui.dck.items.CharsetInput.DEFAULT_CHARSET)) {
 			return new PrintStream(stream, true);
 		} else {
 			try {
-				return new PrintStream(stream, true, Config.getInstance().getString("client.encoding", rero.dck.items.CharsetInput.DEFAULT_CHARSET));
+				return new PrintStream(stream, true, Config.getInstance().getString("client.encoding", rero.gui.dck.items.CharsetInput.DEFAULT_CHARSET));
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return new PrintStream(stream, true);
