@@ -11,7 +11,7 @@
  Ugly code below.  You shouldn't need to touch this though.  That is why
  it is framework code.  !@#$%^
 
- BNF Representation of Stuff from Server
+ BNF Representation of Stuff from ServerConfig
 
  <message> ::= ':' <prefix> <SPACE> <command> <params> 
  <command> <params>

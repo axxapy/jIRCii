@@ -1,15 +1,15 @@
-package rero.dialogs.server;
+package rero.config.models;
 
 import rero.util.StringParser;
 
 import java.util.regex.Pattern;
 
-public class Server implements Comparable {
+public class ServerConfig implements Comparable {
 	// x0=server descriptionSERVER:host:portrange:passwordGROUP:network
 	// x00=server descriptionSERVER:host:portrangeGROUP:network
 
-	// Server w/  password regex - (\S)\S*=(.*)SERVER:(.*):(.*):(.*)GROUP:(.*)
-	// Server w/o password regex - (\S)\S*=(.*)SERVER:(.*):(.*)GROUP:(.*)
+	// ServerConfig w/  password regex - (\S)\S*=(.*)SERVER:(.*):(.*):(.*)GROUP:(.*)
+	// ServerConfig w/o password regex - (\S)\S*=(.*)SERVER:(.*):(.*)GROUP:(.*)
 
 	protected static Pattern isServerPassword = Pattern.compile("(\\S)\\S*=(.*)SERVER:(.*):(.*):(.*)GROUP:(.*)");
 	protected static Pattern isServerNormal = Pattern.compile("(\\S)\\S*=(.*)SERVER:(.*):(.*)GROUP:(.*)");
@@ -17,20 +17,17 @@ public class Server implements Comparable {
 	protected String description;
 	protected String host;
 	protected String portRange;
-	protected String network;
 	protected boolean isSSL;
 	protected String password;
 	protected String compare;
 
-	public void setValues(String d, String h, String r, String n, boolean s, String p) {
+	public void setValues(String d, String h, String r, boolean s, String p) {
 		description = serverTrim(d);
 		host = serverTrim(h);
 		portRange = serverTrim(r);
-		network = serverTrim(n);
 		isSSL = s;
 		password = serverTrim(p);
-
-		compare = n.toUpperCase() + host.toUpperCase();
+		compare = host.toUpperCase();
 	}
 
 	private String serverTrim(String txt) {
@@ -40,20 +37,16 @@ public class Server implements Comparable {
 			return txt.trim();
 	}
 
-	public Server() {
+	public ServerConfig() {
 	}
 
-	public Server(String d, String h, String r, String n, boolean s, String p) {
-		setValues(d, h, r, n, s, p);
+	public ServerConfig(String d, String h, String r, boolean s, String p) {
+		setValues(d, h, r, s, p);
 	}
 
 	public String toString() {
 		return toString(0);
-//       return "[Server: " + host + ":" + portRange + ", Desc: " + description + ", Network: " + network + ", Password: " + password + ", Secure? " + isSSL + "]";
-	}
-
-	public boolean isRandom() {
-		return getNetwork() == null || getNetwork().equals("");
+//       return "[ServerConfig: " + host + ":" + portRange + ", Desc: " + description + ", Network: " + network + ", Password: " + password + ", Secure? " + isSSL + "]";
 	}
 
 	public String getCompare() {
@@ -61,7 +54,7 @@ public class Server implements Comparable {
 	}
 
 	public int compareTo(Object o) {
-		Server arg = (Server) o;
+		ServerConfig arg = (ServerConfig) o;
 
 		return getCompare().compareTo(arg.getCompare());
 	}
@@ -98,10 +91,6 @@ public class Server implements Comparable {
 
 	public String getDescription() {
 		return description;
-	}
-
-	public String getNetwork() {
-		return network;
 	}
 
 	// Build the built-in /server command to execute
@@ -148,12 +137,12 @@ public class Server implements Comparable {
 		}
 
 		value.append("GROUP:");
-		value.append(network);
+		//value.append(network);
 
 		return value.toString();
 	}
 
-	public static Server decode(String text) {
+	public static ServerConfig decode(String text) {
 		// Check for server with password
 		StringParser check = new StringParser(text, isServerPassword);
 
@@ -162,7 +151,7 @@ public class Server implements Comparable {
 
 			boolean secure = values[0].charAt(0) == 's';
 
-			return new Server(values[1], values[2], values[3], values[5], secure, values[4]);
+			return new ServerConfig(values[1], values[2], values[3], secure, values[4]);
 		}
 
 		// Check for server without password
@@ -179,7 +168,7 @@ public class Server implements Comparable {
 
 			boolean secure = values[0].charAt(0) == 's';
 
-			return new Server(values[1], values[2], values[3], values[4], secure, null);
+			return new ServerConfig(values[1], values[2], values[3], secure, null);
 		}
 
 		return null;

@@ -2,8 +2,8 @@ package rero.gui;
 
 import rero.bridges.menu.MenuBridge;
 import rero.config.*;
-import rero.dialogs.server.Server;
-import rero.dialogs.server.ServerData;
+import rero.config.models.ServerConfig;
+import rero.config.ServersList;
 import rero.gui.toolkit.MinimalTabUI;
 import rero.gui.windows.ClientWindowEvent;
 import rero.gui.windows.ClientWindowListener;
@@ -102,12 +102,12 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 				} else if (temp.getList().size() == 0) {
 					addSession();
 				} else {
-					ServerData sdata = ServerData.getServerData();
+					ServersList sdata = ServersList.getServerData();
 
 					int y = 0;
 					Iterator i = temp.getList().iterator();
 					while (i.hasNext()) {
-						Server stemp = sdata.getServerByName(i.next().toString());
+						ServerConfig stemp = sdata.getServerByName(i.next().toString());
 
 						if (stemp != null) {
 							addSession();

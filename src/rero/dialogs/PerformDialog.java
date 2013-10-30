@@ -5,8 +5,6 @@ import rero.gui.dck.DItem;
 import rero.gui.dck.DMain;
 import rero.gui.dck.DParent;
 import rero.gui.dck.items.CheckboxInput;
-import rero.gui.dck.items.NetworkSelect;
-import rero.gui.dck.items.TextInput;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,11 +20,8 @@ public class PerformDialog extends DMain implements DParent, ActionListener {
 		return "Perform on Connect";
 	}
 
-	protected String current = NetworkSelect.ALL_NETWORKS;
-
 	public void actionPerformed(ActionEvent ev) {
 		itemc.save();
-		current = ev.getActionCommand();
 	}
 
 	public void notifyParent(String variable) {
@@ -35,10 +30,10 @@ public class PerformDialog extends DMain implements DParent, ActionListener {
 	}
 
 	public String getVariable(String variable) {
-		return "perform." + current.toLowerCase();
+		return "perform.all";
 	}
 
-	protected DItem itemb, itemc;
+	protected DItem itemc;
 	protected CheckboxInput itema;
 
 	public JComponent getDialog() {
@@ -49,7 +44,6 @@ public class PerformDialog extends DMain implements DParent, ActionListener {
 
 		dialog.add(itema.getComponent(), BorderLayout.SOUTH);
 
-		dialog.add(itemb.getComponent(), BorderLayout.NORTH);
 		dialog.add(itemc.getComponent(), BorderLayout.CENTER);
 
 		return dialog;
@@ -65,21 +59,13 @@ public class PerformDialog extends DMain implements DParent, ActionListener {
 	public void setupDialog() {
 		itema = addCheckboxInput("perform.enabled", false, "Perform these commands when connecting", 'P', FlowLayout.LEFT);
 
-		itemb = addNetworkSelector("perform.networks", "perform.cnetwork");
 		itemc = addTextInput(".perform", 5); // doesn't really matter
-
-		((NetworkSelect) itemb).addActionListener(this);
-		((NetworkSelect) itemb).addDeleteListener((TextInput) itemc);
-
-		itemb.setParent(this);
 		itemc.setParent(this);
 
-		itema.addDependent(itemb);
 		itema.addDependent(itemc);
 	}
 
 	public void refresh() {
-		current = NetworkSelect.ALL_NETWORKS;
 		itemc.refresh();
 		super.refresh();
 	}

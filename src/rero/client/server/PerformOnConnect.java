@@ -5,10 +5,9 @@ import rero.client.Feature;
 import rero.client.script.ScriptManager;
 import rero.client.user.UserHandler;
 import rero.config.Config;
+import rero.config.ServersList;
 import rero.config.StringList;
-import rero.gui.dck.items.NetworkSelect;
-import rero.dialogs.server.Server;
-import rero.dialogs.server.ServerData;
+import rero.config.models.ServerConfig;
 import rero.ircfw.interfaces.ChatListener;
 
 import java.util.HashMap;
@@ -46,25 +45,11 @@ public class PerformOnConnect extends Feature implements ChatListener {
 		} else if ((event.equals("376") || event.equals("422")) && newConnect) // 422 = no motd, 376 = end of /motd
 		{
 			if (Config.getInstance().isOption("perform.enabled", false)) {
-				Server myserver =
-						ServerData.getServerData().getServerByName(getCapabilities().getSocketConnection().getSocketInformation().hostname);
+				ServerConfig myserver =
+						ServersList.getServerData().getServerByName(getCapabilities().getSocketConnection().getSocketInformation().hostname);
 				StringList actions;
 
-				if (myserver != null && !myserver.isRandom()) {
-					getCapabilities().getSocketConnection().getSocketInformation().network = myserver.getNetwork();
-					network = myserver.getNetwork();
-				}
-
-				if (Config.getInstance().getString("perform." + network.toLowerCase(), null) != null) {
-					actions = Config.getInstance().getStringList("perform." + network.toLowerCase());
-				} else if (Config.getInstance().getString("perform." + network, null) != null) {
-					// this is a hack to help users migrate their jIRCii perform settings...
-
-					actions = Config.getInstance().getStringList("perform." + network);
-				} else {
-					actions =
-							Config.getInstance().getStringList("perform." + NetworkSelect.ALL_NETWORKS.toLowerCase());
-				}
+				actions = Config.getInstance().getStringList("perform.all");
 
 				Iterator ii = actions.getList().iterator();
 				while (ii.hasNext()) {

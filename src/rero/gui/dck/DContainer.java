@@ -189,12 +189,6 @@ public abstract class DContainer {
 		return temp;
 	}
 
-	public NetworkSelect addNetworkSelector(String variable, String variable2) {
-		NetworkSelect temp = new NetworkSelect(variable, variable2);
-		itemList.add(temp);
-		return temp;
-	}
-
 	public TextInput addTextInput(String variable, int gap) {
 		TextInput temp = new TextInput(variable, gap);
 		itemList.add(temp);

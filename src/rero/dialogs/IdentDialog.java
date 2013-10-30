@@ -28,7 +28,7 @@ public class IdentDialog extends DMain {
 			}
 		});
 
-		CheckboxInput boxed = addCheckboxInput("ident.enabled", ClientDefaults.ident_enabled, "Enable Ident Server", 'E', FlowLayout.CENTER);
+		CheckboxInput boxed = addCheckboxInput("ident.enabled", ClientDefaults.ident_enabled, "Enable Ident ServerConfig", 'E', FlowLayout.CENTER);
 		boxed.addDependent(temp);
 	}
 }

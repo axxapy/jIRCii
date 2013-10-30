@@ -1,8 +1,8 @@
 package rero.client.functions;
 
 import rero.client.Feature;
-import rero.dialogs.server.Server;
-import rero.dialogs.server.ServerData;
+import rero.config.models.ServerConfig;
+import rero.config.ServersList;
 import sleep.bridges.BridgeUtilities;
 import sleep.interfaces.Function;
 import sleep.interfaces.Loadable;
@@ -20,14 +20,13 @@ public class ServerOperators extends Feature implements Loadable {
 
 	public void scriptLoaded(ScriptInstance script) {
 		script.getScriptEnvironment().getEnvironment().put("&getAllServers", new getAllServers());
-		script.getScriptEnvironment().getEnvironment().put("&getAllNetworks", new getAllNetworks());
+		//script.getScriptEnvironment().getEnvironment().put("&getAllNetworks", new getAllNetworks());
 
 		script.getScriptEnvironment().getEnvironment().put("&getServerInfo", new getServerInfo());
-		script.getScriptEnvironment().getEnvironment().put("&getServersForNetwork", new getServersForNetwork());
 
 		script.getScriptEnvironment().getEnvironment().put("&serverInfoHost", new serverInfoHost());
 		script.getScriptEnvironment().getEnvironment().put("&serverInfoPortRange", new serverInfoPorts());
-		script.getScriptEnvironment().getEnvironment().put("&serverInfoNetwork", new serverInfoNetwork());
+		//script.getScriptEnvironment().getEnvironment().put("&serverInfoNetwork", new serverInfoNetwork());
 		script.getScriptEnvironment().getEnvironment().put("&serverInfoIsSecure", new serverInfoIsSecure());
 		script.getScriptEnvironment().getEnvironment().put("&serverInfoPassword", new serverInfoPassword());
 		script.getScriptEnvironment().getEnvironment().put("&serverInfoDescription", new serverInfoDescription());
@@ -40,13 +39,7 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class getAllServers implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			return SleepUtils.getArrayWrapper(ServerData.getServerData().getAllServers());
-		}
-	}
-
-	private static class getAllNetworks implements Function {
-		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			return SleepUtils.getArrayWrapper(ServerData.getServerData().getGroups());
+			return SleepUtils.getArrayWrapper(ServersList.getServerData().getServers());
 		}
 	}
 
@@ -54,21 +47,13 @@ public class ServerOperators extends Feature implements Loadable {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
 			String temp = BridgeUtilities.getString(locals, "");
 			if (temp == null) return SleepUtils.getEmptyScalar();
-			return SleepUtils.getScalar(ServerData.getServerData().getServerByName(temp).toString());
-		}
-	}
-
-	private static class getServersForNetwork implements Function {
-		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			String temp = BridgeUtilities.getString(locals, "");
-			if (temp == null) return SleepUtils.getEmptyScalar();
-			return SleepUtils.getArrayWrapper(ServerData.getServerData().getGroup(temp).getServers());
+			return SleepUtils.getScalar(ServersList.getServerData().getServerByName(temp).toString());
 		}
 	}
 
 	private static class serverInfoPassword implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 			return SleepUtils.getScalar(temp.getPassword());
 		}
@@ -76,7 +61,7 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class serverInfoDescription implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 			return SleepUtils.getScalar(temp.getDescription());
 		}
@@ -84,7 +69,7 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class serverInfoConnectPort implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 			return SleepUtils.getScalar(temp.getConnectPort());
 		}
@@ -92,7 +77,7 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class serverInfoCommand implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 			return SleepUtils.getScalar(temp.getCommand());
 		}
@@ -100,7 +85,7 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class serverInfoHost implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 			return SleepUtils.getScalar(temp.getHost());
 		}
@@ -108,26 +93,15 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class serverInfoPorts implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 			return SleepUtils.getScalar(temp.getPorts());
 		}
 	}
 
-	private static class serverInfoNetwork implements Function {
-		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
-
-			if (temp == null) return SleepUtils.getEmptyScalar();
-
-
-			return SleepUtils.getScalar(temp.getNetwork());
-		}
-	}
-
 	private static class serverInfoIsSecure implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			Server temp = Server.decode(BridgeUtilities.getString(locals, ""));
+			ServerConfig temp = ServerConfig.decode(BridgeUtilities.getString(locals, ""));
 			if (temp == null) return SleepUtils.getEmptyScalar();
 
 			if (temp.isSecure()) {

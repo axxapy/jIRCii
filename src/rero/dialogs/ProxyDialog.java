@@ -30,7 +30,7 @@ public class ProxyDialog extends DMain {
 			}
 		});
 
-		CheckboxInput boxed = addCheckboxInput("proxy.enabled", false, "Use Proxy Server", 'e', FlowLayout.CENTER);
+		CheckboxInput boxed = addCheckboxInput("proxy.enabled", false, "Use Proxy ServerConfig", 'e', FlowLayout.CENTER);
 		boxed.addDependent(temp);
 	}
 }

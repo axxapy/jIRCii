@@ -1,17 +1,16 @@
 package rero.gui.dck.items;
 
 import rero.config.Config;
+import rero.config.ServersList;
 import rero.config.StringList;
-import rero.gui.dck.DCapabilities;
-import rero.gui.dck.DItem;
-import rero.gui.dck.DParent;
-import rero.dialogs.server.Server;
-import rero.dialogs.server.ServerData;
-import rero.dialogs.server.ServerGroup;
+import rero.config.models.ServerConfig;
 import rero.dialogs.toolkit.ADialog;
 import rero.dialogs.toolkit.APanel;
 import rero.dialogs.toolkit.LabelGroup;
 import rero.gui.SessionManager;
+import rero.gui.dck.DCapabilities;
+import rero.gui.dck.DItem;
+import rero.gui.dck.DParent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,18 +23,17 @@ public class ServerList extends JPanel implements DItem {
 	protected int height;
 	protected int width;
 
-	protected JButton connect, edit;
-	protected JComboBox network;
+	protected JButton connect, edit, add, remove;
 
 	protected JList list;
 
-	protected ServerData data;
+	protected ServersList data;
 	protected StringList autoConnect;
 	protected JComponent component;
 
 	protected DCapabilities capabilities;
 
-	public ServerList(ServerData _data, int _width, int _height, DCapabilities _capabilities) {
+	public ServerList(ServersList _data, int _width, int _height, DCapabilities _capabilities) {
 		data = _data;
 
 		autoConnect = Config.getInstance().getStringList("auto.connect");
@@ -57,39 +55,64 @@ public class ServerList extends JPanel implements DItem {
 		edit = new JButton("Edit");
 		edit.setMnemonic('E');
 
+		add = new JButton("Add");
+		add.setMnemonic('A');
+
+		remove = new JButton("Remove");
+		remove.setMnemonic('R');
+
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
 
 		buttons.add(connect);
+		buttons.add(add);
 		buttons.add(edit);
-
-		network = new JComboBox(new NetworkListModel());
-		network.setPrototypeDisplayValue("Random Servers");
-
-		buttons.add(network);
-
-		edit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				ServerEditorDialog temp = new ServerEditorDialog(component);
-				temp.getListbox().setSelectedIndex(list.getSelectedIndex());
-				temp.getListbox().ensureIndexIsVisible(list.getSelectedIndex());
-				temp.showDialog(component);
-				data.update();
-				((ServerListModel) (list.getModel())).fireChange();
-				((NetworkListModel) (network.getModel())).fireChange();
-			}
-		});
-
-		network.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent ev) {
-				data.setActive((ServerGroup) network.getSelectedItem());
-				((ServerListModel) (list.getModel())).fireChange();
-			}
-		});
+		buttons.add(remove);
 
 		connect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
 				handleConnectAction();
+			}
+		});
+
+		add.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				EditServerInfo editor = new EditServerInfo();
+				editor.setupDialog(null);
+
+				ADialog dialog = new ADialog(component, "New ServerConfig", editor, null);
+				dialog.setSize(new Dimension(330, 280));
+
+				ServerConfig temp = (ServerConfig) dialog.showDialog(component);
+				if (temp != null) {
+					data.addServer(temp);
+					data.update();
+					((ServerListModel) list.getModel()).fireChange();
+				}
+			}
+		});
+
+		edit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				EditServerInfo editor = new EditServerInfo();
+				editor.setupDialog(list.getSelectedValue());
+
+				ADialog dialog = new ADialog(component, "Edit ServerConfig", editor, list.getSelectedValue());
+				dialog.setSize(new Dimension(330, 280));
+				if (dialog.showDialog(component) != null) // the returned value is modified directly.
+				{
+					((ServerListModel) list.getModel()).fireChange();
+				}
+			}
+		});
+
+		remove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ev) {
+				if (list.getSelectedValue() != null) {
+					data.removeServer((ServerConfig) list.getSelectedValue());
+					data.update();
+					((ServerListModel) list.getModel()).fireChange();
+				}
 			}
 		});
 
@@ -126,7 +149,7 @@ public class ServerList extends JPanel implements DItem {
 		}
 
 		if (list.getSelectedValue() != null) {
-			Server connectToMe = (Server) list.getSelectedValue();
+			ServerConfig connectToMe = (ServerConfig) list.getSelectedValue();
 			SessionManager.getGlobalCapabilities().getActiveSession().executeCommand(connectToMe.getCommand());
 			capabilities.closeDialog();
 		} else {
@@ -142,15 +165,11 @@ public class ServerList extends JPanel implements DItem {
 	}
 
 	public void save() {
-		if (network.getSelectedItem() != null) {
-			Config.getInstance().setInteger("sdialog.selected", ((ServerGroup) network.getSelectedItem()).getNumber());
-		}
 		data.save();
 	}
 
 	public void refresh() {
 		try {
-			network.setSelectedIndex(Config.getInstance().getInteger("sdialog.selected", 0));
 			data.update();
 			((ServerListModel) list.getModel()).fireChange();
 		} catch (Exception ex) {
@@ -173,133 +192,11 @@ public class ServerList extends JPanel implements DItem {
 		return this;
 	}
 
-	protected class ServerEditorDialog extends JDialog {
-		protected JList alist;
-
-		public String showDialog(Component comp) {
-			setLocationRelativeTo(comp);
-			setVisible(true);
-			return "";
-		}
-
-		public JList getListbox() {
-			return alist;
-		}
-
-		public ServerEditorDialog(JComponent comp) {
-			super(JOptionPane.getFrameForComponent(comp), "Server Editor", true);
-
-			getContentPane().setLayout(new BorderLayout());
-
-			ServerListModel lmodel = new ServerListModel();
-
-			alist = new JList(lmodel);
-			alist.setCellRenderer(lmodel);
-
-			JPanel lpanel = new JPanel();
-			lpanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-			lpanel.setLayout(new BorderLayout());
-			lpanel.add(new JScrollPane(alist, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED), BorderLayout.CENTER);
-
-			getContentPane().add(lpanel, BorderLayout.CENTER);
-
-			JToolBar buttons = new JToolBar();
-			buttons.setFloatable(false);
-			buttons.setLayout(new FlowLayout());
-
-			JButton add, edit, remove, sort, ok;
-
-			add = new JButton("Add");
-			add.setMnemonic('A');
-			buttons.add(add);
-
-			edit = new JButton("Edit");
-			edit.setMnemonic('E');
-			buttons.add(edit);
-
-			remove = new JButton("Remove");
-			remove.setMnemonic('R');
-			buttons.add(remove);
-
-			buttons.addSeparator();
-
-			sort = new JButton("Sort");
-			sort.setMnemonic('S');
-			buttons.add(sort);
-
-			buttons.addSeparator();
-
-			ok = new JButton("Close");
-			ok.setMnemonic('C');
-			buttons.add(ok);
-
-			edit.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev) {
-					EditServerInfo editor = new EditServerInfo();
-					editor.setupDialog(alist.getSelectedValue());
-
-					ADialog dialog = new ADialog(component, "Edit Server", editor, alist.getSelectedValue());
-					dialog.setSize(new Dimension(330, 280));
-					if (dialog.showDialog(component) != null) // the returned value is modified directly.
-					{
-						((ServerListModel) alist.getModel()).fireChange();
-					}
-				}
-			});
-
-			add.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev) {
-					EditServerInfo editor = new EditServerInfo();
-					editor.setupDialog(null);
-
-					ADialog dialog = new ADialog(component, "New Server", editor, null);
-					dialog.setSize(new Dimension(330, 280));
-
-					Server temp = (Server) dialog.showDialog(component);
-					if (temp != null) {
-						data.addServer(temp);
-						data.update();
-						((ServerListModel) alist.getModel()).fireChange();
-					}
-				}
-			});
-
-			remove.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev) {
-					if (alist.getSelectedValue() != null) {
-						data.removeServer((Server) alist.getSelectedValue());
-						data.update();
-						((ServerListModel) alist.getModel()).fireChange();
-					}
-				}
-			});
-
-			sort.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev) {
-					data.sort();
-					data.update();
-					((ServerListModel) alist.getModel()).fireChange();
-				}
-			});
-
-			ok.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent ev) {
-					setVisible(false);
-				}
-			});
-
-			getContentPane().add(buttons, BorderLayout.SOUTH);
-
-			setSize(400, 200);
-		}
-
-	}
-
 	protected class ServerListModel extends AbstractListModel implements ListCellRenderer {
 		protected JLabel cell = new JLabel();
 
 		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-			Server svalue = (Server) value;
+			ServerConfig svalue = (ServerConfig) value;
 
 			if (index < 0 || index > getSize()) {
 				return cell;
@@ -325,32 +222,19 @@ public class ServerList extends JPanel implements DItem {
 
 				cell.setBorder(UIManager.getBorder("List.focusCellHighlightBorder"));
 
-				if (svalue.getNetwork().equals("")) {
-					cell.setText("Random: " + svalue.getHost() + ":" + svalue.getPorts());
-				} else {
-					if (svalue.isSecure()) {
-						cell.setText(svalue.getNetwork() + ": " + svalue.getHost() + ":" + svalue.getPorts() + " (SSL)");
-					} else {
-						cell.setText(svalue.getNetwork() + ": " + svalue.getHost() + ":" + svalue.getPorts());
-					}
-				}
+				cell.setText(svalue.getHost() + ":" + svalue.getPorts());
 			} else {
 				cell.setOpaque(false);
 				cell.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
 				cell.setForeground(fore);
 
 				String description = svalue.getDescription();
-				String network = svalue.getNetwork();
 
 				if (description == null || description.equals("")) {
 					description = svalue.getHost();
 				}
 
-				if (network == null || network.equals("")) {
-					network = "Random";
-				}
-
-				cell.setText(network + ": " + description);
+				cell.setText(description);
 			}
 
 			return cell;
@@ -370,44 +254,20 @@ public class ServerList extends JPanel implements DItem {
 		}
 	}
 
-	protected class NetworkListModel extends AbstractListModel implements ComboBoxModel {
-		protected Object selected;
-
-		public Object getSelectedItem() {
-			return selected;
-		}
-
-		public void setSelectedItem(Object item) {
-			selected = item;
-		}
-
-		public void fireChange() {
-			fireContentsChanged(this, 0, -1);
-		}
-
-		public Object getElementAt(int index) {
-			return data.getGroups().get(index);
-		}
-
-		public int getSize() {
-			return data.getGroups().size();
-		}
-	}
-
 	protected class EditServerInfo extends APanel {
 		protected JTextField description = new JTextField();
 		protected JTextField host = new JTextField();
 		protected JTextField portRange = new JTextField();
 		protected JTextField network = new JTextField();
-		protected JCheckBox isSSL = new JCheckBox("Server requires SSL");
+		protected JCheckBox isSSL = new JCheckBox("ServerConfig requires SSL");
 		protected JCheckBox isStartup = new JCheckBox("Connect to server on client startup");
 		protected JPasswordField password = new JPasswordField();
 
 		public void setupDialog(Object value) {
 			if (value == null) {
-				setBorder(BorderFactory.createTitledBorder(" Create New Server "));
+				setBorder(BorderFactory.createTitledBorder(" Create New ServerConfig "));
 			} else {
-				setBorder(BorderFactory.createTitledBorder(" Edit Server Information "));
+				setBorder(BorderFactory.createTitledBorder(" Edit ServerConfig Information "));
 			}
 
 			JLabel description_l, host_l, portRange_l, network_l, password_l;
@@ -429,7 +289,6 @@ public class ServerList extends JPanel implements DItem {
 			addComponent(mergeComponents(description_l, description, 20));
 			addComponent(mergeComponents(host_l, host, 20));
 			addComponent(mergeComponents(portRange_l, portRange, 100));
-			addComponent(mergeComponents(network_l, network, 20));
 			addComponent(isSSL);
 			addComponent(mergeComponents(password_l, password, 20));
 			addComponent(isStartup);
@@ -437,11 +296,11 @@ public class ServerList extends JPanel implements DItem {
 			labels.sync();
 
 			if (value != null) {
-				Server temp = (Server) value;
+				ServerConfig temp = (ServerConfig) value;
 				description.setText(temp.getDescription());
 				host.setText(temp.getHost());
 				portRange.setText(temp.getPorts());
-				network.setText(temp.getNetwork());
+				//network.setText(temp.getNetwork());
 				isSSL.setSelected(temp.isSecure());
 
 				isStartup.setSelected(autoConnect.isValue(temp.getHost()));
@@ -451,12 +310,12 @@ public class ServerList extends JPanel implements DItem {
 		}
 
 		public Object getValue(Object value) {
-			Server server;
+			ServerConfig server;
 
 			if (value != null) {
-				server = (Server) value;
+				server = (ServerConfig) value;
 			} else {
-				server = new Server();
+				server = new ServerConfig();
 			}
 
 			if (isStartup.isSelected() && !autoConnect.isValue(host.getText())) {
@@ -471,7 +330,7 @@ public class ServerList extends JPanel implements DItem {
 				autoConnect.save();
 			}
 
-			server.setValues(description.getText(), host.getText(), portRange.getText(), network.getText(), isSSL.isSelected(), password.getText());
+			server.setValues(description.getText(), host.getText(), portRange.getText(), isSSL.isSelected(), password.getText());
 			return server;
 		}
 	}

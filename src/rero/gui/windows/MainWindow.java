@@ -7,6 +7,7 @@ import rero.config.Config;
 import rero.config.Resources;
 import rero.gui.GlobalCapabilities;
 import rero.gui.SessionManager;
+import rero.gui.windows.components.ServersTree;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +28,7 @@ public class MainWindow extends JFrame {
 
 		getContentPane().add(new SessionManager(this), BorderLayout.CENTER);
 
-		//getContentPane().add(new ServersTree(), BorderLayout.WEST);
+		getContentPane().add(new ServersTree(), BorderLayout.WEST);
 
 		setIconImage(Resources.getInstance().getIcon("jirc.icon", "jicon.jpg").getImage());
 
