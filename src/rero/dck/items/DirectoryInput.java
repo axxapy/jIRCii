@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.FileLink;
 import rero.dck.SuperInput;
 
@@ -52,7 +52,7 @@ public class DirectoryInput extends SuperInput implements ActionListener {
 	}
 
 	public void save() {
-		ClientState.getInstance().setString(getVariable(), text.getText());
+		Config.getInstance().setString(getVariable(), text.getText());
 	}
 
 	public int getEstimatedWidth() {
@@ -69,7 +69,7 @@ public class DirectoryInput extends SuperInput implements ActionListener {
 	}
 
 	public void refresh() {
-		text.setText(ClientState.getInstance().getString(getVariable(), value));
+		text.setText(Config.getInstance().getString(getVariable(), value));
 	}
 }
 

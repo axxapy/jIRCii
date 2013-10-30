@@ -3,6 +3,7 @@ package rero.gui.sdi;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import rero.gui.toolkit.OrientedToolBar;
 import rero.gui.windows.ClientWindow;
 import rero.gui.windows.StatusWindow;
@@ -26,7 +27,7 @@ public class ClientPanel extends WindowManager implements ActionListener, Client
 
 	public void propertyChanged(String key, String value) {
 		if (key.equals("switchbar.position")) {
-			int orientation = ClientState.getInstance().getInteger("switchbar.position", ClientDefaults.switchbar_position);
+			int orientation = Config.getInstance().getInteger("switchbar.position", ClientDefaults.switchbar_position);
 
 			top.remove(button);
 			if (orientation == 2 || orientation == 3) {

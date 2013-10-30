@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.SuperInput;
 
 import javax.swing.*;
@@ -61,7 +61,7 @@ public class FloatInput extends SuperInput implements ChangeListener {
 	}
 
 	public void save() {
-		ClientState.getInstance().setFloat(getVariable(), (float) slider.getValue() / 100f);
+		Config.getInstance().setFloat(getVariable(), (float) slider.getValue() / 100f);
 	}
 
 	public int getEstimatedWidth() {
@@ -78,7 +78,7 @@ public class FloatInput extends SuperInput implements ChangeListener {
 	}
 
 	public void refresh() {
-		int defValue = (int) (ClientState.getInstance().getFloat(getVariable(), value) * 100);
+		int defValue = (int) (Config.getInstance().getFloat(getVariable(), value) * 100);
 		slider.setValue(defValue);
 
 		if (defValue == 0) {

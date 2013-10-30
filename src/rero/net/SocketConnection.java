@@ -3,6 +3,7 @@ package rero.net;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import rero.net.interfaces.SocketDataListener;
 import rero.net.interfaces.SocketStatusListener;
 import rero.util.ClientUtils;
@@ -202,7 +203,7 @@ public class SocketConnection implements Runnable, ClientStateListener {
 
 	private static class StripCodesListener implements ClientStateListener {
 		public void propertyChanged(String key, String value) {
-			stripcodes = ClientState.getInstance().isOption("client.stripcodes", ClientDefaults.client_stripcodes);
+			stripcodes = Config.getInstance().isOption("client.stripcodes", ClientDefaults.client_stripcodes);
 		}
 	}
 

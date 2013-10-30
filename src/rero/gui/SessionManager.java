@@ -1,10 +1,7 @@
 package rero.gui;
 
 import rero.bridges.menu.MenuBridge;
-import rero.config.ClientDefaults;
-import rero.config.ClientState;
-import rero.config.ClientStateListener;
-import rero.config.StringList;
+import rero.config.*;
 import rero.dialogs.server.Server;
 import rero.dialogs.server.ServerData;
 import rero.gui.toolkit.MinimalTabUI;
@@ -44,7 +41,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		bridge = (MenuBridge) getActiveSession().getCapabilities().getDataStructure("menuBridge");
 		rero.util.ClientUtils.invokeLater(new Runnable() {
 			public void run() {
-				if (ClientState.getInstance().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
+				if (Config.getInstance().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
 					JMenuBar menu = new JMenuBar();
 					bridge.installMenubar(menu);
 					frame.setJMenuBar(menu);
@@ -93,11 +90,11 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// do this before doing anything else... dig?
-				if (!ClientState.getInstance().isOption("ui.showtabs", ClientDefaults.ui_showtabs)) {
+				if (!Config.getInstance().isOption("ui.showtabs", ClientDefaults.ui_showtabs)) {
 					setUI(new MinimalTabUI());
 				}
 
-				StringList temp = ClientState.getInstance().getStringList("auto.connect");
+				StringList temp = Config.getInstance().getStringList("auto.connect");
 
 				if (QuickConnect.IsQuickConnect()) {
 					addSession();
@@ -181,7 +178,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		propertyChanged(null, null);
 		revalidate();
 
-		if (ClientState.getInstance().getString("user.nick", null) == null && !QuickConnect.IsQuickConnect()) {
+		if (Config.getInstance().getString("user.nick", null) == null && !QuickConnect.IsQuickConnect()) {
 			getGlobalCapabilities().showOptionDialog(null);
 			session.getStatusWindow().getInput().requestFocus(); // give status window focus after first time setup...
 		}

@@ -13,7 +13,7 @@ public class StringList {
 	}
 
 	public void load() {
-		String value = ClientState.getInstance().getString(key, null);
+		String value = Config.getInstance().getString(key, null);
 		LinkedList rv = new LinkedList();
 
 		if (value != null) {
@@ -48,7 +48,7 @@ public class StringList {
 			}
 		}
 
-		ClientState.getInstance().setString(key, value.toString());
+		Config.getInstance().setString(key, value.toString());
 	}
 
 	public void add(String element) {

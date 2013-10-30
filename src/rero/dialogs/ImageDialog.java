@@ -1,6 +1,7 @@
 package rero.dialogs;
 
 import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.DMain;
 import rero.dck.DParent;
 import rero.dck.DTab;
@@ -75,7 +76,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 		}
 
 		public boolean isEnabled() {
-			int type = ClientState.getInstance().getInteger(current + ".bgtype", 0);
+			int type = Config.getInstance().getInteger(current + ".bgtype", 0);
 			return type == 2 || type == 3;
 		}
 
@@ -94,7 +95,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 		}
 
 		public boolean isEnabled() {
-			return ClientState.getInstance().getInteger(current + ".bgtype", 0) != 0;
+			return Config.getInstance().getInteger(current + ".bgtype", 0) != 0;
 		}
 
 		public String getDescription() {
@@ -113,7 +114,7 @@ public class ImageDialog extends DMain implements DParent, ActionListener {
 		}
 
 		public boolean isEnabled() {
-			return ClientState.getInstance().getInteger(current + ".bgtype", 0) == 3;
+			return Config.getInstance().getInteger(current + ".bgtype", 0) == 3;
 		}
 
 		public String getDescription() {

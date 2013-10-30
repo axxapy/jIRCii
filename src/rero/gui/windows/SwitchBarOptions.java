@@ -3,6 +3,7 @@ package rero.gui.windows;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,8 +39,8 @@ public class SwitchBarOptions implements ClientStateListener {
 
 	public void rehash() {
 		container.remove(switchbar);
-		boolean enabled = ClientState.getInstance().isOption("switchbar.enabled", true);
-		int position = ClientState.getInstance().getInteger("switchbar.position", 0);
+		boolean enabled = Config.getInstance().isOption("switchbar.enabled", true);
+		int position = Config.getInstance().getInteger("switchbar.position", 0);
 
 		if (enabled) {
 			switch (position) {
@@ -76,8 +77,8 @@ public class SwitchBarOptions implements ClientStateListener {
 		}
 
 		public void propertyChanged(String key, String value) {
-			theColor = ClientState.getInstance().getColor("switchbar.color", ClientDefaults.switchbar_color);
-			hilight = ClientState.getInstance().isOption("switchbar.hilight", ClientDefaults.switchbar_hilight);
+			theColor = Config.getInstance().getColor("switchbar.color", ClientDefaults.switchbar_color);
+			hilight = Config.getInstance().isOption("switchbar.hilight", ClientDefaults.switchbar_hilight);
 		}
 
 		public boolean isHilightOn() {

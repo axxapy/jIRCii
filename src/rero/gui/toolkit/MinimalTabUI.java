@@ -1,7 +1,7 @@
 package rero.gui.toolkit;
 
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -54,7 +54,7 @@ public class MinimalTabUI extends TabbedPaneUI implements ChangeListener {
 		JTabbedPane temp = (JTabbedPane) c;
 		c.setLayout(new MinimalLayout());
 
-		int size = ClientState.getInstance().getInteger("notabs.border", ClientDefaults.notabs_border);
+		int size = Config.getInstance().getInteger("notabs.border", ClientDefaults.notabs_border);
 
 		c.setBorder(BorderFactory.createEmptyBorder(size, size, size, size));
 		temp.addChangeListener(this);

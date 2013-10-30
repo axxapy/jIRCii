@@ -3,6 +3,7 @@ package rero.gui.toolkit;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,13 +23,13 @@ public class OrientedToolBar extends JToolBar implements ClientStateListener {
 	}
 
 	public void propertyChanged(String var, String var2) {
-		int orientation = ClientState.getInstance().getInteger("switchbar.position", 0);
+		int orientation = Config.getInstance().getInteger("switchbar.position", 0);
 
 		if (orientation == 2 || orientation == 3) {
 //         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			setLayout(new GridLayout3());
 			validate();
-		} else if (ClientState.getInstance().isOption("switchbar.fixed", ClientDefaults.switchbar_fixed)) {
+		} else if (Config.getInstance().isOption("switchbar.fixed", ClientDefaults.switchbar_fixed)) {
 			if (fixed == null || fill == null) {
 				fixed = new FlowLayout2(FlowLayout.LEFT, 0, 0);
 				fill = new GridLayout2();

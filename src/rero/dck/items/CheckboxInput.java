@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.DItem;
 import rero.dck.SuperInput;
 
@@ -53,7 +53,7 @@ public class CheckboxInput extends SuperInput implements ChangeListener {
 	public void save() {
 		//System.out.println("Saving: " + getVariable());
 
-		ClientState.getInstance().setOption(getVariable(), box.isSelected());
+		Config.getInstance().setOption(getVariable(), box.isSelected());
 	}
 
 	public int getEstimatedWidth() {
@@ -70,7 +70,7 @@ public class CheckboxInput extends SuperInput implements ChangeListener {
 	public void refresh() {
 		//System.out.println("Refreshing: " + getVariable());
 
-		box.setSelected(ClientState.getInstance().isOption(getVariable(), defaultVal));
+		box.setSelected(Config.getInstance().isOption(getVariable(), defaultVal));
 		handleDependents();
 	}
 

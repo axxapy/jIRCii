@@ -4,6 +4,7 @@ import rero.client.Feature;
 import rero.client.output.OutputCapabilities;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
+import rero.config.Config;
 import rero.ircfw.InternalDataList;
 import rero.ircfw.User;
 import rero.ircfw.interfaces.ChannelDataWatch;
@@ -46,8 +47,8 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				if (ClientState.getInstance().attentionEnabledChannelChat())
 					ClientUtils.getAttention(); // Get attention for channel chat
 			} else {
-				if (ClientState.getInstance().isOption("auto.query", ClientDefaults.auto_option)) {
-					boolean isSelected = !ClientState.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
+				if (Config.getInstance().isOption("auto.query", ClientDefaults.auto_option)) {
+					boolean isSelected = !Config.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
 					getCapabilities().getUserInterface().openQueryWindow(nick, isSelected);
 				}
 				output.fireSetQuery(eventDescription, nick, target, "PRIVMSG");
@@ -72,7 +73,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 
 				if (ClientState.getInstance().attentionEnabledChannelChat())
 					ClientUtils.getAttention(); // Get attention for channel notice
-			} else if (ClientState.getInstance().isOption("active.notice", ClientDefaults.active_option)) {
+			} else if (Config.getInstance().isOption("active.notice", ClientDefaults.active_option)) {
 				output.fireSetConfused(eventDescription, target, "notice", "NOTICE");
 
 				if (ClientState.getInstance().attentionEnabledNotice())
@@ -91,8 +92,8 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				if (ClientState.getInstance().attentionEnabledChannelChat())
 					ClientUtils.getAttention(); // Get attention for channel action message
 			} else {
-				if (ClientState.getInstance().isOption("auto.query", ClientDefaults.auto_option)) {
-					boolean isSelected = !ClientState.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
+				if (Config.getInstance().isOption("auto.query", ClientDefaults.auto_option)) {
+					boolean isSelected = !Config.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
 					getCapabilities().getUserInterface().openQueryWindow(nick, isSelected);
 				}
 
@@ -109,7 +110,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				// make this an option later
 				//
 
-				if (ClientState.getInstance().isOption("update.ial", ClientDefaults.update_ial)) {
+				if (Config.getInstance().isOption("update.ial", ClientDefaults.update_ial)) {
 					UpdateIAL checkIAL = new UpdateIAL();
 					getCapabilities().addTemporaryListener(checkIAL);
 					getCapabilities().sendln("WHO " + channel.toString());
@@ -118,7 +119,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				//
 				// auto /window on join
 				//
-				if (ClientState.getInstance().isOption("auto.join", ClientDefaults.auto_option)) {
+				if (Config.getInstance().isOption("auto.join", ClientDefaults.auto_option)) {
 					getCapabilities().getUserInterface().openChannelWindow(ircData.getChannel(channel));
 				} else {
 					getCapabilities().getUserInterface().setQuery(channel.toString());
@@ -139,7 +140,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 				output.cycleQuery();
 			}
 
-			if (ClientState.getInstance().isOption("auto.part", ClientDefaults.auto_option) && ClientState.getInstance().isOption("auto.join", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(channel)) {
+			if (Config.getInstance().isOption("auto.part", ClientDefaults.auto_option) && Config.getInstance().isOption("auto.join", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(channel)) {
 				// do nothing if there is no window open and we have the option set to part the channel on closing the window.
 			} else {
 				output.fireSetTarget(eventDescription, channel, "CHANNEL_PART");
@@ -189,8 +190,8 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 		} else if (event.equals("CHAT_OPEN")) {
 			nick = "=" + eventDescription.get("$nick");
 
-			if (ClientState.getInstance().isOption("auto.chat", ClientDefaults.auto_option)) {
-				boolean isSelected = !ClientState.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
+			if (Config.getInstance().isOption("auto.chat", ClientDefaults.auto_option)) {
+				boolean isSelected = !Config.getInstance().isOption("auto.hide", ClientDefaults.auto_option);
 				getCapabilities().getUserInterface().openQueryWindow(nick, isSelected);
 			}
 
@@ -208,7 +209,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 		} else if (event.equals("CHAT_CLOSE")) {
 			nick = "=" + eventDescription.get("$nick");
 
-			if (ClientState.getInstance().isOption("auto.chatclose", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(nick)) {
+			if (Config.getInstance().isOption("auto.chatclose", ClientDefaults.auto_option) && !getCapabilities().getUserInterface().isWindow(nick)) {
 				// we don't have a window anymore, and we have something enabled to close the chat on closing the window as such
 				// we'll do nothing now.
 			} else {
@@ -320,7 +321,7 @@ public class ProcessEvents extends Feature implements FrameworkConstants, ChatLi
 			data.tokenize(" ");
 
 			output.fireSetTarget(eventDescription, data.getToken(0), "CHANNEL_BANLIST_END");
-		} else if ((event.equals("375") || event.equals("376") || event.equals("372")) && !ClientState.getInstance().isOption("option.showmotd", ClientDefaults.option_showmotd)) {
+		} else if ((event.equals("375") || event.equals("376") || event.equals("372")) && !Config.getInstance().isOption("option.showmotd", ClientDefaults.option_showmotd)) {
 			// do nothing as 372 is the MOTD reply
 		} else if (eventDescription.get($NUMERIC$) != null) {
 			String numeric = (String) eventDescription.get($NUMERIC$);

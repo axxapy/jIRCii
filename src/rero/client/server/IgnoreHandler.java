@@ -2,6 +2,7 @@ package rero.client.server;
 
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import rero.config.StringList;
 import rero.util.StringUtils;
 
@@ -21,7 +22,7 @@ public class IgnoreHandler implements ClientStateListener {
 	}
 
 	public void hash() {
-		ignoreMasks = ClientState.getInstance().getStringList("ignore.masks");
+		ignoreMasks = Config.getInstance().getStringList("ignore.masks");
 		checkIgnore = ignoreMasks.getList().size() > 0;
 	}
 

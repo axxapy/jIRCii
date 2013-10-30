@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.config.StringList;
 import rero.dck.SuperInput;
 
@@ -23,7 +23,7 @@ public class ListInput extends SuperInput implements ActionListener {
 
 		setLayout(new BorderLayout());
 
-		data = ClientState.getInstance().getStringList(variable);
+		data = Config.getInstance().getStringList(variable);
 		data.load();
 
 		model = new InputListModel();

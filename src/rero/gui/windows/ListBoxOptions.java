@@ -2,6 +2,7 @@ package rero.gui.windows;
 
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,8 +25,8 @@ public class ListBoxOptions implements ClientStateListener {
 		synchronized (listbox) {
 			container.remove(listbox);
 
-			boolean enabled = ClientState.getInstance().isOption("listbox.enabled", true);
-			int position = ClientState.getInstance().getInteger("listbox.position", 1); // default to right...
+			boolean enabled = Config.getInstance().isOption("listbox.enabled", true);
+			int position = Config.getInstance().getInteger("listbox.position", 1); // default to right...
 
 			if (enabled) {
 				if (position == 0) {

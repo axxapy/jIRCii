@@ -3,6 +3,7 @@ package rero.gui.windows;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -28,7 +29,7 @@ public abstract class WindowManager extends JPanel implements ClientStateListene
 	}
 
 	public void addToSwitchbar(StatusWindow window) {
-		if (ClientState.getInstance().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
+		if (Config.getInstance().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
 			Iterator i = windows.iterator();
 			int pos = 0;
 			while (i.hasNext()) {
@@ -88,9 +89,9 @@ public abstract class WindowManager extends JPanel implements ClientStateListene
 	}
 
 	public void propertyChanged(String key, String value) {
-		isRelative = ClientState.getInstance().isOption("window.relative", false);
+		isRelative = Config.getInstance().isOption("window.relative", false);
 
-		if (ClientState.getInstance().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
+		if (Config.getInstance().isOption("switchbar.sort", ClientDefaults.switchbar_sort)) {
 			switchbar.removeAll();
 
 			Collections.sort(windows);
@@ -109,7 +110,7 @@ public abstract class WindowManager extends JPanel implements ClientStateListene
 		init();
 		ClientState.getInstance().addClientStateListener("switchbar.sort", this);
 		ClientState.getInstance().addClientStateListener("window", this);
-		isRelative = ClientState.getInstance().isOption("window.relative", false);
+		isRelative = Config.getInstance().isOption("window.relative", false);
 	}
 
 	public LinkedList getAllWindows() {

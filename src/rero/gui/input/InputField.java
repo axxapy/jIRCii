@@ -3,6 +3,7 @@ package rero.gui.input;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import text.AttributedString;
 import text.AttributedText;
 import text.ModifyColorMapDialog;
@@ -132,12 +133,12 @@ public class InputField extends JTextField implements KeyListener, ActionListene
 	}
 
 	public void rehashColors() {
-		Color temp = ClientState.getInstance().getColor("ui.editcolor", ClientDefaults.ui_editcolor);
+		Color temp = Config.getInstance().getColor("ui.editcolor", ClientDefaults.ui_editcolor);
 
 		setForeground(temp);
 		setCaretColor(temp.brighter());
 
-		setFont(ClientState.getInstance().getFont("ui.font", ClientDefaults.ui_font));
+		setFont(Config.getInstance().getFont("ui.font", ClientDefaults.ui_font));
 
 		revalidate();
 	}

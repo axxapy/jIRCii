@@ -2,6 +2,7 @@ package rero.client.functions;
 
 import rero.client.Feature;
 import rero.config.ClientState;
+import rero.config.Config;
 import rero.config.StringList;
 import sleep.interfaces.Function;
 import sleep.interfaces.Loadable;
@@ -38,7 +39,7 @@ public class ConfigOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 
 			Scalar value = SleepUtils.getArrayScalar();
-			Iterator i = ClientState.getInstance().getStringList(a).getList().iterator();
+			Iterator i = Config.getInstance().getStringList(a).getList().iterator();
 			while (i.hasNext()) {
 				value.getArray().push(SleepUtils.getScalar(i.next().toString()));
 			}
@@ -52,7 +53,7 @@ public class ConfigOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 			Scalar b = (Scalar) locals.pop();
 
-			StringList list = ClientState.getInstance().getStringList(a);
+			StringList list = Config.getInstance().getStringList(a);
 
 			list.clear();
 
@@ -75,7 +76,7 @@ public class ConfigOperators extends Feature implements Loadable {
 				def = locals.pop().toString();
 			}
 
-			return SleepUtils.getScalar(ClientState.getInstance().getString(a, def));
+			return SleepUtils.getScalar(Config.getInstance().getString(a, def));
 		}
 	}
 
@@ -84,7 +85,7 @@ public class ConfigOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 			String b = locals.pop().toString();
 
-			ClientState.getInstance().setString(a, b);
+			Config.getInstance().setString(a, b);
 
 			return SleepUtils.getEmptyScalar();
 		}
@@ -94,7 +95,7 @@ public class ConfigOperators extends Feature implements Loadable {
 		public boolean decide(String f, ScriptInstance si, Stack locals) {
 			String a = locals.pop().toString();
 
-			return ClientState.getInstance().isOption(a, true);
+			return Config.getInstance().isOption(a, true);
 		}
 	}
 
@@ -102,7 +103,7 @@ public class ConfigOperators extends Feature implements Loadable {
 		public boolean decide(String f, ScriptInstance si, Stack locals) {
 			String a = locals.pop().toString();
 
-			return ClientState.getInstance().isOption(a, false);
+			return Config.getInstance().isOption(a, false);
 		}
 	}
 

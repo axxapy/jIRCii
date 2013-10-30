@@ -5,6 +5,7 @@ import rero.client.notify.Lag;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import rero.gui.IRCAwareComponent;
 import rero.gui.background.BackgroundToolBar;
 import text.LabelDisplay;
@@ -67,8 +68,8 @@ public class WindowStatusBar extends BackgroundToolBar implements IRCAwareCompon
 	}
 
 	public void rehashValues() {
-		if (ClientState.getInstance().isOption("ui.showsbar", true)) {
-			int lines = ClientState.getInstance().getInteger("ui.sbarlines", ClientDefaults.ui_sbarlines);
+		if (Config.getInstance().isOption("ui.showsbar", true)) {
+			int lines = Config.getInstance().getInteger("ui.sbarlines", ClientDefaults.ui_sbarlines);
 			contents.setNumberOfLines(lines);
 		} else {
 			contents.setNumberOfLines(0);

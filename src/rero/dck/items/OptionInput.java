@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.SuperInput;
 
 import javax.swing.*;
@@ -50,7 +50,7 @@ public class OptionInput extends SuperInput implements ItemListener {
 	}
 
 	public void save() {
-		ClientState.getInstance().setString(getVariable(), select.getSelectedItem().toString());
+		Config.getInstance().setString(getVariable(), select.getSelectedItem().toString());
 	}
 
 	public int getEstimatedWidth() {
@@ -67,7 +67,7 @@ public class OptionInput extends SuperInput implements ItemListener {
 	}
 
 	public void refresh() {
-		select.setSelectedItem(ClientState.getInstance().getString(getVariable(), defaultVal));
+		select.setSelectedItem(Config.getInstance().getString(getVariable(), defaultVal));
 	}
 
 	public void itemStateChanged(ItemEvent ev) {

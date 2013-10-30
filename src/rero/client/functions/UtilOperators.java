@@ -1,9 +1,7 @@
 package rero.client.functions;
 
 import rero.client.Feature;
-import rero.config.ClientDefaults;
-import rero.config.ClientState;
-import rero.config.StringList;
+import rero.config.*;
 import rero.util.ClientUtils;
 import sleep.bridges.BridgeUtilities;
 import sleep.interfaces.Function;
@@ -159,7 +157,7 @@ public class UtilOperators extends Feature implements Loadable {
 	}
 
 	private static File _getScriptPath(String script) {
-		StringList temp = ClientState.getInstance().getStringList("script.files");
+		StringList temp = Config.getInstance().getStringList("script.files");
 		Iterator i = temp.getList().iterator();
 
 		while (i.hasNext()) {
@@ -208,7 +206,7 @@ public class UtilOperators extends Feature implements Loadable {
 
 	private static class versionString implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			return SleepUtils.getScalar(ClientState.getInstance().getString("version.string", ClientDefaults.version_string));
+			return SleepUtils.getScalar(Config.getInstance().getString("version.string", ClientDefaults.version_string));
 		}
 	}
 
@@ -217,7 +215,7 @@ public class UtilOperators extends Feature implements Loadable {
 			String a = locals.pop().toString();
 
 			try {
-				Font font = Font.createFont(Font.TRUETYPE_FONT, ClientState.getInstance().getResourceAsStream(a));
+				Font font = Font.createFont(Font.TRUETYPE_FONT, Resources.getInstance().getResourceAsStream(a));
 				return SleepUtils.getScalar(ClientUtils.encodeFont(font));
 			} catch (Exception ex) {
 				si.getScriptEnvironment().flagError(ex.getMessage());

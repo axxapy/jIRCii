@@ -1,7 +1,7 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.DMain;
 import rero.gui.SessionManager;
 import rero.util.ClientUtils;
@@ -36,7 +36,7 @@ public class ThemeDialog extends DMain implements ActionListener {
 			String name = ClientUtils.generateThemeScript(null);
 
 			if (name != null) {
-				ClientState.getInstance().setString("current.theme", name);
+				Config.getInstance().setString("current.theme", name);
 			}
 		}
 	}
@@ -78,7 +78,7 @@ public class ThemeDialog extends DMain implements ActionListener {
 	}
 
 	public void refresh() {
-		label.setText("Current Theme: " + ClientState.getInstance().getString("current.theme", ClientDefaults.current_theme));
+		label.setText("Current Theme: " + Config.getInstance().getString("current.theme", ClientDefaults.current_theme));
 	}
 }
 

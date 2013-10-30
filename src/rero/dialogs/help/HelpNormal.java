@@ -1,6 +1,6 @@
 package rero.dialogs.help;
 
-import rero.config.ClientState;
+import rero.config.Resources;
 
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -45,7 +45,7 @@ public class HelpNormal extends HelperObject implements TreeSelectionListener {
 		lastKey = key;
 
 		if (helpData.get(key) == null) {
-			String text = ClientState.getInstance().getHelpString(key);
+			String text = Resources.getInstance().getHelpString(key);
 
 			if (text != null) {
 				helpData.put(key, text);

@@ -2,6 +2,8 @@ package rero.gui.windows;
 
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
+import rero.config.Config;
+import rero.config.Resources;
 import rero.gui.GlobalCapabilities;
 import rero.gui.SessionManager;
 
@@ -18,7 +20,7 @@ public class MainWindow extends JFrame {
 
 		GlobalCapabilities.frame = this;
 
-		if (ClientState.getInstance().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
+		if (Config.getInstance().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
 			setJMenuBar(new JMenuBar());
 		}
 
@@ -26,11 +28,11 @@ public class MainWindow extends JFrame {
 
 		getContentPane().add(new SessionManager(this), BorderLayout.CENTER);
 
-		setIconImage(ClientState.getInstance().getIcon("jirc.icon", "jicon.jpg").getImage());
+		setIconImage(Resources.getInstance().getIcon("jirc.icon", "jicon.jpg").getImage());
 
 		int inset = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
 
-		setBounds(ClientState.getInstance().getBounds("desktop.bounds", Toolkit.getDefaultToolkit().getScreenSize(), new Dimension(640, 480)));
+		setBounds(Config.getInstance().getBounds("desktop.bounds", Toolkit.getDefaultToolkit().getScreenSize(), new Dimension(640, 480)));
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent ev) {
@@ -44,9 +46,9 @@ public class MainWindow extends JFrame {
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentMoved(ComponentEvent ev) {
-				if (ClientState.getInstance().isOption("desktop.relative", false) ||
-						ClientState.getInstance().isOption("window.relative", false) ||
-						ClientState.getInstance().isOption("statusbar.relative", false)
+				if (Config.getInstance().isOption("desktop.relative", false) ||
+						Config.getInstance().isOption("window.relative", false) ||
+						Config.getInstance().isOption("statusbar.relative", false)
 						) {
 					validate();
 					ClientState.getInstance().fireChange("desktop");

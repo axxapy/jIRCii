@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.SuperInput;
 
 import javax.swing.*;
@@ -37,11 +37,11 @@ public class ColorInput extends SuperInput implements ActionListener {
 	}
 
 	public void save() {
-		ClientState.getInstance().setColor(getVariable(), colorIcon.getColor());
+		Config.getInstance().setColor(getVariable(), colorIcon.getColor());
 	}
 
 	public void refresh() {
-		colorIcon.setColor(ClientState.getInstance().getColor(getVariable(), initial));
+		colorIcon.setColor(Config.getInstance().getColor(getVariable(), initial));
 		button.repaint();
 	}
 

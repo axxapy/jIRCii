@@ -1,6 +1,6 @@
 package rero.dialogs;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.DCapabilities;
 import rero.dck.DMain;
 import rero.gui.KeyBindings;
@@ -31,7 +31,7 @@ public class OptionWindow extends JDialog implements DCapabilities, TreeSelectio
 	public void forceSave() {
 		if (current != null) {
 			current.save();
-			ClientState.getInstance().sync();
+			Config.getInstance().sync();
 		}
 	}
 
@@ -48,7 +48,7 @@ public class OptionWindow extends JDialog implements DCapabilities, TreeSelectio
 	public void saveCurrent(DMain newDialog) {
 		if (current != null) {
 			current.save();
-			ClientState.getInstance().sync();
+			Config.getInstance().sync();
 		}
 
 		current = newDialog;

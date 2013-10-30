@@ -1,8 +1,6 @@
 package rero.gui;
 
-import rero.config.ClientDefaults;
-import rero.config.ClientState;
-import rero.config.ClientStateListener;
+import rero.config.*;
 import rero.gui.toolbar.*;
 
 import javax.swing.*;
@@ -49,7 +47,7 @@ public class GraphicalToolbar extends JToolBar {
 			if (toolbar != null)
 				SessionManager.getGlobalCapabilities().getFrame().getContentPane().remove(toolbar);
 
-			if (ClientState.getInstance().isOption("ui.usetoolbar", ClientDefaults.ui_usetoolbar)) {
+			if (Config.getInstance().isOption("ui.usetoolbar", ClientDefaults.ui_usetoolbar)) {
 				if (toolbar == null)
 					toolbar = new GraphicalToolbar();
 
@@ -65,7 +63,7 @@ public class GraphicalToolbar extends JToolBar {
 		int[] tiles;
 		ToolAction[] actions;
 
-		if (ClientState.getInstance().isOption("ui.sdi", ClientDefaults.ui_sdi)) {
+		if (Config.getInstance().isOption("ui.sdi", ClientDefaults.ui_sdi)) {
 			tiles = new int[]{0, -1, 4, 7, -1, 10, -1, 22, 23, 24, -1, 26, 28, -1, 35, 36};
 			actions = new ToolAction[]{
 					new ConnectAction(),
@@ -171,7 +169,7 @@ public class GraphicalToolbar extends JToolBar {
 	}
 
 	private static BufferedImage LoadToolbarImage() {
-		ImageIcon original = ClientState.getInstance().getIcon("jirc.toolbar", "toolbar.gif");
+		ImageIcon original = Resources.getInstance().getIcon("jirc.toolbar", "toolbar.gif");
 
 		Image image = original.getImage();
 		BufferedImage value = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_ARGB);

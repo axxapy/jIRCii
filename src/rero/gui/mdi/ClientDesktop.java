@@ -1,7 +1,7 @@
 package rero.gui.mdi;
 
-import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import rero.gui.background.BackgroundDesktop;
 import rero.gui.toolkit.OrientedToolBar;
 import rero.gui.windows.*;
@@ -47,7 +47,7 @@ public class ClientDesktop extends WindowManager implements ClientWindowListener
 		ClientInternalWindow temp = new ClientInternalWindow();
 		window.init(temp);
 
-		Rectangle bounds = ClientState.getInstance().getBounds(window.getWindowType() + ".size", desktop.getSize(), new Dimension(480, 300));
+		Rectangle bounds = Config.getInstance().getBounds(window.getWindowType() + ".size", desktop.getSize(), new Dimension(480, 300));
 
 		temp.setBounds(bounds);
 
@@ -193,9 +193,9 @@ public class ClientDesktop extends WindowManager implements ClientWindowListener
 		JInternalFrame temp = (JInternalFrame) window.getWindow();
 
 		if (window.getWindow().isMaximum()) {
-			ClientState.getInstance().setBounds(window.getWindowType() + ".size", new Rectangle(0, 0, (int) desktop.getSize().getWidth(), (int) desktop.getSize().getHeight()));
+			Config.getInstance().setBounds(window.getWindowType() + ".size", new Rectangle(0, 0, (int) desktop.getSize().getWidth(), (int) desktop.getSize().getHeight()));
 		} else {
-			ClientState.getInstance().setBounds(window.getWindowType() + ".size", temp.getBounds());
+			Config.getInstance().setBounds(window.getWindowType() + ".size", temp.getBounds());
 		}
 	}
 

@@ -3,7 +3,7 @@ package rero.gui;
 import rero.client.Capabilities;
 import rero.client.DataStructures;
 import rero.client.user.UserHandler;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dialogs.AboutWindow;
 import rero.dialogs.HelpWindow;
 import rero.dialogs.OptionWindow;
@@ -58,10 +58,10 @@ public class GlobalCapabilities {
 				((UserHandler) temp.getCapabilities().getDataStructure(DataStructures.UserHandler)).runAlias("QUIT", "");
 		}
 
-		ClientState.getInstance().setBounds("desktop.bounds", frame.getBounds());
-		ClientState.getInstance().sync();
+		Config.getInstance().setBounds("desktop.bounds", frame.getBounds());
+		Config.getInstance().sync();
 
-		if (ClientState.getInstance().isOption("load.lame", false)) {
+		if (Config.getInstance().isOption("load.lame", false)) {
 			System.out.println("\nThis IRC Client was made possible by:\nDr. Lipensteins Penial Enlargement Pump\nStop feeling embarrassed call 1-877-PUMP\n");
 		}
 

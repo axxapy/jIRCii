@@ -2,6 +2,7 @@ package rero.gui.background;
 
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 import java.awt.*;
 
@@ -67,12 +68,12 @@ public class BackgroundProperties implements ClientStateListener {
 		boolean _isRelative;
 		String _name;
 
-		_name = ClientState.getInstance().getString(type + ".image", "background.jpg");
-		_bgType = ClientState.getInstance().getInteger(type + ".bgtype", defaultType);
-		_bgColor = ClientState.getInstance().getColor(type + ".color", defaultColor);
-		_bgTint = ClientState.getInstance().getFloat(type + ".tint", defaultTint);
-		_bgStyle = ClientState.getInstance().getInteger(type + ".bgstyle", defaultStyle);
-		_isRelative = ClientState.getInstance().isOption(type + ".relative", false);
+		_name = Config.getInstance().getString(type + ".image", "background.jpg");
+		_bgType = Config.getInstance().getInteger(type + ".bgtype", defaultType);
+		_bgColor = Config.getInstance().getColor(type + ".color", defaultColor);
+		_bgTint = Config.getInstance().getFloat(type + ".tint", defaultTint);
+		_bgStyle = Config.getInstance().getInteger(type + ".bgstyle", defaultStyle);
+		_isRelative = Config.getInstance().isOption(type + ".relative", false);
 
 		if (!_name.equals(name) || bgColor == null || bgType != _bgType || !bgColor.equals(_bgColor) || bgTint != _bgTint || bgStyle != _bgStyle || isRelative != _isRelative) {
 			name = _name;
@@ -88,7 +89,7 @@ public class BackgroundProperties implements ClientStateListener {
 
 	public Image getImage(Component c) {
 		if (image == null) {
-			String imageName = ClientState.getInstance().getString(type + ".image", "background.jpg");
+			String imageName = Config.getInstance().getString(type + ".image", "background.jpg");
 			image = BackgroundUtil.getManagedImage(c, imageName, bgTint, bgColor);
 		}
 

@@ -3,6 +3,7 @@ package rero.ident;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -50,12 +51,12 @@ public class IdentDaemon implements Runnable, ClientStateListener {
 	}
 
 	public void setup() {
-		if (ClientState.getInstance().isOption("ident.enabled", ClientDefaults.ident_enabled) && serverThread == null) {
+		if (Config.getInstance().isOption("ident.enabled", ClientDefaults.ident_enabled) && serverThread == null) {
 			serverThread = new Thread(this);
 			serverThread.setPriority(Thread.MIN_PRIORITY);
 			serverThread.setName("jIRCii Ident Daemon");
 			serverThread.start();
-		} else if (ClientState.getInstance().isOption("ident.enabled", ClientDefaults.ident_enabled) == false && serverThread != null) {
+		} else if (Config.getInstance().isOption("ident.enabled", ClientDefaults.ident_enabled) == false && serverThread != null) {
 			close();
 		}
 	}
@@ -89,7 +90,7 @@ public class IdentDaemon implements Runnable, ClientStateListener {
 
 	public void run() {
 		try {
-			listener = new ServerSocket(ClientState.getInstance().getInteger("ident.port", ClientDefaults.ident_port));
+			listener = new ServerSocket(Config.getInstance().getInteger("ident.port", ClientDefaults.ident_port));
 		} catch (Exception ex2) {
 			ex2.printStackTrace();
 			close();
@@ -107,7 +108,7 @@ public class IdentDaemon implements Runnable, ClientStateListener {
 					String text = socketInput.readLine();
 					fireEvent(activeClient.getInetAddress().getHostAddress(), text);
 
-					socketOutput.print(text + " : USERID : " + ClientState.getInstance().getString("ident.system", ClientDefaults.ident_system) + " : " + ClientState.getInstance().getString("ident.userid", ClientDefaults.ident_userid));
+					socketOutput.print(text + " : USERID : " + Config.getInstance().getString("ident.system", ClientDefaults.ident_system) + " : " + Config.getInstance().getString("ident.userid", ClientDefaults.ident_userid));
 					socketOutput.flush();
 
 					socketInput.close();
@@ -120,7 +121,7 @@ public class IdentDaemon implements Runnable, ClientStateListener {
 					Thread.sleep(10 * 1000); // sleep for 10 seconds if something nasty happens, then *shrug* try again?
 
 					if (listener == null || listener.isClosed())
-						listener = new ServerSocket(ClientState.getInstance().getInteger("ident.port", ClientDefaults.ident_port));
+						listener = new ServerSocket(Config.getInstance().getInteger("ident.port", ClientDefaults.ident_port));
 				} catch (Exception ex1) {
 					ex1.printStackTrace();
 				}

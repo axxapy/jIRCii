@@ -4,7 +4,7 @@ import rero.client.DataStructures;
 import rero.client.Feature;
 import rero.client.user.ClientCommand;
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dcc.*;
 import rero.dialogs.DialogUtilities;
 import rero.dialogs.dcc.ChatRequest;
@@ -77,7 +77,7 @@ public class FeatureDCC extends Feature implements ClientCommand, ChatListener, 
 
 		if (port > -1) {
 			String fname = file.getName();
-			if (ClientState.getInstance().isOption("dcc.fillspaces", ClientDefaults.dcc_fillspaces)) {
+			if (Config.getInstance().isOption("dcc.fillspaces", ClientDefaults.dcc_fillspaces)) {
 				fname = fname.replace(' ', '_');
 			}
 
@@ -174,8 +174,8 @@ public class FeatureDCC extends Feature implements ClientCommand, ChatListener, 
 
 			dccData.addConnection(port + "", connect);
 
-			boolean checkDialog = ClientState.getInstance().getInteger("dcc.onchat", ClientDefaults.dcc_accept) == 0 && ChatRequest.showDialog(getCapabilities().getGlobalCapabilities().getFrame(), connect);
-			boolean checkAutoAccept = ClientState.getInstance().getInteger("dcc.onchat", ClientDefaults.dcc_accept) == 1;
+			boolean checkDialog = Config.getInstance().getInteger("dcc.onchat", ClientDefaults.dcc_accept) == 0 && ChatRequest.showDialog(getCapabilities().getGlobalCapabilities().getFrame(), connect);
+			boolean checkAutoAccept = Config.getInstance().getInteger("dcc.onchat", ClientDefaults.dcc_accept) == 1;
 
 			if (checkDialog || checkAutoAccept)
 				connect.connect();
@@ -231,7 +231,7 @@ public class FeatureDCC extends Feature implements ClientCommand, ChatListener, 
 
 			fstring = (new File(fstring)).getName(); // strip off any path information
 
-			File output = new File(ClientState.getInstance().getString("dcc.saveto", ClientDefaults.dcc_saveto), fstring);
+			File output = new File(Config.getInstance().getString("dcc.saveto", ClientDefaults.dcc_saveto), fstring);
 
 			Receive protocol = new Receive(description.get($NICK$).toString(), output, Long.parseLong(temp.getToken(5 + offset)));
 
@@ -241,8 +241,8 @@ public class FeatureDCC extends Feature implements ClientCommand, ChatListener, 
 
 			dccData.addConnection(port + "", connect);
 
-			boolean checkDialog = ClientState.getInstance().getInteger("dcc.onsend", ClientDefaults.dcc_accept) == 0 && SendRequest.showDialog(getCapabilities().getGlobalCapabilities().getFrame(), connect);
-			boolean checkAutoAccept = ClientState.getInstance().getInteger("dcc.onsend", ClientDefaults.dcc_accept) == 1;
+			boolean checkDialog = Config.getInstance().getInteger("dcc.onsend", ClientDefaults.dcc_accept) == 0 && SendRequest.showDialog(getCapabilities().getGlobalCapabilities().getFrame(), connect);
+			boolean checkAutoAccept = Config.getInstance().getInteger("dcc.onsend", ClientDefaults.dcc_accept) == 1;
 
 			if (checkDialog || checkAutoAccept) {
 				handleReceive(protocol, connect, description, temp);

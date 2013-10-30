@@ -3,6 +3,7 @@ package rero.test;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 
 public class ProxySettings implements ClientStateListener {
 	private static ProxySettings settings;
@@ -21,11 +22,11 @@ public class ProxySettings implements ClientStateListener {
 	}
 
 	public void setup() {
-		if (ClientState.getInstance().isOption("proxy.enabled", false)) {
-			System.setProperty("socksProxyHost", ClientState.getInstance().getString("proxy.server", ClientDefaults.proxy_server));
-			System.setProperty("socksProxyPort", ClientState.getInstance().getString("proxy.port", ClientDefaults.proxy_port));
-			System.setProperty("java.net.socks.username", ClientState.getInstance().getString("proxy.userid", ClientDefaults.proxy_userid));
-			System.setProperty("java.net.socks.password", ClientState.getInstance().getString("proxy.password", ClientDefaults.proxy_password));
+		if (Config.getInstance().isOption("proxy.enabled", false)) {
+			System.setProperty("socksProxyHost", Config.getInstance().getString("proxy.server", ClientDefaults.proxy_server));
+			System.setProperty("socksProxyPort", Config.getInstance().getString("proxy.port", ClientDefaults.proxy_port));
+			System.setProperty("java.net.socks.username", Config.getInstance().getString("proxy.userid", ClientDefaults.proxy_userid));
+			System.setProperty("java.net.socks.password", Config.getInstance().getString("proxy.password", ClientDefaults.proxy_password));
 		} else {
 			System.setProperty("socksProxyHost", "");
 			System.setProperty("socksProxyPort", "");

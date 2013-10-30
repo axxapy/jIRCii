@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.SuperInput;
 
 import javax.swing.*;
@@ -44,7 +44,7 @@ public class CharsetInput extends SuperInput {
 	}
 
 	public void save() {
-		ClientState.getInstance().setString(getVariable(), name.getSelectedItem().toString());
+		Config.getInstance().setString(getVariable(), name.getSelectedItem().toString());
 	}
 
 	public JComponent getComponent() {
@@ -57,7 +57,7 @@ public class CharsetInput extends SuperInput {
 
 	public void refresh() {
 		if (!listing) {
-			name.setSelectedItem(ClientState.getInstance().getString(getVariable(), DEFAULT_CHARSET));
+			name.setSelectedItem(Config.getInstance().getString(getVariable(), DEFAULT_CHARSET));
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

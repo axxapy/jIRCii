@@ -3,6 +3,7 @@ package text.list;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import text.TextSource;
 
 import javax.swing.*;
@@ -30,7 +31,7 @@ public class ListDisplayComponent extends JComponent implements ChangeListener, 
 	private static final String widthstring = "1234567890123456789012345678901234567890123456789012345678901234567890";
 
 	public void propertyChanged(String a, String b) {
-		test_string = widthstring.substring(0, ClientState.getInstance().getInteger("listbox.width", ClientDefaults.listbox_width));
+		test_string = widthstring.substring(0, Config.getInstance().getInteger("listbox.width", ClientDefaults.listbox_width));
 		revalidate();
 	}
 

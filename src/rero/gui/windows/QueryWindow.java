@@ -1,7 +1,7 @@
 package rero.gui.windows;
 
 import rero.client.Capabilities;
-import rero.config.ClientState;
+import rero.config.Resources;
 
 import javax.swing.*;
 
@@ -14,7 +14,7 @@ public class QueryWindow extends StatusWindow {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getInstance().getResource("query.gif"));
+			icon = new ImageIcon(Resources.getInstance().getResource("query.gif"));
 		}
 
 		return icon;

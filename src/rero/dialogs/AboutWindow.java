@@ -1,7 +1,7 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Resources;
 import rero.gui.KeyBindings;
 
 import javax.swing.*;
@@ -58,7 +58,7 @@ public class AboutWindow extends JDialog {
 		super(frame, "About jIRCii", false);
 
 		if (logo == null) {
-			logo = ClientState.getInstance().getIcon("about.logo", "logo.jpg");
+			logo = Resources.getInstance().getIcon("about.logo", "logo.jpg");
 		}
 
 		JButton closeButton = new JButton("Close");

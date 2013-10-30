@@ -2,7 +2,7 @@ package rero.dcc;
 
 import rero.client.Capabilities;
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dialogs.dcc.ResumeRequest;
 
 public class DCCUtilities {
@@ -36,7 +36,7 @@ public class DCCUtilities {
 	 */
 	public static final int DetermineResumeOption(Capabilities c, ConnectDCC connect) {
 		int resumeOption = -1;
-		int selectedOption = ClientState.getInstance().getInteger("dcc.exists", ClientDefaults.dcc_accept);
+		int selectedOption = Config.getInstance().getInteger("dcc.exists", ClientDefaults.dcc_accept);
 
 		switch (selectedOption) {
 			case ASK_RESUME_OPTION_SET:

@@ -8,7 +8,7 @@ package rero.util;
 //
 
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dialogs.DialogUtilities;
 import text.AttributedString;
 import text.TextSource;
@@ -50,7 +50,7 @@ public class ClientUtils {
 	public static String ShowVersion() {
 		String tagline = ClientUtils.tagline();
 
-		return "jIRCii " + ClientState.getInstance().getString("version.string", ClientDefaults.version_string) + " " + System.getProperty("os.name").replaceAll(" ", "") + " : " + ClientState.getInstance().getString("version.addons", ClientUtils.tagline());
+		return "jIRCii " + Config.getInstance().getString("version.string", ClientDefaults.version_string) + " " + System.getProperty("os.name").replaceAll(" ", "") + " : " + Config.getInstance().getString("version.addons", ClientUtils.tagline());
 	}
 
 	public static String tagline() {
@@ -542,14 +542,14 @@ public class ClientUtils {
 	private static String generateThemeLine(String var, String comment) {
 		StringBuffer temp = new StringBuffer();
 
-		if (ClientState.getInstance().getString(var, null) != null) {
+		if (Config.getInstance().getString(var, null) != null) {
 			if (comment != null)
 				temp.append("# " + comment + "\n");
 
 			temp.append("setProperty(\"");
 			temp.append(var);
 			temp.append("\", \"");
-			temp.append(ClientState.getInstance().getString(var, null));
+			temp.append(Config.getInstance().getString(var, null));
 			temp.append("\");\n");
 		}
 
@@ -637,7 +637,7 @@ public class ClientUtils {
 				Class[] defArgs = new Class[]{boolean.class}; // We're going to be passing one argument to the method
 				Method gaMethod = osxAdapter.getDeclaredMethod("getAttention", defArgs);
 				if (gaMethod != null) {
-					Boolean blnObj = new Boolean(ClientState.getInstance().isOption("option.attention.osx.bouncedock.repeat", ClientDefaults.attention_osx_bouncedock_repeat));
+					Boolean blnObj = new Boolean(Config.getInstance().isOption("option.attention.osx.bouncedock.repeat", ClientDefaults.attention_osx_bouncedock_repeat));
 					gaMethod.invoke(osxAdapter, new Object[]{blnObj}); // apple.OSXAdapter.getAttention(boolean) equivalent; what a bitch to code this.
 				}
 			} catch (Exception ex) {

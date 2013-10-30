@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.SuperInput;
 
 import javax.swing.*;
@@ -40,7 +40,7 @@ public class StringInput extends SuperInput {
 	}
 
 	public void save() {
-		ClientState.getInstance().setString(getVariable(), text.getText());
+		Config.getInstance().setString(getVariable(), text.getText());
 	}
 
 	public int getEstimatedWidth() {
@@ -57,7 +57,7 @@ public class StringInput extends SuperInput {
 	}
 
 	public void refresh() {
-		text.setText(ClientState.getInstance().getString(getVariable(), value));
+		text.setText(Config.getInstance().getString(getVariable(), value));
 	}
 }
 

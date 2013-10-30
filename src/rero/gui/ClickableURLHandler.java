@@ -2,7 +2,7 @@ package rero.gui;
 
 import rero.client.Feature;
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.util.ClientUtils;
 import text.event.ClickEvent;
 import text.event.ClickListener;
@@ -15,7 +15,7 @@ public class ClickableURLHandler extends Feature implements ClickListener {
 
 	public void wordClicked(ClickEvent ev) {
 		int clickCount = ev.getEvent().getClickCount();
-		boolean dclick = ClientState.getInstance().isOption("dclick.links", ClientDefaults.dclick_links);
+		boolean dclick = Config.getInstance().isOption("dclick.links", ClientDefaults.dclick_links);
 		int need_clicks = dclick ? 2 : 1;
 
 		if (clickCount == need_clicks) {

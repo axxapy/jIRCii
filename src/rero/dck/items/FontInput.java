@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.SuperInput;
 
 import javax.swing.*;
@@ -75,7 +75,7 @@ public class FontInput extends SuperInput implements ItemListener {
 	}
 
 	public void save() {
-		ClientState.getInstance().setFont(getVariable(), preview.getFont());
+		Config.getInstance().setFont(getVariable(), preview.getFont());
 	}
 
 	public int getEstimatedWidth() {
@@ -100,7 +100,7 @@ public class FontInput extends SuperInput implements ItemListener {
 
 	public void refresh() {
 		if (!listing) {
-			Font f = ClientState.getInstance().getFont(getVariable(), value);
+			Font f = Config.getInstance().getFont(getVariable(), value);
 
 			name.setSelectedItem(f.getFamily());
 			size.setSelectedItem(f.getSize() + "");

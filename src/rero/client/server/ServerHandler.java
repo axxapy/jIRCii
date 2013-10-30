@@ -4,6 +4,7 @@ import rero.client.Feature;
 import rero.client.notify.NotifyData;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
+import rero.config.Config;
 import rero.ident.IdentDaemon;
 import rero.ident.IdentListener;
 import rero.ircfw.Channel;
@@ -110,7 +111,7 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 		if (ev.data.isConnected) {
 			getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(ev.data.hostname, "connected"), "IRC_CONNECT");
 
-			String[] parms = ClientState.getInstance().getString("user.email", "jircii@127.0.0.1").split("@");
+			String[] parms = Config.getInstance().getString("user.email", "jircii@127.0.0.1").split("@");
 
 			if (parms.length == 1) {
 				parms = new String[]{parms[0], "127.0.0.1"};
@@ -127,15 +128,15 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 			String user, nick;
 
 			if (rero.test.QuickConnect.IsQuickConnect()) {
-				user = ClientState.getInstance().getString("user.rname", "jIRCii Web User: http://www.jircii.org/");
-				nick = ClientState.getInstance().getString("user.nick", rero.test.QuickConnect.GetInformation().getNickname());
+				user = Config.getInstance().getString("user.rname", "jIRCii Web User: http://www.jircii.org/");
+				nick = Config.getInstance().getString("user.nick", rero.test.QuickConnect.GetInformation().getNickname());
 			} else if ((System.currentTimeMillis() % 5) == 0) // haveing some more fun...
 			{
-				user = ClientState.getInstance().getString("user.rname", "I'm to lame to read mIRC.hlp");
-				nick = ClientState.getInstance().getString("user.nick", "madgoat");
+				user = Config.getInstance().getString("user.rname", "I'm to lame to read mIRC.hlp");
+				nick = Config.getInstance().getString("user.nick", "madgoat");
 			} else {
-				user = ClientState.getInstance().getString("user.rname", ClientUtils.tagline());
-				nick = ClientState.getInstance().getString("user.nick", "IRCFrEAK");
+				user = Config.getInstance().getString("user.rname", ClientUtils.tagline());
+				nick = Config.getInstance().getString("user.nick", "IRCFrEAK");
 			}
 
 			if (restoreInformation != null) {
@@ -158,7 +159,7 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 				ClientUtils.getAttention(); // Get attention for disconnect
 
 			if (data.getMyUser().getChannels().size() > 0) {
-				if (ClientState.getInstance().isOption("option.reconnect", ClientDefaults.option_reconnect)) {
+				if (Config.getInstance().isOption("option.reconnect", ClientDefaults.option_reconnect)) {
 					//System.out.println("Reconnecting is an option");
 
 					restoreInformation = data.getMyUser().copy();
@@ -166,7 +167,7 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 
 					getCapabilities().getOutputCapabilities().fireSetAll(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_RECONNECT");
 					getCapabilities().getGlobalCapabilities().setTabTitle(getCapabilities(), "reconnecting");
-					socket.connect(ev.data.hostname, ev.data.port, ClientState.getInstance().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
+					socket.connect(ev.data.hostname, ev.data.port, Config.getInstance().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
 
 					isDone = true;
 				}
@@ -179,13 +180,13 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 			if (restoreInformation != null && !isDone) {
 				getCapabilities().getOutputCapabilities().fireSetStatus(ClientUtils.getEventHashMap(ev.data.hostname, ev.message), "IRC_RECONNECT");
 				getCapabilities().getGlobalCapabilities().setTabTitle(getCapabilities(), "reconnecting");
-				socket.connect(ev.data.hostname, ev.data.port, ClientState.getInstance().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
+				socket.connect(ev.data.hostname, ev.data.port, Config.getInstance().getInteger("reconnect.time", ClientDefaults.reconnect_time) * 1000, ev.data.password, ev.data.isSecure);
 			}
 		}
 	}
 
 	protected class NickInUseListener implements ChatListener {
-		protected String altNick = ClientState.getInstance().getString("user.altnick", "lamer" + System.currentTimeMillis());
+		protected String altNick = Config.getInstance().getString("user.altnick", "lamer" + System.currentTimeMillis());
 		protected boolean armed = true;
 
 		public boolean isChatEvent(String event, HashMap data) {
@@ -204,7 +205,7 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 					// set a new alternate alt nick iff a user is quick connecting and a default nickname has been specified...
 					// otherwise lamer will do just fine...
 
-					altNick = ClientState.getInstance().getString("user.nick", rero.test.QuickConnect.GetInformation().getNickname()) + System.currentTimeMillis();
+					altNick = Config.getInstance().getString("user.nick", rero.test.QuickConnect.GetInformation().getNickname()) + System.currentTimeMillis();
 				}
 				getCapabilities().sendln("NICK " + altNick);
 			}

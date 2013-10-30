@@ -1,6 +1,6 @@
 package rero.dialogs.help;
 
-import rero.config.ClientState;
+import rero.config.Resources;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,7 +29,7 @@ public class HelpData {
 	}
 
 	public HelpData() {
-		URL url = ClientState.getInstance().getPackagedResource("aliases", "help");
+		URL url = Resources.getInstance().getPackagedResource("aliases", "help");
 
 		if (url != null) {
 			try {

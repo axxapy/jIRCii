@@ -5,6 +5,7 @@ import rero.client.Feature;
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
+import rero.config.Config;
 import rero.ircfw.InternalDataList;
 import rero.ircfw.interfaces.ChatListener;
 import rero.ircfw.interfaces.FrameworkConstants;
@@ -70,20 +71,20 @@ public class LocalInfo extends Feature implements FrameworkConstants, ClientStat
 		if (localHost != null)  // localhost has already been processed... f00.
 			return;
 
-		if (ClientState.getInstance().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_AUTOMATIC)) {
+		if (Config.getInstance().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_AUTOMATIC)) {
 			(new Thread(new Runnable() {
 				public void run() {
 					localip();
 				}
 			})).start();
-		} else if (ClientState.getInstance().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_FROM_SERVER)) {
+		} else if (Config.getInstance().getString("dcc.localinfo", ClientDefaults.dcc_localinfo).equals(RESOLVE_FROM_SERVER)) {
 			if (!resolveProcessed) {
 				getCapabilities().addTemporaryListener(new ResolveLocalInfo());
 			} else {
 				localHost = resolveHost;
 			}
 		} else {
-			localHost = ClientState.getInstance().getString("dcc.localinfo", "127.0.0.1");
+			localHost = Config.getInstance().getString("dcc.localinfo", "127.0.0.1");
 		}
 	}
 

@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.config.StringList;
 import rero.dck.SuperInput;
 import rero.dialogs.server.ServerData;
@@ -58,8 +58,8 @@ public class NetworkSelect extends SuperInput implements ItemListener {
 			public void actionPerformed(ActionEvent ev) {
 				if (networks.getSelectedIndex() > 0) // we don't want to remove the first element, so > 0...
 				{
-					ClientState.getInstance().setString(getVariable(), "");
-					ClientState.getInstance().sync();
+					Config.getInstance().setString(getVariable(), "");
+					Config.getInstance().sync();
 
 					int zz = networks.getSelectedIndex() - 1;
 					data.remove(networks.getSelectedItem().toString());
@@ -156,7 +156,7 @@ public class NetworkSelect extends SuperInput implements ItemListener {
 		networks.addItem(ALL_NETWORKS);
 
 		if (data == null) {
-			data = ClientState.getInstance().getStringList(networkV);
+			data = Config.getInstance().getStringList(networkV);
 		}
 
 		LinkedList temp = data.getList();

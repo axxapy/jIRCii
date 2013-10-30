@@ -1,7 +1,7 @@
 package rero.dialogs;
 
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.dck.DGroup;
 import rero.dck.DMain;
 import rero.dck.items.CheckboxInput;
@@ -33,7 +33,7 @@ public class UIDialog extends DMain {
 
 		preferenceListener = new ActionListener() {
 			public void actionPerformed(ActionEvent ev) {
-				if (ClientState.getInstance().isOption("ui.showrestart", ClientDefaults.ui_showrestart)) {
+				if (Config.getInstance().isOption("ui.showrestart", ClientDefaults.ui_showrestart)) {
 					JOptionPane.showMessageDialog((JComponent) ev.getSource(), "This change in jIRCii's interface\npreferences will not take effect\nuntil you restart jIRCii\n\nUse Alt+O to open the options\ndialog to undo this later", "Interface Setting", JOptionPane.INFORMATION_MESSAGE);
 				}
 			}

@@ -7,7 +7,7 @@ import rero.client.output.ChatCapabilities;
 import rero.client.script.ScriptManager;
 import rero.client.server.ListFilter;
 import rero.config.ClientDefaults;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.config.StringList;
 import rero.dialogs.DialogUtilities;
 import rero.gui.SessionManager;
@@ -316,7 +316,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 					parms = parms + "!*@*";
 				}
 
-				StringList templ = ClientState.getInstance().getStringList("ignore.masks");
+				StringList templ = Config.getInstance().getStringList("ignore.masks");
 				templ.add(parms);
 				templ.save();
 
@@ -347,7 +347,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				}
 				break;
 			case K:
-				temp = ClientState.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
+				temp = Config.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
 				target = ircData.nickComplete(tokens.getToken(0), gui.getQuery());
 
 				if (tokens.getTotalTokens() > 1) {
@@ -357,7 +357,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				getCapabilities().sendln("KICK " + gui.getQuery() + " " + target + " :" + temp);
 				break;
 			case KB:
-				temp = ClientState.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
+				temp = Config.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
 				target = ircData.nickComplete(tokens.getToken(0), gui.getQuery());
 
 				if (tokens.getTotalTokens() > 1) {
@@ -375,7 +375,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 
 				break;
 			case KICK:
-				temp = ClientState.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
+				temp = Config.getInstance().getString("kick.message", "I know... I'm a \002jIRC\002");
 
 				if (tokens.getTotalTokens() > 2) {
 					temp = tokens.getTokenFrom(2);
@@ -384,7 +384,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				getCapabilities().sendln("KICK " + tokens.getToken(0) + " " + tokens.getToken(1) + " :" + temp);
 				break;
 			case KILL:
-				temp = ClientState.getInstance().getString("kill.message", "I know... I'm a \002jIRC\002");
+				temp = Config.getInstance().getString("kill.message", "I know... I'm a \002jIRC\002");
 
 				if (tokens.getTotalTokens() > 1) {
 					temp = tokens.getTokenFrom(1);
@@ -517,7 +517,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 					parms = tokens.getTokenFrom(1);
 				}
 
-				if (ClientState.getInstance().isOption("auto.part", ClientDefaults.auto_option) && gui.isWindow(target)) {
+				if (Config.getInstance().isOption("auto.part", ClientDefaults.auto_option) && gui.isWindow(target)) {
 					getCapabilities().getUserInterface().closeWindow(target);
 				} else {
 					getCapabilities().sendln("PART " + target + " :" + parms);
@@ -556,7 +556,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				break;
 			case QUIT:
 				if (parms.length() == 0) {
-					parms = ClientState.getInstance().getString("message.quit", "jIRCii - http://www.oldschoolirc.com");
+					parms = Config.getInstance().getString("message.quit", "jIRCii - http://www.oldschoolirc.com");
 				}
 
 				if (getCapabilities().isConnected()) {
@@ -656,7 +656,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 				getCapabilities().sendln("MODE " + gui.getQuery() + " +b");
 				break;
 			case UNIGNORE:
-				StringList templw = ClientState.getInstance().getStringList("ignore.masks");
+				StringList templw = Config.getInstance().getStringList("ignore.masks");
 				templw.remove(parms);
 				templw.save();
 

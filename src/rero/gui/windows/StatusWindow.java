@@ -3,6 +3,7 @@ package rero.gui.windows;
 import rero.bridges.menu.MenuBridge;
 import rero.client.Capabilities;
 import rero.config.ClientState;
+import rero.config.Resources;
 import rero.gui.IRCAwareComponent;
 import rero.gui.IRCSession;
 import rero.gui.background.BackgroundPanel;
@@ -197,7 +198,7 @@ public class StatusWindow extends BackgroundPanel implements IRCAwareComponent, 
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getInstance().getResource("status.gif"));
+			icon = new ImageIcon(Resources.getInstance().getResource("status.gif"));
 		}
 
 		return icon;

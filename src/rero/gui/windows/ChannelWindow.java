@@ -2,7 +2,7 @@ package rero.gui.windows;
 
 import rero.bridges.menu.ScriptedPopupMenu;
 import rero.client.Capabilities;
-import rero.config.ClientState;
+import rero.config.Resources;
 import rero.ircfw.Channel;
 import rero.ircfw.InternalDataList;
 import rero.ircfw.User;
@@ -138,7 +138,7 @@ public class ChannelWindow extends StatusWindow implements ChannelDataWatch {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getInstance().getResource("channel.gif"));
+			icon = new ImageIcon(Resources.getInstance().getResource("channel.gif"));
 		}
 
 		return icon;

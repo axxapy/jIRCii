@@ -1,7 +1,7 @@
 package rero.gui.windows;
 
 import contrib.javapro.JSortTable;
-import rero.config.ClientState;
+import rero.config.Resources;
 import rero.gui.toolkit.GeneralListModel;
 import text.AttributedLabel;
 import text.AttributedString;
@@ -118,7 +118,7 @@ public class GeneralListDialog extends EmptyWindow {
 
 	public ImageIcon getImageIcon() {
 		if (icon == null) {
-			icon = new ImageIcon(ClientState.getInstance().getResource("jsmall.gif"));
+			icon = new ImageIcon(Resources.getInstance().getResource("jsmall.gif"));
 		}
 
 		return icon;

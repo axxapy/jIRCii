@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.config.StringList;
 import rero.dck.SuperInput;
 
@@ -53,7 +53,7 @@ public class TextInput extends SuperInput implements ActionListener {
 	}
 
 	public void refresh() {
-		StringList string = ClientState.getInstance().getStringList(getVariable());
+		StringList string = Config.getInstance().getStringList(getVariable());
 		StringBuffer data = new StringBuffer();
 
 		Iterator i = string.getList().iterator();

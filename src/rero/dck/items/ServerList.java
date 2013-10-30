@@ -1,6 +1,6 @@
 package rero.dck.items;
 
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.config.StringList;
 import rero.dck.DCapabilities;
 import rero.dck.DItem;
@@ -38,7 +38,7 @@ public class ServerList extends JPanel implements DItem {
 	public ServerList(ServerData _data, int _width, int _height, DCapabilities _capabilities) {
 		data = _data;
 
-		autoConnect = ClientState.getInstance().getStringList("auto.connect");
+		autoConnect = Config.getInstance().getStringList("auto.connect");
 
 		capabilities = _capabilities;
 
@@ -143,14 +143,14 @@ public class ServerList extends JPanel implements DItem {
 
 	public void save() {
 		if (network.getSelectedItem() != null) {
-			ClientState.getInstance().setInteger("sdialog.selected", ((ServerGroup) network.getSelectedItem()).getNumber());
+			Config.getInstance().setInteger("sdialog.selected", ((ServerGroup) network.getSelectedItem()).getNumber());
 		}
 		data.save();
 	}
 
 	public void refresh() {
 		try {
-			network.setSelectedIndex(ClientState.getInstance().getInteger("sdialog.selected", 0));
+			network.setSelectedIndex(Config.getInstance().getInteger("sdialog.selected", 0));
 			data.update();
 			((ServerListModel) list.getModel()).fireChange();
 		} catch (Exception ex) {

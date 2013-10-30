@@ -2,7 +2,7 @@ package rero.gui.toolbar;
 
 import rero.client.DataStructures;
 import rero.client.script.ScriptManager;
-import rero.config.ClientState;
+import rero.config.Config;
 import rero.gui.SessionManager;
 
 import javax.swing.*;
@@ -11,7 +11,7 @@ import java.awt.event.MouseEvent;
 public class EvilAction implements ToolAction {
 	public void actionPerformed(MouseEvent ev) {
 		if (ev.getClickCount() > 2) {
-			boolean lame = !ClientState.getInstance().isOption("load.lame", false);
+			boolean lame = !Config.getInstance().isOption("load.lame", false);
 			String message = "";
 
 			if (lame) {
@@ -22,7 +22,7 @@ public class EvilAction implements ToolAction {
 			}
 
 			JOptionPane.showMessageDialog(null, message, "Your favorite holiday...", JOptionPane.INFORMATION_MESSAGE);
-			ClientState.getInstance().setOption("load.lame", lame);
+			Config.getInstance().setOption("load.lame", lame);
 		}
 	}
 

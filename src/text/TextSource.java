@@ -1,8 +1,6 @@
 package text;
 
-import rero.config.ClientDefaults;
-import rero.config.ClientState;
-import rero.config.ClientStateListener;
+import rero.config.*;
 import rero.gui.SessionManager;
 
 import javax.swing.*;
@@ -41,7 +39,7 @@ public class TextSource {
 
 	static {
 		try {
-			ObjectInputStream p = new ObjectInputStream(ClientState.getInstance().getResourceAsStream("color.map"));
+			ObjectInputStream p = new ObjectInputStream(Resources.getInstance().getResourceAsStream("color.map"));
 			colorTable = (Color[]) p.readObject();
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -148,13 +146,13 @@ public class TextSource {
 		}
 
 		public void rehashValue() {
-			if (ClientState.getInstance().isOption("ui.antialias", ClientDefaults.ui_antialias)) {
+			if (Config.getInstance().isOption("ui.antialias", ClientDefaults.ui_antialias)) {
 				antiAliasHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 			} else {
 				antiAliasHint = RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;
 			}
 
-			clientFont = ClientState.getInstance().getFont("ui.font", ClientDefaults.ui_font);
+			clientFont = Config.getInstance().getFont("ui.font", ClientDefaults.ui_font);
 			fontMetrics = new AdjustedFontMetrics(clientFont, Toolkit.getDefaultToolkit().getFontMetrics(clientFont));
 		}
 

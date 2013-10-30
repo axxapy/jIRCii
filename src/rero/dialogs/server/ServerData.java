@@ -1,6 +1,6 @@
 package rero.dialogs.server;
 
-import rero.config.ClientState;
+import rero.config.Resources;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -128,7 +128,7 @@ public class ServerData {
 		allServers = new ServerGroup("All Servers");
 
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(ClientState.getInstance().getResourceAsStream("servers.ini")));
+			BufferedReader in = new BufferedReader(new InputStreamReader(Resources.getInstance().getResourceAsStream("servers.ini")));
 
 			String data = in.readLine();
 			while (data != null) {
@@ -151,7 +151,7 @@ public class ServerData {
 	// Generate the servers.ini file
 	public void save() {
 		try {
-			PrintWriter out = new PrintWriter(new FileOutputStream(ClientState.getInstance().getFile("servers.ini"), false));
+			PrintWriter out = new PrintWriter(new FileOutputStream(Resources.getInstance().getFile("servers.ini"), false));
 
 			int x = 0;
 
