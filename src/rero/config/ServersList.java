@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ServersList {
-	protected static ServersList data = null;
+	protected static ServersList instance = null;
 
 	protected ArrayList<ServerConfig> servers;
 
@@ -21,7 +21,7 @@ public class ServersList {
 		load();
 	}
 
-	public ServerConfig getServerByName(String host) {
+	public ServerConfig getServerByHost(String host) {
 		Iterator i = servers.iterator();
 		while (i.hasNext()) {
 			ServerConfig temp = (ServerConfig) i.next();
@@ -33,11 +33,11 @@ public class ServersList {
 		return null;
 	}
 
-	public static ServersList getServerData() {
-		if (data == null)
-			data = new ServersList();
-
-		return data;
+	public static ServersList getInstance() {
+		if (instance == null) {
+			instance = new ServersList();
+		}
+		return instance;
 	}
 
 	public void update() {}

@@ -27,7 +27,7 @@ public class ServerOperators extends Feature implements Loadable {
 
 	private static class getAllServers implements Function {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
-			return SleepUtils.getArrayWrapper(ServersList.getServerData().getServers());
+			return SleepUtils.getArrayWrapper(ServersList.getInstance().getServers());
 		}
 	}
 
@@ -35,7 +35,7 @@ public class ServerOperators extends Feature implements Loadable {
 		public Scalar evaluate(String f, ScriptInstance si, Stack locals) {
 			String temp = BridgeUtilities.getString(locals, "");
 			if (temp == null) return SleepUtils.getEmptyScalar();
-			return SleepUtils.getScalar(ServersList.getServerData().getServerByName(temp).toString());
+			return SleepUtils.getScalar(ServersList.getInstance().getServerByHost(temp).toString());
 		}
 	}
 }

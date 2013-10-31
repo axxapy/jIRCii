@@ -46,7 +46,7 @@ public class PerformOnConnect extends Feature implements ChatListener {
 		{
 			if (Config.getInstance().isOption("perform.enabled", false)) {
 				ServerConfig myserver =
-						ServersList.getServerData().getServerByName(getCapabilities().getSocketConnection().getSocketInformation().hostname);
+						ServersList.getInstance().getServerByHost(getCapabilities().getSocketConnection().getSocketInformation().hostname);
 				StringList actions;
 
 				actions = Config.getInstance().getStringList("perform.all");

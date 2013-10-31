@@ -1,30 +1,34 @@
 package rero.gui.windows.components;
 
-import rero.config.Config;
+import rero.ApplicationContext;
 import rero.config.Resources;
-import rero.gui.SessionManager;
+import rero.config.ServersList;
+import rero.config.models.ServerConfig;
 
 import javax.swing.*;
 import javax.swing.tree.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public class ServersTree extends JTree {
+	ApplicationContext mContext;
+
 	protected static TreeModel getDefaultTreeModel() {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
-		LinkedList<String> list = Config.getInstance().getStringList("saved.servers").getList();
-		for (String server : list) {
-			//server = server.substring(0, server.indexOf(" /"));
-			DefaultMutableTreeNode node = new DefaultMutableTreeNode(server);
+		ArrayList<ServerConfig> servers = ServersList.getInstance().getServers();
+		for (ServerConfig server : servers) {
+			DefaultMutableTreeNode node = new DefaultMutableTreeNode(server.getDescription());
 			node.setAllowsChildren(true);
 			root.add(node);
 		}
 		return new DefaultTreeModel(root);
 	}
 
-	public ServersTree() {
+	public ServersTree(ApplicationContext Context) {
 		super(getDefaultTreeModel());
+		mContext = Context;
+
 		DefaultTreeCellRenderer Renderer = new DefaultTreeCellRenderer();
 		ImageIcon Icon = Resources.getInstance().getIcon(null, "ic_tree_server.png");
 		Renderer.setLeafIcon(Icon);
@@ -52,9 +56,16 @@ public class ServersTree extends JTree {
 
 	public void onDblClick(int row, TreePath path) {
 		DefaultMutableTreeNode node = ((DefaultMutableTreeNode)path.getLastPathComponent());
-		String server = (String)node.getUserObject();
+
+		ServerConfig server = ServersList.getInstance().getServers().get(row);
+
+		mContext.getConnectionsManager().getConnection(server).Connect();
+
+		/*String server = (String)node.getUserObject();
 		String cmd = server.split(" ", 2)[1];
-		SessionManager.getGlobalCapabilities().getSessionManager().getActiveSession().executeCommand(cmd);
+		SessionManager.getGlobalCapabilities().getSessionManager().getActiveSession().executeCommand(cmd);*/
+
+
 		/*
 		UserHandler commands = (UserHandler) getCapabilities().getDataStructure("commands");
 

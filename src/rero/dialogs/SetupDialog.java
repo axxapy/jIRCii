@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SetupDialog extends DMain {
-	protected ServersList data = ServersList.getServerData();
+	protected ServersList data = ServersList.getInstance();
 	protected DItem itema, itemb;
 
 	public String getTitle() {

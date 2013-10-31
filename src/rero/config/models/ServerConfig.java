@@ -47,7 +47,7 @@ public class ServerConfig implements Comparable {
 		return host;
 	}
 
-	public String getConnectPort() {
+	public int getConnectPort() {
 		String myPort = portRange;
 
 		if (myPort.indexOf("-") > -1) {
@@ -58,7 +58,11 @@ public class ServerConfig implements Comparable {
 			myPort = myPort.substring(0, myPort.indexOf(","));
 		}
 
-		return myPort.trim();
+		try {
+			return Integer.parseInt(myPort.trim());
+		} catch (NumberFormatException ex) {
+			return 6667;
+		}
 	}
 
 	public boolean isSecure() {

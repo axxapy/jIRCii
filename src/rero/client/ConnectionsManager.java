@@ -2,19 +2,15 @@ package rero.client;
 
 import rero.config.models.ServerConfig;
 
-import java.util.LinkedList;
+import java.util.HashMap;
 
 public class ConnectionsManager {
-	private LinkedList<InternetRelayChatClient> connections = new LinkedList<InternetRelayChatClient>();
+	private HashMap<ServerConfig, Client> connections = new HashMap<ServerConfig, Client>();
 
-	public InternetRelayChatClient getConnection(int id) {
-		return connections.size() > 0 && connections.size() < id ? connections.get(id) : null;
-	}
-
-	public InternetRelayChatClient newConnection(ServerConfig params) {
-		int id = connections.size() + 1;
-		InternetRelayChatClient client = new InternetRelayChatClient(id);
-		connections.add(client);
+	public Client getConnection(ServerConfig params) {
+		if (connections.containsKey(params)) return connections.get(params);
+		Client client = new Client(params);
+		connections.put(params, client);
 		return client;
 	}
 }

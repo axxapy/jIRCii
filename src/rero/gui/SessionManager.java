@@ -102,12 +102,12 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 				} else if (temp.getList().size() == 0) {
 					addSession();
 				} else {
-					ServersList sdata = ServersList.getServerData();
+					ServersList sdata = ServersList.getInstance();
 
 					int y = 0;
 					Iterator i = temp.getList().iterator();
 					while (i.hasNext()) {
-						ServerConfig stemp = sdata.getServerByName(i.next().toString());
+						ServerConfig stemp = sdata.getServerByHost(i.next().toString());
 
 						if (stemp != null) {
 							addSession();

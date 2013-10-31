@@ -57,7 +57,6 @@ public class InternetRelayChatClient {
 	public Capabilities getCapabilities() {
 		return actions;
 	}
-
 	public WeakHashMap getData() {
 		return data;
 	}
