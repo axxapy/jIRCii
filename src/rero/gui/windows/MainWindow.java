@@ -26,9 +26,14 @@ public class MainWindow extends JFrame {
 			setJMenuBar(new JMenuBar());
 		}
 
-		getContentPane().add(new SessionManager(this), BorderLayout.CENTER);
+		JSplitPane root = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		root.add(new ServersTree());
+		root.add(new SessionManager(this));
 
-		getContentPane().add(new ServersTree(), BorderLayout.WEST);
+		getContentPane().add(root);
+
+		//getContentPane().add(new SessionManager(this), BorderLayout.CENTER);
+		//getContentPane().add(new ServersTree(), BorderLayout.WEST);
 
 		setIconImage(Resources.getInstance().getIcon("jirc.icon", "jicon.jpg").getImage());
 

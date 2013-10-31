@@ -15,9 +15,8 @@ public class ServersTree extends JTree {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
 		LinkedList<String> list = Config.getInstance().getStringList("saved.servers").getList();
 		for (String server : list) {
-			String name = server.substring(0, server.indexOf(" /"));
-			DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
-			node.setUserObject(server);
+			//server = server.substring(0, server.indexOf(" /"));
+			DefaultMutableTreeNode node = new DefaultMutableTreeNode(server);
 			node.setAllowsChildren(true);
 			root.add(node);
 		}
