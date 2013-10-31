@@ -1,19 +1,8 @@
 package rero.config.models;
 
-import rero.util.StringParser;
-
-import java.util.regex.Pattern;
+import com.google.gson.Gson;
 
 public class ServerConfig implements Comparable {
-	// x0=server descriptionSERVER:host:portrange:passwordGROUP:network
-	// x00=server descriptionSERVER:host:portrangeGROUP:network
-
-	// ServerConfig w/  password regex - (\S)\S*=(.*)SERVER:(.*):(.*):(.*)GROUP:(.*)
-	// ServerConfig w/o password regex - (\S)\S*=(.*)SERVER:(.*):(.*)GROUP:(.*)
-
-	protected static Pattern isServerPassword = Pattern.compile("(\\S)\\S*=(.*)SERVER:(.*):(.*):(.*)GROUP:(.*)");
-	protected static Pattern isServerNormal = Pattern.compile("(\\S)\\S*=(.*)SERVER:(.*):(.*)GROUP:(.*)");
-
 	protected String description;
 	protected String host;
 	protected String portRange;
@@ -21,32 +10,19 @@ public class ServerConfig implements Comparable {
 	protected String password;
 	protected String compare;
 
-	public void setValues(String d, String h, String r, boolean s, String p) {
-		description = serverTrim(d);
-		host = serverTrim(h);
-		portRange = serverTrim(r);
-		isSSL = s;
-		password = serverTrim(p);
+	public ServerConfig() {}
+
+	public void setValues(String desc, String host, String port, boolean ssl, String pass) {
+		this.description = desc;
+		this.host = host;
+		this.portRange = port;
+		this.isSSL = ssl;
+		this.password = pass;
 		compare = host.toUpperCase();
 	}
 
-	private String serverTrim(String txt) {
-		if (txt == null || txt == "")
-			return txt;
-		else
-			return txt.trim();
-	}
-
-	public ServerConfig() {
-	}
-
-	public ServerConfig(String d, String h, String r, boolean s, String p) {
-		setValues(d, h, r, s, p);
-	}
-
 	public String toString() {
-		return toString(0);
-//       return "[ServerConfig: " + host + ":" + portRange + ", Desc: " + description + ", Network: " + network + ", Password: " + password + ", Secure? " + isSSL + "]";
+		return new Gson().toJson(this);
 	}
 
 	public String getCompare() {
@@ -112,65 +88,5 @@ public class ServerConfig implements Comparable {
 		command.append(getConnectPort());
 
 		return command.toString();
-	}
-
-	public String toString(int x) {
-		StringBuffer value = new StringBuffer();
-
-		if (isSSL) {
-			value.append('s');
-		} else {
-			value.append('n');
-		}
-
-		value.append(x);
-		value.append('=');
-		value.append(description);
-		value.append("SERVER:");
-		value.append(host);
-		value.append(":");
-		value.append(portRange);
-
-		if (password != null && password.length() > 0) {
-			value.append(":");
-			value.append(password);
-		}
-
-		value.append("GROUP:");
-		//value.append(network);
-
-		return value.toString();
-	}
-
-	public static ServerConfig decode(String text) {
-		// Check for server with password
-		StringParser check = new StringParser(text, isServerPassword);
-
-		if (check.matches()) {
-			String[] values = check.getParsedStrings();
-
-			boolean secure = values[0].charAt(0) == 's';
-
-			return new ServerConfig(values[1], values[2], values[3], secure, values[4]);
-		}
-
-		// Check for server without password
-		check = new StringParser(text, isServerNormal);
-
-		if (check.matches()) {
-			// 0: s
-			// 1: Random US DALnet server
-			// 2: irc.dal.net
-			// 3: 6660-6667
-			// 4: 01
-
-			String[] values = check.getParsedStrings();
-
-			boolean secure = values[0].charAt(0) == 's';
-
-			return new ServerConfig(values[1], values[2], values[3], secure, null);
-		}
-
-		return null;
 	}
 }
