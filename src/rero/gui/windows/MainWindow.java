@@ -44,7 +44,7 @@ public class MainWindow extends JFrame {
 		super("jIRCii");
 		mContext = Context;
 
-		getWindowManager();
+		//getWindowManager();
 
 		GlobalCapabilities.frame = this;
 
