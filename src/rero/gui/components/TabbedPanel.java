@@ -13,11 +13,13 @@ import text.event.ClickListener;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.util.HashMap;
 
 public class TabbedPanel extends JTabbedPane implements InputListener, ClickListener, ClientWindowListener, ChangeListener {
 	HashMap<Channel, StatusWindow> windows = new HashMap<Channel, StatusWindow>();
+	HashMap<String, StatusWindow> tabs = new HashMap<String, StatusWindow>();
 
 	public TabbedPanel(MainWindow Window) {
 		addChangeListener(this);
@@ -28,6 +30,27 @@ public class TabbedPanel extends JTabbedPane implements InputListener, ClickList
 		if (!Config.getInstance().getBoolean("ui.showtabs", ClientDefaults.ui_showtabs)) {
 			setUI(new MinimalTabUI());
 		}
+
+		setUI(new BasicTabbedPaneUI() {
+			@Override
+			protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {}
+
+			@Override
+			protected void paintTabArea(Graphics g,int tabPlacement,int selectedIndex){}
+
+			@Override
+			protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {return 0;}
+		});
+	}
+
+	public StatusWindow getTab(String name) {
+		if (tabs.containsKey(name)) {
+			return tabs.get(name);
+		}
+		StatusWindow w = new StatusWindow(this);
+		tabs.put(name, w);
+		add(name, w);
+		return w;
 	}
 
 	public StatusWindow createStatusWindow() {

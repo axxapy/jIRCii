@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 public class ServersTree extends JTree {
 	ApplicationContext mContext;
+	MainWindow mWindow;
 
 	protected static TreeModel getDefaultTreeModel() {
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode();
@@ -29,6 +30,7 @@ public class ServersTree extends JTree {
 	public ServersTree(MainWindow Window) {
 		super(getDefaultTreeModel());
 		mContext = Window.getContext();
+		mWindow = Window;
 
 		DefaultTreeCellRenderer Renderer = new DefaultTreeCellRenderer();
 		ImageIcon Icon = Resources.getInstance().getIcon(null, "ic_tree_server.png");
@@ -45,7 +47,7 @@ public class ServersTree extends JTree {
 				TreePath selPath = getPathForLocation(e.getX(), e.getY());
 				if(selRow != -1) {
 					if(e.getClickCount() == 1) {
-						//mySingleClick(selRow, selPath);
+						onClick(selRow, selPath);
 					}
 					else if(e.getClickCount() == 2) {
 						onDblClick(selRow, selPath);
@@ -53,6 +55,12 @@ public class ServersTree extends JTree {
 				}
 			}
 		});
+	}
+
+	public void onClick(int row, TreePath path) {
+		ServerConfig server = ServersList.getInstance().getServers().get(row);
+		String name = server.toString();
+		mWindow.getTab(name).setActive();
 	}
 
 	public void onDblClick(int row, TreePath path) {

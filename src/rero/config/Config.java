@@ -44,9 +44,10 @@ public class Config {
 		}
 	}
 
-	public void setString(String key, String value) {
+	public Config setString(String key, String value) {
 		state.setProperty(key, value);
 		ClientState.getInstance().fireChange(key);
+		return this;
 	}
 
 	public String getString(String key, String defaultValue) {
@@ -74,8 +75,9 @@ public class Config {
 		}
 	}
 
-	public void setFloat(String key, float value) {
+	public Config setFloat(String key, float value) {
 		setString(key, value + "");
+		return this;
 	}
 
 	public int getInteger(String key, int defaultValue) {
@@ -92,17 +94,19 @@ public class Config {
 		}
 	}
 
-	public void setInteger(String key, int value) {
+	public Config setInteger(String key, int value) {
 		setString(key, value + "");
+		return this;
 	}
 
-	public void setBoolean(String key, boolean value) {
+	public Config setBoolean(String key, boolean value) {
 		if (value) {
 			setString(key, "true");
 		} else {
 			setString(key, "false");
 		}
 		ClientState.getInstance().fireChange(key);
+		return this;
 	}
 
 	public boolean getBoolean(String key, boolean defaultBoolean) {
@@ -129,13 +133,14 @@ public class Config {
 		return Color.decode(temp);
 	}
 
-	public void setColor(String key, Color color) {
+	public Config setColor(String key, Color color) {
 /*      long value = 0;
 	  value = (color.getRed() << 16) | value;
       value = (color.getGreen() << 8) | value;
       value = (color.getBlue() << 0) | value; */
 
 		setString(key, color.getRGB() + "");
+		return this;
 	}
 
 	public Font getFont(String key, Font defaultValue) {
@@ -148,11 +153,12 @@ public class Config {
 		return Font.decode(fname);
 	}
 
-	public void setFont(String key, Font value) {
+	public Config setFont(String key, Font value) {
 		setString(key, rero.util.ClientUtils.encodeFont(value));
+		return this;
 	}
 
-	public void setBounds(String key, Rectangle value) {
+	public Config setBounds(String key, Rectangle value) {
 		StringBuffer bounds = new StringBuffer();
 		bounds.append((int) value.getX());
 		bounds.append('x');
@@ -163,6 +169,7 @@ public class Config {
 		bounds.append((int) value.getHeight());
 
 		setString(key, bounds.toString());
+		return this;
 	}
 
 	public Rectangle getBounds(String key, Dimension areaSize, Dimension mySize) {

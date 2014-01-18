@@ -5,9 +5,7 @@ import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.Config;
 import rero.config.Resources;
-import rero.gui.GlobalCapabilities;
 import rero.gui.KeyBindings;
-import rero.gui.SessionManager;
 import rero.gui.components.MainMenu;
 import rero.gui.components.ServersTree;
 import rero.gui.components.TabbedPanel;
@@ -18,11 +16,14 @@ import rero.gui.sdi.ClientPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 public class MainWindow extends JFrame {
 	private ApplicationContext mContext;
-	private  WindowManager mWindowManager;
+	private WindowManager mWindowManager;
 	private KeyBindings mKeyBindings;
+	private TabbedPanel mTabbedPanel;
 
 	public ApplicationContext getContext() {
 		return mContext;
@@ -43,10 +44,10 @@ public class MainWindow extends JFrame {
 	public MainWindow(ApplicationContext Context) {
 		super("jIRCii");
 		mContext = Context;
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		//getWindowManager();
-
-		GlobalCapabilities.frame = this;
+		//GlobalCapabilities.frame = this;
 
 		mKeyBindings = new KeyBindings(this);
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(mKeyBindings);
@@ -56,12 +57,24 @@ public class MainWindow extends JFrame {
 		}
 
 		JSplitPane root = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		root.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				JSplitPane sourceSplitPane = (JSplitPane) evt.getSource();
+				//int value = (int) (sourceSplitPane.getDividerLocation()/(float)sourceSplitPane.getBounds().width*100);
+				Config.getInstance().setInteger("iu.divider.position", sourceSplitPane.getDividerLocation()).sync();
+			}
+		});
+		mTabbedPanel = new TabbedPanel(this);
 		root.add(new ServersTree(this));
-		root.add(new TabbedPanel(this));
+		root.add(mTabbedPanel);
+		int value = Config.getInstance().getInteger("iu.divider.position", 0);
+		if (value > 0) {
+			root.setDividerLocation(value);
+		}
 		//root.add(new SessionManager(this));
 		getContentPane().add(root);
 		getContentPane().add(new Toolbar(), BorderLayout.NORTH);
-
 
 		setJMenuBar(new MainMenu(this));
 
@@ -70,14 +83,15 @@ public class MainWindow extends JFrame {
 
 		setIconImage(Resources.getInstance().getIcon("jirc.icon", "jicon.jpg").getImage());
 
-		int inset = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
+		//int inset = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
 
 		setBounds(Config.getInstance().getBounds("desktop.bounds", Toolkit.getDefaultToolkit().getScreenSize(), new Dimension(640, 480)));
 
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent ev) {
 				try {//exit4shure
-					SessionManager.getGlobalCapabilities().QuitClient();
+					Config.getInstance().sync();
+					//SessionManager.getGlobalCapabilities().QuitClient();
 				} catch (NullPointerException ex) {
 					ex.printStackTrace();
 				}
@@ -85,6 +99,11 @@ public class MainWindow extends JFrame {
 		});
 
 		addComponentListener(new ComponentAdapter() {
+			public void componentResized(ComponentEvent ev) {
+				MainWindow W = (MainWindow)ev.getSource();
+				Config.getInstance().setBounds("desktop.bounds", W.getBounds()).sync();
+			}
+
 			public void componentMoved(ComponentEvent ev) {
 				if (Config.getInstance().getBoolean("desktop.relative", false) ||
 						Config.getInstance().getBoolean("window.relative", false) ||
@@ -98,6 +117,10 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
+	}
+
+	public StatusWindow getTab(String name) {
+		return mTabbedPanel.getTab(name);
 	}
 
 	protected class PopupManager extends MouseAdapter {

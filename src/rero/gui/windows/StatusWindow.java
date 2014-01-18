@@ -2,11 +2,11 @@ package rero.gui.windows;
 
 import rero.bridges.menu.MenuBridge;
 import rero.client.Capabilities;
-import rero.config.ClientState;
 import rero.config.Resources;
 import rero.gui.IRCAwareComponent;
 import rero.gui.IRCSession;
 import rero.gui.background.BackgroundPanel;
+import rero.gui.components.TabbedPanel;
 import rero.gui.input.InputField;
 import rero.gui.toolkit.OrientedToolBar;
 import rero.util.ClientUtils;
@@ -37,6 +37,21 @@ public class StatusWindow extends BackgroundPanel implements IRCAwareComponent, 
 	protected Color defaultForegroundColor;
 
 	protected MenuBridge menuManager;
+
+	private TabbedPanel mPanel;
+
+	public StatusWindow() {
+		super();
+	}
+
+	public StatusWindow(TabbedPanel panel) {
+		super();
+		mPanel = panel;
+	}
+
+	public void setActive() {
+		mPanel.setSelectedComponent(this);
+	}
 
 	public void cleanup() {
 		if (display != null)
