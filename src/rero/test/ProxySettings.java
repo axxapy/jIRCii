@@ -22,7 +22,7 @@ public class ProxySettings implements ClientStateListener {
 	}
 
 	public void setup() {
-		if (Config.getInstance().isOption("proxy.enabled", false)) {
+		if (Config.getInstance().getBoolean("proxy.enabled", false)) {
 			System.setProperty("socksProxyHost", Config.getInstance().getString("proxy.server", ClientDefaults.proxy_server));
 			System.setProperty("socksProxyPort", Config.getInstance().getString("proxy.port", ClientDefaults.proxy_port));
 			System.setProperty("java.net.socks.username", Config.getInstance().getString("proxy.userid", ClientDefaults.proxy_userid));

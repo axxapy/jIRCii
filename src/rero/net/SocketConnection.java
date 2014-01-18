@@ -203,7 +203,7 @@ public class SocketConnection implements Runnable, ClientStateListener {
 
 	private static class StripCodesListener implements ClientStateListener {
 		public void propertyChanged(String key, String value) {
-			stripcodes = Config.getInstance().isOption("client.stripcodes", ClientDefaults.client_stripcodes);
+			stripcodes = Config.getInstance().getBoolean("client.stripcodes", ClientDefaults.client_stripcodes);
 		}
 	}
 

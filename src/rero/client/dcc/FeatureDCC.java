@@ -77,7 +77,7 @@ public class FeatureDCC extends Feature implements ClientCommand, ChatListener, 
 
 		if (port > -1) {
 			String fname = file.getName();
-			if (Config.getInstance().isOption("dcc.fillspaces", ClientDefaults.dcc_fillspaces)) {
+			if (Config.getInstance().getBoolean("dcc.fillspaces", ClientDefaults.dcc_fillspaces)) {
 				fname = fname.replace(' ', '_');
 			}
 

@@ -29,7 +29,7 @@ public class OrientedToolBar extends JToolBar implements ClientStateListener {
 //         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 			setLayout(new GridLayout3());
 			validate();
-		} else if (Config.getInstance().isOption("switchbar.fixed", ClientDefaults.switchbar_fixed)) {
+		} else if (Config.getInstance().getBoolean("switchbar.fixed", ClientDefaults.switchbar_fixed)) {
 			if (fixed == null || fill == null) {
 				fixed = new FlowLayout2(FlowLayout.LEFT, 0, 0);
 				fill = new GridLayout2();

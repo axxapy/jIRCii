@@ -637,7 +637,7 @@ public class ClientUtils {
 				Class[] defArgs = new Class[]{boolean.class}; // We're going to be passing one argument to the method
 				Method gaMethod = osxAdapter.getDeclaredMethod("getAttention", defArgs);
 				if (gaMethod != null) {
-					Boolean blnObj = new Boolean(Config.getInstance().isOption("option.attention.osx.bouncedock.repeat", ClientDefaults.attention_osx_bouncedock_repeat));
+					Boolean blnObj = new Boolean(Config.getInstance().getBoolean("option.attention.osx.bouncedock.repeat", ClientDefaults.attention_osx_bouncedock_repeat));
 					gaMethod.invoke(osxAdapter, new Object[]{blnObj}); // apple.OSXAdapter.getAttention(boolean) equivalent; what a bitch to code this.
 				}
 			} catch (Exception ex) {

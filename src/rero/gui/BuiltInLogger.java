@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 public class BuiltInLogger {
-	protected static boolean isEnabled = Config.getInstance().isOption("log.enabled", ClientDefaults.log_enabled);
-	protected static boolean timeStamp = Config.getInstance().isOption("log.timestamp", ClientDefaults.log_timestamp);
-	protected static boolean stripColors = Config.getInstance().isOption("log.strip", ClientDefaults.log_strip);
+	protected static boolean isEnabled = Config.getInstance().getBoolean("log.enabled", ClientDefaults.log_enabled);
+	protected static boolean timeStamp = Config.getInstance().getBoolean("log.timestamp", ClientDefaults.log_timestamp);
+	protected static boolean stripColors = Config.getInstance().getBoolean("log.strip", ClientDefaults.log_strip);
 	protected static HashMap logHandles = new HashMap();
 
 	protected static ClientStateListener listener = null;
@@ -69,7 +69,7 @@ public class BuiltInLogger {
 	private static class LoggerPropListener implements ClientStateListener {
 		public void propertyChanged(String prop, String parm) {
 			if (prop.equals("log.enabled"))
-				isEnabled = Config.getInstance().isOption("log.enabled", ClientDefaults.log_enabled);
+				isEnabled = Config.getInstance().getBoolean("log.enabled", ClientDefaults.log_enabled);
 
 			if (prop.equals("log.saveto")) {
 				Iterator i = logHandles.values().iterator();
@@ -86,8 +86,8 @@ public class BuiltInLogger {
 				logHandles.clear();
 			}
 
-			timeStamp = Config.getInstance().isOption("log.timestamp", ClientDefaults.log_timestamp);
-			stripColors = Config.getInstance().isOption("log.strip", ClientDefaults.log_strip);
+			timeStamp = Config.getInstance().getBoolean("log.timestamp", ClientDefaults.log_timestamp);
+			stripColors = Config.getInstance().getBoolean("log.strip", ClientDefaults.log_strip);
 		}
 	}
 

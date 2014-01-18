@@ -95,7 +95,7 @@ public class ConfigOperators extends Feature implements Loadable {
 		public boolean decide(String f, ScriptInstance si, Stack locals) {
 			String a = locals.pop().toString();
 
-			return Config.getInstance().isOption(a, true);
+			return Config.getInstance().getBoolean(a, true);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class ConfigOperators extends Feature implements Loadable {
 		public boolean decide(String f, ScriptInstance si, Stack locals) {
 			String a = locals.pop().toString();
 
-			return Config.getInstance().isOption(a, false);
+			return Config.getInstance().getBoolean(a, false);
 		}
 	}
 

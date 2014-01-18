@@ -1,14 +1,14 @@
 package rero;
 
-import rero.client.ConnectionsManager;
+import rero.client.ConnectionManager;
 
 public class ApplicationContext {
-	ConnectionsManager mConnectionsManager = new ConnectionsManager();
+	ConnectionManager mConnectionManager = new ConnectionManager();
 
 	public ApplicationContext() {}
 
-	public ConnectionsManager getConnectionsManager() {
-		return mConnectionsManager;
+	public ConnectionManager getConnectionManager() {
+		return mConnectionManager;
 	}
 
 	public void executeCommand(String command) {

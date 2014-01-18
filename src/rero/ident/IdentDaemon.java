@@ -51,12 +51,12 @@ public class IdentDaemon implements Runnable, ClientStateListener {
 	}
 
 	public void setup() {
-		if (Config.getInstance().isOption("ident.enabled", ClientDefaults.ident_enabled) && serverThread == null) {
+		if (Config.getInstance().getBoolean("ident.enabled", ClientDefaults.ident_enabled) && serverThread == null) {
 			serverThread = new Thread(this);
 			serverThread.setPriority(Thread.MIN_PRIORITY);
 			serverThread.setName("jIRCii Ident Daemon");
 			serverThread.start();
-		} else if (Config.getInstance().isOption("ident.enabled", ClientDefaults.ident_enabled) == false && serverThread != null) {
+		} else if (Config.getInstance().getBoolean("ident.enabled", ClientDefaults.ident_enabled) == false && serverThread != null) {
 			close();
 		}
 	}

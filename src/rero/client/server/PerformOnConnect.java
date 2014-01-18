@@ -44,7 +44,7 @@ public class PerformOnConnect extends Feature implements ChatListener {
 			newConnect = true; // flag this as a new connection...
 		} else if ((event.equals("376") || event.equals("422")) && newConnect) // 422 = no motd, 376 = end of /motd
 		{
-			if (Config.getInstance().isOption("perform.enabled", false)) {
+			if (Config.getInstance().getBoolean("perform.enabled", false)) {
 				ServerConfig myserver =
 						ServersList.getInstance().getServerByHost(getCapabilities().getSocketConnection().getSocketInformation().hostname);
 				StringList actions;

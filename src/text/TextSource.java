@@ -146,7 +146,7 @@ public class TextSource {
 		}
 
 		public void rehashValue() {
-			if (Config.getInstance().isOption("ui.antialias", ClientDefaults.ui_antialias)) {
+			if (Config.getInstance().getBoolean("ui.antialias", ClientDefaults.ui_antialias)) {
 				antiAliasHint = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 			} else {
 				antiAliasHint = RenderingHints.VALUE_TEXT_ANTIALIAS_OFF;

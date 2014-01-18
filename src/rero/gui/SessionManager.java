@@ -7,6 +7,7 @@ import rero.config.ServersList;
 import rero.gui.toolkit.MinimalTabUI;
 import rero.gui.windows.ClientWindowEvent;
 import rero.gui.windows.ClientWindowListener;
+import rero.gui.components.toolbar.Toolbar;
 import rero.net.SocketEvent;
 import rero.net.interfaces.SocketStatusListener;
 import rero.test.QuickConnect;
@@ -41,7 +42,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		bridge = (MenuBridge) getActiveSession().getCapabilities().getDataStructure("menuBridge");
 		rero.util.ClientUtils.invokeLater(new Runnable() {
 			public void run() {
-				if (Config.getInstance().isOption("ui.showbar", ClientDefaults.ui_showbar)) {
+				if (Config.getInstance().getBoolean("ui.showbar", ClientDefaults.ui_showbar)) {
 					JMenuBar menu = new JMenuBar();
 					bridge.installMenubar(menu);
 					frame.setJMenuBar(menu);
@@ -60,7 +61,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 			propertyChanged(null, null);
 //         MenuBridge temp = (MenuBridge)getActiveSession().getCapabilities().getDataStructure("menuBridge");
 //         temp.installMenubar(menu);
-			GraphicalToolbar.stateChanged(); // CHEATING!!!!
+			Toolbar.stateChanged(); // CHEATING!!!!
 
 			getActiveSession().getCapabilities().dispatchEvent(switchEventHashMap);
 		}
@@ -90,7 +91,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				// do this before doing anything else... dig?
-				if (!Config.getInstance().isOption("ui.showtabs", ClientDefaults.ui_showtabs)) {
+				if (!Config.getInstance().getBoolean("ui.showtabs", ClientDefaults.ui_showtabs)) {
 					setUI(new MinimalTabUI());
 				}
 
@@ -117,7 +118,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 					}
 				}
 
-				GraphicalToolbar.startup(); // the toolbar knows how to set itself up using the global stuff available
+				//Toolbar.startup(); // the toolbar knows how to set itself up using the global stuff available
 			}
 		});
 
@@ -275,7 +276,7 @@ public class SessionManager extends JTabbedPane implements ClientWindowListener,
 				setTitleAt(getIndexFor(ev.socket), "disconnected");
 		}
 
-		GraphicalToolbar.stateChanged(); // CHEATING!!!!
+		Toolbar.stateChanged(); // CHEATING!!!!
 	}
 
 	public IRCSession getSessionAt(Point location) {

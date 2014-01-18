@@ -517,7 +517,7 @@ public class BuiltInCommands extends Feature implements ClientCommand {
 					parms = tokens.getTokenFrom(1);
 				}
 
-				if (Config.getInstance().isOption("auto.part", ClientDefaults.auto_option) && gui.isWindow(target)) {
+				if (Config.getInstance().getBoolean("auto.part", ClientDefaults.auto_option) && gui.isWindow(target)) {
 					getCapabilities().getUserInterface().closeWindow(target);
 				} else {
 					getCapabilities().sendln("PART " + target + " :" + parms);

@@ -73,7 +73,7 @@ public class BackgroundProperties implements ClientStateListener {
 		_bgColor = Config.getInstance().getColor(type + ".color", defaultColor);
 		_bgTint = Config.getInstance().getFloat(type + ".tint", defaultTint);
 		_bgStyle = Config.getInstance().getInteger(type + ".bgstyle", defaultStyle);
-		_isRelative = Config.getInstance().isOption(type + ".relative", false);
+		_isRelative = Config.getInstance().getBoolean(type + ".relative", false);
 
 		if (!_name.equals(name) || bgColor == null || bgType != _bgType || !bgColor.equals(_bgColor) || bgTint != _bgTint || bgStyle != _bgStyle || isRelative != _isRelative) {
 			name = _name;

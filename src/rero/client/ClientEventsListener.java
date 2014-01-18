@@ -1,7 +1,7 @@
 package rero.client;
 
 public interface ClientEventsListener {
-	public void onConnected(Client client);
-	public void onDisconnect(Client client);
-	public void onMsgReceived(Client client, String msg);
+	public void onConnected(Connection connection);
+	public void onDisconnect(Connection connection);
+	public void onMsgReceived(Connection connection, String msg);
 }

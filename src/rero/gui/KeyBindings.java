@@ -1,6 +1,7 @@
 package rero.gui;
 
 import rero.bridges.bind.BindEnvironment;
+import rero.gui.windows.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,11 +13,18 @@ public class KeyBindings implements KeyEventDispatcher {
 	public static boolean is_dialog_active = false; // bad idea I know, but what can ya do? - used so scripted key bindings don't
 	// mess up dialog keyboard shortcuts.
 
+	private MainWindow mMainWindow;
+
 	protected SessionManager session;
 	protected HashMap binds;   // a hashmap referencing the bound reference for each "session"
 
 	public KeyBindings(SessionManager s) {
 		session = s;
+		binds = new HashMap();
+	}
+
+	public KeyBindings(MainWindow Window) {
+		mMainWindow = Window;
 		binds = new HashMap();
 	}
 
@@ -34,7 +42,12 @@ public class KeyBindings implements KeyEventDispatcher {
 			return false;
 		}
 
-		BindEnvironment temp = (BindEnvironment) binds.get(session.getActiveSession());
+		BindEnvironment temp;
+		try {
+			temp = (BindEnvironment) binds.get(session.getActiveSession());
+		} catch (NullPointerException ex) {
+			return false;
+		}
 
 		if (temp == null) {
 			binds.put(session.getActiveSession(), session.getActiveSession().getCapabilities().getDataStructure("bindBridge"));

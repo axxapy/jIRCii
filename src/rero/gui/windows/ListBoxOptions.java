@@ -25,7 +25,7 @@ public class ListBoxOptions implements ClientStateListener {
 		synchronized (listbox) {
 			container.remove(listbox);
 
-			boolean enabled = Config.getInstance().isOption("listbox.enabled", true);
+			boolean enabled = Config.getInstance().getBoolean("listbox.enabled", true);
 			int position = Config.getInstance().getInteger("listbox.position", 1); // default to right...
 
 			if (enabled) {

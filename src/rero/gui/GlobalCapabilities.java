@@ -61,7 +61,7 @@ public class GlobalCapabilities {
 		Config.getInstance().setBounds("desktop.bounds", frame.getBounds());
 		Config.getInstance().sync();
 
-		if (Config.getInstance().isOption("load.lame", false)) {
+		if (Config.getInstance().getBoolean("load.lame", false)) {
 			System.out.println("\nThis IRC Client was made possible by:\nDr. Lipensteins Penial Enlargement Pump\nStop feeling embarrassed call 1-877-PUMP\n");
 		}
 

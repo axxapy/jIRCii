@@ -2,7 +2,10 @@ package rero.config;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 public class Resources {
@@ -72,6 +75,7 @@ public class Resources {
 		String temp = Config.getInstance().getString(key, null);
 
 		if (temp == null) {
+			System.out.println(defaultResource);
 			return new ImageIcon(getResource(defaultResource));
 		} else {
 			return new ImageIcon(Toolkit.getDefaultToolkit().getImage(temp));

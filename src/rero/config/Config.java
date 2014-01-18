@@ -96,7 +96,7 @@ public class Config {
 		setString(key, value + "");
 	}
 
-	public void setOption(String key, boolean value) {
+	public void setBoolean(String key, boolean value) {
 		if (value) {
 			setString(key, "true");
 		} else {
@@ -105,7 +105,7 @@ public class Config {
 		ClientState.getInstance().fireChange(key);
 	}
 
-	public boolean isOption(String key, boolean defaultBoolean) {
+	public boolean getBoolean(String key, boolean defaultBoolean) {
 		String temp = getString(key, null);
 
 		if (temp == null) {

@@ -27,13 +27,13 @@ public class OutputCapabilities extends Feature implements ClientStateListener {
 		gui = getCapabilities().getUserInterface();
 		data = (InternalDataList) getCapabilities().getDataStructure("clientInformation");
 
-		doTimestamp = Config.getInstance().isOption("option.timestamp", ClientDefaults.option_timestamp);
+		doTimestamp = Config.getInstance().getBoolean("option.timestamp", ClientDefaults.option_timestamp);
 
 		ClientState.getInstance().addClientStateListener("option.timestamp", this);
 	}
 
 	public void propertyChanged(String varname, String parm) {
-		doTimestamp = Config.getInstance().isOption("option.timestamp", ClientDefaults.option_timestamp);
+		doTimestamp = Config.getInstance().getBoolean("option.timestamp", ClientDefaults.option_timestamp);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class OutputCapabilities extends Feature implements ClientStateListener {
 			target = target.substring(1, target.length());
 		}
 
-		boolean toActive = Config.getInstance().isOption("active.query", ClientDefaults.active_option);
+		boolean toActive = Config.getInstance().getBoolean("active.query", ClientDefaults.active_option);
 
 		if (data.isChannel(target)) {
 			fireSetTarget(event, target, setName);
@@ -106,7 +106,7 @@ public class OutputCapabilities extends Feature implements ClientStateListener {
 			target = target.substring(1, target.length());
 		}
 
-		boolean toActive = Config.getInstance().isOption("active." + setType, ClientDefaults.active_option);
+		boolean toActive = Config.getInstance().getBoolean("active." + setType, ClientDefaults.active_option);
 
 		if (target != null && getCapabilities().getUserInterface().isWindow(target)) {
 			fireSetTarget(event, target, setName);

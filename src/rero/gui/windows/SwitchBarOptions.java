@@ -39,7 +39,7 @@ public class SwitchBarOptions implements ClientStateListener {
 
 	public void rehash() {
 		container.remove(switchbar);
-		boolean enabled = Config.getInstance().isOption("switchbar.enabled", true);
+		boolean enabled = Config.getInstance().getBoolean("switchbar.enabled", true);
 		int position = Config.getInstance().getInteger("switchbar.position", 0);
 
 		if (enabled) {
@@ -78,7 +78,7 @@ public class SwitchBarOptions implements ClientStateListener {
 
 		public void propertyChanged(String key, String value) {
 			theColor = Config.getInstance().getColor("switchbar.color", ClientDefaults.switchbar_color);
-			hilight = Config.getInstance().isOption("switchbar.hilight", ClientDefaults.switchbar_hilight);
+			hilight = Config.getInstance().getBoolean("switchbar.hilight", ClientDefaults.switchbar_hilight);
 		}
 
 		public boolean isHilightOn() {

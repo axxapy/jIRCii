@@ -159,7 +159,7 @@ public class ServerHandler extends Feature implements FrameworkConstants, Socket
 				ClientUtils.getAttention(); // Get attention for disconnect
 
 			if (data.getMyUser().getChannels().size() > 0) {
-				if (Config.getInstance().isOption("option.reconnect", ClientDefaults.option_reconnect)) {
+				if (Config.getInstance().getBoolean("option.reconnect", ClientDefaults.option_reconnect)) {
 					//System.out.println("Reconnecting is an option");
 
 					restoreInformation = data.getMyUser().copy();

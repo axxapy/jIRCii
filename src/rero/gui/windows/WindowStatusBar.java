@@ -68,7 +68,7 @@ public class WindowStatusBar extends BackgroundToolBar implements IRCAwareCompon
 	}
 
 	public void rehashValues() {
-		if (Config.getInstance().isOption("ui.showsbar", true)) {
+		if (Config.getInstance().getBoolean("ui.showsbar", true)) {
 			int lines = Config.getInstance().getInteger("ui.sbarlines", ClientDefaults.ui_sbarlines);
 			contents.setNumberOfLines(lines);
 		} else {

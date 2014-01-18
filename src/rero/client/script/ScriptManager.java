@@ -73,7 +73,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 			String tt = (String) i.next();
 			loader.unloadScript(tt);
 
-			if (Config.getInstance().isOption("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
+			if (Config.getInstance().getBoolean("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
 				getCapabilities().getUserInterface().printStatus("Successfully unloaded script " + tt);
 			}
 		}
@@ -274,7 +274,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 
 		// TODO: Deal with all of this stuff.
 		try {
-			if (Config.getInstance().isOption("load.default", true)) {
+			if (Config.getInstance().getBoolean("load.default", true)) {
 				long start = System.currentTimeMillis();
 				ScriptInstance defaults =
 						loader.loadScript("default", Resources.getInstance().getResourceAsStream("default.irc"), environment);
@@ -284,7 +284,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 				defaults.runScript();
 			}
 
-			if (Config.getInstance().isOption("load.menus", true)) {
+			if (Config.getInstance().getBoolean("load.menus", true)) {
 				long start = System.currentTimeMillis();
 				ScriptInstance defaults =
 						loader.loadScript("menus", Resources.getInstance().getResourceAsStream("menus.irc"), environment);
@@ -294,7 +294,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 				defaults.runScript();
 			}
 
-			if (Config.getInstance().isOption("load.lame", false)) {
+			if (Config.getInstance().getBoolean("load.lame", false)) {
 				loadLameScripts();
 			}
 		} catch (YourCodeSucksException ex) {
@@ -371,7 +371,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 
 			scripti.addWarningWatcher(this);
 
-			if (Config.getInstance().isOption("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
+			if (Config.getInstance().getBoolean("script.verboseLoad", ClientDefaults.script_verboseLoad)) {
 				getCapabilities().getUserInterface().printStatus("Successfully loaded script " + new File(scriptFile).getName());
 			}
 
@@ -435,7 +435,7 @@ public class ScriptManager extends Feature implements ClientStateListener, Runti
 	}
 
 	public void processScriptWarning(ScriptWarning warn) {
-		if (!Config.getInstance().isOption("script.ignoreWarnings", ClientDefaults.script_ignoreWarnings)) {
+		if (!Config.getInstance().getBoolean("script.ignoreWarnings", ClientDefaults.script_ignoreWarnings)) {
 			String[] temp = warn.getMessage().split("\n");
 
 
