@@ -4,8 +4,8 @@ import rero.client.Feature;
 import rero.config.ClientDefaults;
 import rero.config.Config;
 import rero.util.ClientUtils;
-import text.event.ClickEvent;
-import text.event.ClickListener;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

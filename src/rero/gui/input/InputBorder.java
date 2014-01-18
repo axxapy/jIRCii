@@ -1,8 +1,8 @@
 package rero.gui.input;
 
-import text.AttributedString;
-import text.AttributedText;
-import text.TextSource;
+import rero.gui.text.AttributedString;
+import rero.gui.text.AttributedText;
+import rero.gui.text.TextSource;
 
 import javax.swing.border.Border;
 import java.awt.*;

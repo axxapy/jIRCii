@@ -8,8 +8,8 @@ import rero.config.ClientStateListener;
 import rero.config.Config;
 import rero.gui.IRCAwareComponent;
 import rero.gui.background.BackgroundToolBar;
-import text.LabelDisplay;
-import text.TextSource;
+import rero.gui.text.LabelDisplay;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

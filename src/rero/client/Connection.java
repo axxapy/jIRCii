@@ -7,20 +7,20 @@ import rero.net.SocketEvent;
 import rero.net.interfaces.SocketDataListener;
 import rero.net.interfaces.SocketStatusListener;
 
-import javax.swing.*;
 import java.util.LinkedList;
 
 public class Connection implements SocketStatusListener, SocketDataListener {
 	private ServerConfig mServerConfig;
-	private ChatFramework mChatFramework = new ChatFramework();
-	private SocketConnection mSocketConnection = new SocketConnection();
+	private ChatFramework mChatFramework;
+	private SocketConnection mSocketConnection;
 
 	private LinkedList<ClientEventsListener> listeners = new LinkedList<ClientEventsListener>();
 
-	JTextArea debug;
-
 	public Connection(ServerConfig config) {
 		mServerConfig = config;
+
+		mChatFramework = new ChatFramework();
+		mSocketConnection  = new SocketConnection();
 
 		/* socket events are fired in a first in first out fashion.
 		 * so the framework will be the last thing to touch the socket
@@ -28,12 +28,6 @@ public class Connection implements SocketStatusListener, SocketDataListener {
 		mSocketConnection.addSocketDataListener(mChatFramework.getProtocolHandler());
 		mSocketConnection.addSocketStatusListener(this);
 		mSocketConnection.addSocketDataListener(this);
-
-		debug = new JTextArea();
-		JFrame frame = new JFrame("");
-		frame.setSize(200, 200);
-		frame.add(debug);
-		frame.setVisible(true);
 	}
 
 	public ServerConfig getServerConfig() {
@@ -62,11 +56,17 @@ public class Connection implements SocketStatusListener, SocketDataListener {
 
 	@Override
 	public void socketStatusChanged(SocketEvent ev) {
-		debug.setText(debug.getText() + "\n" + ev.message);
+		fire(ev.message);
 	}
 
 	@Override
 	public void socketDataRead(SocketEvent ev) {
-		debug.setText(debug.getText() + "\n" + ev.message);
+		fire(ev.message);
+	}
+
+	private void fire(String msg) {
+		for (ClientEventsListener l : listeners) {
+			l.onMsgReceived(this, msg);
+		}
 	}
 }

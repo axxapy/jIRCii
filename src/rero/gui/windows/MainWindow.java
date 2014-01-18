@@ -5,13 +5,16 @@ import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.Config;
 import rero.config.Resources;
+import rero.config.models.ServerConfig;
 import rero.gui.KeyBindings;
 import rero.gui.components.MainMenu;
+import rero.gui.components.MainPanel;
 import rero.gui.components.ServersTree;
 import rero.gui.components.TabbedPanel;
 import rero.gui.components.toolbar.Toolbar;
 import rero.gui.mdi.ClientDesktop;
 import rero.gui.sdi.ClientPanel;
+import rero.ircfw.Channel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -100,7 +103,7 @@ public class MainWindow extends JFrame {
 
 		addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent ev) {
-				MainWindow W = (MainWindow)ev.getSource();
+				MainWindow W = (MainWindow) ev.getSource();
 				Config.getInstance().setBounds("desktop.bounds", W.getBounds()).sync();
 			}
 
@@ -119,8 +122,8 @@ public class MainWindow extends JFrame {
 		});
 	}
 
-	public StatusWindow getTab(String name) {
-		return mTabbedPanel.getTab(name);
+	public MainPanel getTab(ServerConfig server, Channel channel) {
+		return mTabbedPanel.getTab(server, channel);
 	}
 
 	protected class PopupManager extends MouseAdapter {

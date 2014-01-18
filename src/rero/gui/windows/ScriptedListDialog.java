@@ -4,8 +4,8 @@ import rero.gui.toolkit.GeneralListModel;
 import rero.script.ScriptCore;
 import rero.util.ClientUtils;
 import sleep.runtime.Scalar;
-import text.AttributedString;
-import text.TextSource;
+import rero.gui.text.AttributedString;
+import rero.gui.text.TextSource;
 
 import java.util.Comparator;
 import java.util.HashMap;

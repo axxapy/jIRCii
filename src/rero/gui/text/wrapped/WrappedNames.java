@@ -1,7 +1,7 @@
-package text.wrapped;
+package rero.gui.text.wrapped;
 
-import text.AttributedString;
-import text.AttributedText;
+import rero.gui.text.AttributedString;
+import rero.gui.text.AttributedText;
 
 import java.util.LinkedList;
 import java.util.ListIterator;

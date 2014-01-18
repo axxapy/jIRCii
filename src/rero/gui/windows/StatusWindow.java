@@ -10,7 +10,7 @@ import rero.gui.components.TabbedPanel;
 import rero.gui.input.InputField;
 import rero.gui.toolkit.OrientedToolBar;
 import rero.util.ClientUtils;
-import text.WrappedDisplay;
+import rero.gui.text.WrappedDisplay;
 
 import javax.swing.*;
 import java.awt.*;

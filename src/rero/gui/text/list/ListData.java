@@ -1,6 +1,6 @@
-package text.list;
+package rero.gui.text.list;
 
-import text.TextSource;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

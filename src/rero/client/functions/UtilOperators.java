@@ -11,7 +11,7 @@ import sleep.runtime.Scalar;
 import sleep.runtime.ScalarArray;
 import sleep.runtime.ScriptInstance;
 import sleep.runtime.SleepUtils;
-import text.TextSource;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import java.awt.*;

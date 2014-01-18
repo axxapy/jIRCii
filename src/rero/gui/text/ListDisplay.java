@@ -1,11 +1,11 @@
-package text;
+package rero.gui.text;
 
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
-import text.list.ListData;
-import text.list.ListDisplayComponent;
-import text.list.ListElement;
-import text.list.ListSelectionSpace;
+import rero.gui.text.list.ListData;
+import rero.gui.text.list.ListDisplayComponent;
+import rero.gui.text.list.ListElement;
+import rero.gui.text.list.ListSelectionSpace;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;

@@ -1,4 +1,4 @@
-package text;
+package rero.gui.text;
 
 import javax.swing.*;
 import java.awt.*;

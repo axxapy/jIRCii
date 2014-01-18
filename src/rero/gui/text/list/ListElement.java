@@ -1,7 +1,7 @@
-package text.list;
+package rero.gui.text.list;
 
-import text.AttributedString;
-import text.AttributedText;
+import rero.gui.text.AttributedString;
+import rero.gui.text.AttributedText;
 
 public class ListElement {
 	protected AttributedString data;

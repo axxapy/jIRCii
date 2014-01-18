@@ -124,7 +124,7 @@ public class HelpWindow extends JDialog implements HyperlinkListener {
 
 		display = new JTextPane();
 		display.setEditable(false);
-		display.setContentType("text/html"); // so we can do some nice formatting of the help text.
+		display.setContentType("rero/gui/text/html"); // so we can do some nice formatting of the help text.
 		display.setOpaque(true);
 		display.setBackground(Color.white);
 

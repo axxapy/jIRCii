@@ -1,14 +1,16 @@
 package rero.gui.components;
 
+import rero.client.Connection;
 import rero.config.ClientDefaults;
 import rero.config.Config;
+import rero.config.models.ServerConfig;
 import rero.gui.input.InputListener;
 import rero.gui.input.UserInputEvent;
 import rero.gui.toolkit.MinimalTabUI;
 import rero.gui.windows.*;
 import rero.ircfw.Channel;
-import text.event.ClickEvent;
-import text.event.ClickListener;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -19,9 +21,11 @@ import java.util.HashMap;
 
 public class TabbedPanel extends JTabbedPane implements InputListener, ClickListener, ClientWindowListener, ChangeListener {
 	HashMap<Channel, StatusWindow> windows = new HashMap<Channel, StatusWindow>();
-	HashMap<String, StatusWindow> tabs = new HashMap<String, StatusWindow>();
+	HashMap<ServerConfig, HashMap<Channel, MainPanel>> tabs = new HashMap<ServerConfig, HashMap<Channel, MainPanel>>();
+	private MainWindow mWindow;
 
 	public TabbedPanel(MainWindow Window) {
+		mWindow = Window;
 		addChangeListener(this);
 		createStatusWindow();
 
@@ -33,23 +37,38 @@ public class TabbedPanel extends JTabbedPane implements InputListener, ClickList
 
 		setUI(new BasicTabbedPaneUI() {
 			@Override
-			protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {}
+			protected void paintContentBorder(Graphics g, int tabPlacement, int selectedIndex) {
+			}
 
 			@Override
-			protected void paintTabArea(Graphics g,int tabPlacement,int selectedIndex){}
+			protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
+			}
 
 			@Override
-			protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {return 0;}
+			protected int calculateTabAreaHeight(int tabPlacement, int horizRunCount, int maxTabHeight) {
+				return 0;
+			}
 		});
 	}
 
-	public StatusWindow getTab(String name) {
-		if (tabs.containsKey(name)) {
-			return tabs.get(name);
+	public MainPanel getTab(ServerConfig server, Channel channel) {
+		HashMap<Channel, MainPanel> server_connections;
+		if (tabs.containsKey(server)) {
+			server_connections = tabs.get(server);
+		} else {
+			server_connections = new HashMap<Channel, MainPanel>();
+			tabs.put(server, server_connections);
 		}
-		StatusWindow w = new StatusWindow(this);
-		tabs.put(name, w);
-		add(name, w);
+
+
+		if (server_connections.containsKey(channel)) {
+			return server_connections.get(channel);
+		}
+
+		Connection conn = mWindow.getContext().getConnectionManager().getConnection(server);
+		MainPanel w = new MainPanel(this, conn, channel);
+		server_connections.put(channel, w);
+		add(w);
 		return w;
 	}
 

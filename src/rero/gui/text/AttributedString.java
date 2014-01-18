@@ -1,4 +1,4 @@
-package text;
+package rero.gui.text;
 
 import rero.util.TokenizedString;
 

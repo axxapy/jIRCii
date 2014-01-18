@@ -1,10 +1,10 @@
-package text.list;
+package rero.gui.text.list;
 
 import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
 import rero.config.Config;
-import text.TextSource;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

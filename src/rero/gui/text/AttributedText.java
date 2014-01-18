@@ -1,4 +1,4 @@
-package text;
+package rero.gui.text;
 
 public class AttributedText {
 	public static int INSTANCES = 0;

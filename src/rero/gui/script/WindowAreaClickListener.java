@@ -2,8 +2,8 @@ package rero.gui.script;
 
 import rero.bridges.event.ScriptedEventListener;
 import rero.ircfw.interfaces.ChatListener;
-import text.event.ClickEvent;
-import text.event.ClickListener;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
 
 import java.awt.event.MouseEvent;
 import java.util.HashMap;

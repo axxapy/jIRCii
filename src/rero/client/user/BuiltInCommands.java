@@ -20,7 +20,7 @@ import rero.util.ClientUtils;
 import rero.util.StringStack;
 import rero.util.StringUtils;
 import rero.util.TokenizedString;
-import text.AttributedString;
+import rero.gui.text.AttributedString;
 
 import java.io.BufferedReader;
 import java.io.File;

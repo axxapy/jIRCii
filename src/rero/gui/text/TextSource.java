@@ -1,4 +1,4 @@
-package text;
+package rero.gui.text;
 
 import rero.config.*;
 import rero.gui.SessionManager;

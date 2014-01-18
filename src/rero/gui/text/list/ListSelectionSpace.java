@@ -1,7 +1,7 @@
-package text.list;
+package rero.gui.text.list;
 
-import text.ListDisplay;
-import text.TextSource;
+import rero.gui.text.ListDisplay;
+import rero.gui.text.TextSource;
 
 import javax.swing.event.MouseInputAdapter;
 import java.awt.event.MouseEvent;

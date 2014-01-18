@@ -1,9 +1,9 @@
-package text.wrapped;
+package rero.gui.text.wrapped;
 
 import rero.util.TokenizedString;
-import text.AttributedString;
-import text.AttributedText;
-import text.TextSource;
+import rero.gui.text.AttributedString;
+import rero.gui.text.AttributedText;
+import rero.gui.text.TextSource;
 
 import java.util.LinkedList;
 import java.util.ListIterator;

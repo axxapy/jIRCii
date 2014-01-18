@@ -1,4 +1,4 @@
-package text.event;
+package rero.gui.text.event;
 
 import java.awt.event.MouseEvent;
 

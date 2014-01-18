@@ -8,7 +8,7 @@ import rero.ircfw.interfaces.FrameworkConstants;
 import rero.util.ClientUtils;
 import rero.util.StringUtils;
 import rero.util.TokenizedString;
-import text.AttributedString;
+import rero.gui.text.AttributedString;
 
 import javax.swing.*;
 import java.awt.*;

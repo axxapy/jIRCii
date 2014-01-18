@@ -1,6 +1,7 @@
 package rero.gui.components;
 
 import rero.ApplicationContext;
+import rero.client.Connection;
 import rero.config.Resources;
 import rero.config.ServersList;
 import rero.config.models.ServerConfig;
@@ -59,16 +60,14 @@ public class ServersTree extends JTree {
 
 	public void onClick(int row, TreePath path) {
 		ServerConfig server = ServersList.getInstance().getServers().get(row);
-		String name = server.toString();
-		mWindow.getTab(name).setActive();
+		mWindow.getTab(server, null).setActive();
 	}
 
 	public void onDblClick(int row, TreePath path) {
-		DefaultMutableTreeNode node = ((DefaultMutableTreeNode)path.getLastPathComponent());
-
+		//DefaultMutableTreeNode node = ((DefaultMutableTreeNode)path.getLastPathComponent());
 		ServerConfig server = ServersList.getInstance().getServers().get(row);
-
-		mContext.getConnectionManager().getConnection(server).Connect();
+		Connection conn = mContext.getConnectionManager().getConnection(server);
+		conn.Connect();
 
 		/*String server = (String)node.getUserObject();
 		String cmd = server.split(" ", 2)[1];

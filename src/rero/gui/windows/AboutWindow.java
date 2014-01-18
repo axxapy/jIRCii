@@ -6,7 +6,7 @@ import rero.config.ClientDefaults;
 import rero.config.Config;
 import rero.config.Resources;
 import rero.gui.input.InputField;
-import text.WrappedDisplay;
+import rero.gui.text.WrappedDisplay;
 
 import javax.swing.*;
 import java.awt.*;

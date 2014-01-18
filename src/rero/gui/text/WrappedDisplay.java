@@ -1,12 +1,12 @@
-package text;
+package rero.gui.text;
 
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
 import rero.gui.SessionManager;
 import rero.gui.script.WindowAreaClickListener;
-import text.event.ClickEvent;
-import text.event.ClickListener;
-import text.wrapped.*;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
+import rero.gui.text.wrapped.*;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;

@@ -3,9 +3,9 @@ package rero.gui.windows;
 import rero.bridges.menu.MenuBridge;
 import rero.client.Capabilities;
 import rero.gui.input.InputField;
-import text.WrappedDisplay;
-import text.event.ClickEvent;
-import text.event.ClickListener;
+import rero.gui.text.WrappedDisplay;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;

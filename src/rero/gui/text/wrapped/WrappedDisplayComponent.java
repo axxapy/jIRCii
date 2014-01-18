@@ -1,7 +1,7 @@
-package text.wrapped;
+package rero.gui.text.wrapped;
 
-import text.AttributedText;
-import text.TextSource;
+import rero.gui.text.AttributedText;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

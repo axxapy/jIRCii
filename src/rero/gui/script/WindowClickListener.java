@@ -1,8 +1,8 @@
 package rero.gui.script;
 
 import rero.bridges.event.ScriptedEventListener;
-import text.event.ClickEvent;
-import text.event.ClickListener;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
 
 import java.util.HashMap;
 

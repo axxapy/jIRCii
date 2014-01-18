@@ -3,9 +3,9 @@ package rero.gui.windows;
 import contrib.javapro.JSortTable;
 import rero.config.Resources;
 import rero.gui.toolkit.GeneralListModel;
-import text.AttributedLabel;
-import text.AttributedString;
-import text.TextSource;
+import rero.gui.text.AttributedLabel;
+import rero.gui.text.AttributedString;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

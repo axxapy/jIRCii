@@ -4,10 +4,10 @@ import rero.config.ClientDefaults;
 import rero.config.ClientState;
 import rero.config.ClientStateListener;
 import rero.config.Config;
-import text.AttributedString;
-import text.AttributedText;
-import text.ModifyColorMapDialog;
-import text.TextSource;
+import rero.gui.text.AttributedString;
+import rero.gui.text.AttributedText;
+import rero.gui.text.ModifyColorMapDialog;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -97,13 +97,13 @@ public class InputField extends JTextField implements KeyListener, ActionListene
 
 		setOpaque(false);
 
-		defaultBorder =
-				BorderFactory.createEmptyBorder(1, TextSource.UNIVERSAL_TWEAK, 1, 1); // a 1 pixel empty border all around;
+		//TextSource.UNIVERSAL_TWEAK
+		defaultBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3); // a 1 pixel empty border all around;
 		setBorder(defaultBorder);
-/*
-       setBackground(null); // suggested by Sun as a fix to a background being painted problem
-                            // in the GTK+ look and feel, unfortunately it doesn't work... maybe it will when 1.5 comes out
-*/
+
+		setBackground(null); // suggested by Sun as a fix to a background being painted problem
+                             // in the GTK+ look and feel, unfortunately it doesn't work... maybe it will when 1.5 comes out
+
 
 		addActionListener(this);
 		addKeyListener(this);

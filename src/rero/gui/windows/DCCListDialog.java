@@ -9,7 +9,7 @@ import rero.gui.toolkit.GeneralListModel;
 import rero.ircfw.interfaces.ChatListener;
 import rero.ircfw.interfaces.FrameworkConstants;
 import rero.util.TimerListener;
-import text.AttributedString;
+import rero.gui.text.AttributedString;
 
 import java.util.HashMap;
 

@@ -1,6 +1,6 @@
-package text.wrapped;
+package rero.gui.text.wrapped;
 
-import text.TextSource;
+import rero.gui.text.TextSource;
 
 import java.awt.*;
 

@@ -1,6 +1,6 @@
 package rero.util;
 
-import text.AttributedString;
+import rero.gui.text.AttributedString;
 
 public class StringUtils {
 	/**

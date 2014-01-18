@@ -8,7 +8,7 @@ import sleep.engine.Block;
 import sleep.interfaces.Loadable;
 import sleep.parser.CodeGenerator;
 import sleep.runtime.*;
-import text.AttributedString;
+import rero.gui.text.AttributedString;
 
 import java.util.HashMap;
 import java.util.Hashtable;

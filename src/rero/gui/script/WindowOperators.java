@@ -12,7 +12,7 @@ import sleep.interfaces.Predicate;
 import sleep.runtime.Scalar;
 import sleep.runtime.ScriptInstance;
 import sleep.runtime.SleepUtils;
-import text.list.ListElement;
+import rero.gui.text.list.ListElement;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;

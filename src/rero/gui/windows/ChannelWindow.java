@@ -7,10 +7,10 @@ import rero.ircfw.Channel;
 import rero.ircfw.InternalDataList;
 import rero.ircfw.User;
 import rero.ircfw.interfaces.ChannelDataWatch;
-import text.ListDisplay;
-import text.event.ClickEvent;
-import text.event.ClickListener;
-import text.list.ListElement;
+import rero.gui.text.ListDisplay;
+import rero.gui.text.event.ClickEvent;
+import rero.gui.text.event.ClickListener;
+import rero.gui.text.list.ListElement;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

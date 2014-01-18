@@ -4,10 +4,10 @@ import rero.client.Capabilities;
 import rero.client.DataStructures;
 import rero.ircfw.Channel;
 import rero.ircfw.User;
-import text.AttributedString;
-import text.AttributedText;
-import text.list.ListData;
-import text.list.ListElement;
+import rero.gui.text.AttributedString;
+import rero.gui.text.AttributedText;
+import rero.gui.text.list.ListData;
+import rero.gui.text.list.ListElement;
 
 import java.util.HashMap;
 import java.util.Iterator;

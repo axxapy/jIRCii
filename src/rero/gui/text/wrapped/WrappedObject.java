@@ -1,4 +1,4 @@
-package text.wrapped;
+package rero.gui.text.wrapped;
 
 public class WrappedObject {
 	public String text;

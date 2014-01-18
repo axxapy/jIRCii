@@ -10,8 +10,8 @@ package rero.util;
 import rero.config.ClientDefaults;
 import rero.config.Config;
 import rero.dialogs.DialogUtilities;
-import text.AttributedString;
-import text.TextSource;
+import rero.gui.text.AttributedString;
+import rero.gui.text.TextSource;
 
 import javax.swing.*;
 import java.awt.*;
