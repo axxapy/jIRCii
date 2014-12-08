@@ -1,0 +1,87 @@
+apply plugin: 'java'
+
+sourceCompatibility = 1.6
+version = '0.9'
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		}
+		resources {
+			srcDir 'resources'
+		}
+	}
+}
+
+dependencies {
+	compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+jar {
+	from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+	manifest {
+		attributes(
+			'Manifest-Version': '1.0',
+			'Main-Class': 'rero.Application',
+			'Class-Path': configurations.compile.collect { it.getName() }.join(' ')
+		)
+	}
+	manifest.attributes
+	baseName = 'jircii'
+	version = project.version
+	archiveName = 'jIRCii.jar'
+}
+
+task dist(dependsOn: 'assemble', description: 'Creates distributions for Windows, Mac and Linux') << {
+	def dirDist = new File(project.buildDir, '/dist')
+
+	println "Creating windows build..."
+	task(distWindows, type: Zip) {
+		into 'jIRCii'
+		from jar.outputs.files
+		from 'resources/toplevel'
+		from 'src-windows/bin/jircii.exe'
+		destinationDir dirDist
+		archiveName 'jIRCii-win.zip'
+	}.execute()
+
+	println "Creating Linux build..."
+	task(distLinux, type: Tar) {
+		into 'jIRCii'
+		compression = Compression.GZIP
+		from jar.outputs.files
+		from 'resources/toplevel'
+		destinationDir dirDist
+		archiveName 'jIRCii-linux.tgz'
+	}.execute()
+
+	println "Creating MAC build..."
+	task(distMac) {
+		def dirTmp = new File(project.buildDir, '/tmp/jIRCii.app')
+		dirTmp.mkdirs()
+		task(copyTask, type: Copy) {
+			from 'src-apple/jIRCii.app'
+			into dirTmp
+			from jar.outputs.files
+			into dirTmp
+		}.execute()
+
+		String osName = System.getProperty("os.name").toLowerCase();
+		def proc
+		if (osName == "linux") {
+			proc = "genisoimage -V jIRCii -D -R -apple -no-pad -o ${dirDist.absolutePath}/jIRCii.dmg ${dirTmp.absolutePath}".execute()
+		} else if (osName == "mac") {
+			proc = "hdiutil create -ov -volname jIRCii -srcfolder ${dirTmp.absolutePath} ${dirDist.absolutePath}/jIRCii.dmg".execute()
+		} else {
+			println "Your operation system is not supported for generating MAC dmg packages. Only Linux and Windows are supported.";
+			return
+		}
+		proc.in.eachLine { line -> println line }
+		proc.err.eachLine { line -> println 'ERROR: ' + line }
+		proc.waitFor()
+	}.execute()
+
+	println "\nDone. You can find builds here:"
+	dirDist.listFiles().each() { println it }
+}
