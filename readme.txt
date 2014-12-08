@@ -1,3 +1,9 @@
+!!!
+THIS README IS DEPRECATED
+ANT IS NOT USED ANYMORE TO BUILD THIS PROJECT
+SEE README.md
+!!!
+
 This is just a short, sweet, and simple readme for the actual source code.
 
 This code should be reasonably stable.
