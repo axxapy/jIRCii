@@ -27,7 +27,7 @@ public class MainWindow extends JFrame {
 		}
 
 		JSplitPane root = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		root.add(new ServersTree());
+		//root.add(new ServersTree());
 		root.add(new SessionManager(this));
 
 		getContentPane().add(root);
