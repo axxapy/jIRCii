@@ -89,12 +89,13 @@ public class Application {
 			} else if (Config.getInstance().isOption("ui.native", ClientDefaults.ui_native)) {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 			} else {
-				UIManager.LookAndFeelInfo[] feels = UIManager.getInstalledLookAndFeels();
+				UIManager.setLookAndFeel(new com.bulenkov.darcula.DarculaLaf());
+				/*UIManager.LookAndFeelInfo[] feels = UIManager.getInstalledLookAndFeels();
 				for (int x = 0; x < feels.length; x++) {
 					if (feels[x].getName().equals("Nimbus")) {
 						UIManager.setLookAndFeel(feels[x].getClassName());
 					}
-				}
+				}*/
 			}
 		} catch (Exception e) {
 			System.err.println("Could not load specified look and feel, using system default");
