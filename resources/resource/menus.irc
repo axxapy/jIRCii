@@ -348,12 +348,12 @@ menubar "&Help"
 
    item "H&omepage"
    {
-      openCommand("http://www.oldschoolirc.com/");
+      openCommand("https://github.com/axxapy/jIRCii");
    }
 
    item "&Report Bugs" 
    {
-      openCommand("http://code.google.com/p/jircii/issues/list");
+      openCommand("https://github.com/axxapy/jIRCii/issues");
    }
 
    addSeparator();

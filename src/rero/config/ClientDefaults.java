@@ -95,7 +95,7 @@ public class ClientDefaults {
 	public static final boolean attention_osx_bouncedock_repeat = true;
 	// TODO: Windows, Linux
 
-	public static final String version_string = "07.20.11";    // Full version string
+	public static final String version_string = "0.9-14-12-9";    // Full version string
 
 	// This would build out to: 0.90(-revision)(+extra)
 	public static final String version_major = "0";
