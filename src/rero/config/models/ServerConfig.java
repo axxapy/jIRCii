@@ -1,24 +1,32 @@
 package rero.config.models;
 
 import com.google.gson.Gson;
+import rero.util.StringParser;
+
+import java.util.regex.Pattern;
 
 public class ServerConfig implements Comparable {
-	protected String description;
-	protected String host;
-	protected String portRange;
+	protected String  description;
+	protected String  host;
+	protected String  portRange;
 	protected boolean isSSL;
-	protected String password;
-	protected String compare;
+	protected String  password;
+	protected String  compare;
+
+	protected static Pattern isServerPassword = Pattern.compile("(\\S)\\S*=(.*)SERVER:(.*):(.*):(.*)GROUP:(.*)");
+	protected static Pattern isServerNormal   = Pattern.compile("(\\S)\\S*=(.*)SERVER:(.*):(.*)GROUP:(.*)");
+
 
 	public ServerConfig() {}
 
-	public void setValues(String desc, String host, String port, boolean ssl, String pass) {
+	public ServerConfig setValues(String desc, String host, String port, boolean ssl, String pass) {
 		this.description = desc;
 		this.host = host;
 		this.portRange = port;
 		this.isSSL = ssl;
 		this.password = pass;
 		compare = host.toUpperCase();
+		return this;
 	}
 
 	public String toString() {
@@ -89,4 +97,37 @@ public class ServerConfig implements Comparable {
 
 		return command.toString();
 	}
+
+	public static ServerConfig decodeMircServer(String text) {
+		// Check for server with password
+		StringParser check = new StringParser(text, isServerPassword);
+
+		if (check.matches()) {
+			String[] values = check.getParsedStrings();
+
+			boolean secure = values[0].charAt(0) == 's';
+
+			return new ServerConfig().setValues("[" + values[5] + "] " + values[1], values[2], values[3], secure, values[4]);
+		}
+
+		// Check for server without password
+		check = new StringParser(text, isServerNormal);
+
+		if (check.matches()) {
+			// 0: s
+			// 1: Random US DALnet server
+			// 2: irc.dal.net
+			// 3: 6660-6667
+			// 4: 01
+
+			String[] values = check.getParsedStrings();
+
+			boolean secure = values[0].charAt(0) == 's';
+
+			return new ServerConfig().setValues("[" + values[4] + "] " + values[1], values[2], values[3], secure, null);
+		}
+
+		return null;
+	}
+
 }

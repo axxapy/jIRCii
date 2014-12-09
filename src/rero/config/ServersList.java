@@ -5,17 +5,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import rero.config.models.ServerConfig;
 
-import java.io.BufferedReader;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ServersList {
 	protected static ServersList data = null;
 
-	protected ArrayList<ServerConfig> servers;
+	protected ArrayList<ServerConfig> servers = new ArrayList<ServerConfig>();
 
 	protected ServersList() {
 		load();
@@ -58,7 +55,13 @@ public class ServersList {
 
 	public void load() {
 		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(Resources.getInstance().getResourceAsStream("servers.json")));
+			InputStream s = Resources.getInstance().getResourceAsStream("servers.json");
+			if (s == null) {
+				loadMircStyle();
+				save();
+				return;
+			}
+			BufferedReader in = new BufferedReader(new InputStreamReader(s));
 			StringBuilder builder = new StringBuilder();
 			String line;
 			while((line = in.readLine()) != null) {
@@ -71,6 +74,20 @@ public class ServersList {
 			in.close();
 		} catch (Exception ex) {
 			servers = new ArrayList<ServerConfig>();
+			ex.printStackTrace();
+		}
+	}
+
+	public void loadMircStyle() {
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(Resources.getInstance().getResourceAsStream("servers.ini")));
+			String data;
+			while ((data = in.readLine()) != null) {
+				ServerConfig temp = ServerConfig.decodeMircServer(data);
+				if (temp == null) continue;
+				servers.add(temp);
+			}
+		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
