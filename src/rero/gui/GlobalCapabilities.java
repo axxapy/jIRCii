@@ -4,9 +4,9 @@ import rero.client.Capabilities;
 import rero.client.DataStructures;
 import rero.client.user.UserHandler;
 import rero.config.Config;
-import rero.dialogs.AboutWindow;
-import rero.dialogs.HelpWindow;
-import rero.dialogs.OptionWindow;
+import rero.gui.dialogs.AboutWindow;
+import rero.gui.dialogs.HelpWindow;
+import rero.gui.dialogs.OptionWindow;
 
 import javax.swing.*;
 

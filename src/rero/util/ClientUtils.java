@@ -9,7 +9,7 @@ package rero.util;
 
 import rero.config.ClientDefaults;
 import rero.config.Config;
-import rero.dialogs.DialogUtilities;
+import rero.gui.dialogs.DialogUtilities;
 import text.AttributedString;
 import text.TextSource;
 

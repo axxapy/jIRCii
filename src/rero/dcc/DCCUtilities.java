@@ -3,7 +3,7 @@ package rero.dcc;
 import rero.client.Capabilities;
 import rero.config.ClientDefaults;
 import rero.config.Config;
-import rero.dialogs.dcc.ResumeRequest;
+import rero.gui.dialogs.dcc.ResumeRequest;
 
 public class DCCUtilities {
 	/**

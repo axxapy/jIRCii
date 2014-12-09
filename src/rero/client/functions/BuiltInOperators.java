@@ -2,6 +2,7 @@ package rero.client.functions;
 
 import rero.client.Feature;
 import rero.client.user.UserHandler;
+import rero.gui.dialogs.HelpWindow;
 import rero.ircfw.InternalDataList;
 import rero.util.ClientUtils;
 import sleep.bridges.BridgeUtilities;
@@ -78,7 +79,7 @@ public class BuiltInOperators extends Feature implements Predicate, Function, Lo
 	private class getAliasList implements Function {
 		public Scalar evaluate(String function, ScriptInstance si, Stack parms) {
 			LinkedList rv = new LinkedList();
-			rv.addAll(rero.dialogs.HelpWindow.getBuiltInAliases());
+			rv.addAll(HelpWindow.getBuiltInAliases());
 			rv.addAll(commands.getScriptedAliases());
 
 			return SleepUtils.getArrayWrapper(rv);

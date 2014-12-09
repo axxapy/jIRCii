@@ -9,7 +9,7 @@ import rero.client.server.ListFilter;
 import rero.config.ClientDefaults;
 import rero.config.Config;
 import rero.config.StringList;
-import rero.dialogs.DialogUtilities;
+import rero.gui.dialogs.DialogUtilities;
 import rero.gui.SessionManager;
 import rero.gui.UICapabilities;
 import rero.ircfw.Channel;
